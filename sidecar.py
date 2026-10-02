@@ -31,6 +31,7 @@ from pathlib import Path
 from defusedxml import ElementTree as SafeET
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import uvicorn
 
@@ -418,6 +419,9 @@ DASH_DIR = Path("/opt/data/kiosk/dashboard")
 @app.get("/", response_class=HTMLResponse)
 def index():
     return FileResponse(DASH_DIR / "index.html")
+
+# avatar model assets (Live2D) + pages, same-origin so the model can fetch them
+app.mount("/av", StaticFiles(directory=DASH_DIR / "av"), name="av")
 
 
 if __name__ == "__main__":

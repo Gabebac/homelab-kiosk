@@ -1,0 +1,58 @@
+.canvas-card {
+  position: relative;
+  width: 300px;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 10px;
+  justify-content: space-between;
+  /* padding: 10px; */
+  border-radius: 10px;
+  box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+}
+
+.canvas-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+.canvas-card:hover .canvas-icons {
+  opacity: 1;
+}
+
+.canvas-show-canvas-page-title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+  font-weight: 600;
+  font-size: 20px;
+  color: rgb(60, 60, 77);
+  font-weight: 400;
+}
+
+.canvas-icons {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.canvas-card-edit-icon,
+.canvas-card-delete-icon {
+  font-size: 50px;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.canvas-card-edit-icon:hover,
+.canvas-card-delete-icon:hover {
+  color: #ff6347; /* Tomato color */
+}

@@ -3,3 +3,11 @@ _olympus.css
 *.bak
 __pycache__/
 *.pyc
+_*.png
+_*.json
+*.bak
+captures/
+
+_*.css
+_ui_*.html
+_api*.json

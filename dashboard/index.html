@@ -40,53 +40,109 @@
   .logo b{color:var(--accent-corona); font-weight:400}
   .walltag{color:var(--ink-muted); font-weight:400; font-size:12px; letter-spacing:.025em}
   .clock{margin-left:auto; font-family:var(--font-display); font-variant-numeric:tabular-nums; font-size:22px; color:var(--ink-label)}
-  main{padding:12px 16px; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; display:grid; gap:10px; grid-template-rows:auto auto auto; min-width:0}
+
+  /* ---- card grid: flat, draggable, order persisted ---- */
+  main{
+    padding:12px 16px; overflow-y:auto; overflow-x:hidden; scrollbar-width:none;
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; min-width:0;
+  }
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
-  .row{display:grid; gap:10px}
-  .row.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .row.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
   .card{
+    position:relative;
     background:linear-gradient(180deg, var(--surface-plate) 0%, var(--surface-plate-2) 100%);
-    border:1px solid var(--outline-soft); border-radius:10px; padding:10px 12px;
-    box-shadow:0 10px 30px rgba(3,6,8,.5);
+    border:1px solid transparent;
+    border-radius:12px;
+    padding:8px 10px;
+    box-shadow:0 6px 24px rgba(3,6,8,.45);
+    transform-style:preserve-3d;
+    transition:transform .2s var(--ease-settle), box-shadow .2s var(--ease-settle);
+    overflow:hidden;
   }
-  .card h2{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-muted); font-weight:400; margin-bottom:6px}
-  .big{font-size:17px; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums}
-  .sub{color:var(--ink-muted); font-size:11px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-  .bar{height:5px; background:var(--surface-well); border-radius:3px; overflow:hidden; margin-top:8px}
-  .bar>i{display:block; height:100%; background:var(--accent-busy); border-radius:3px; transition:width .5s var(--ease-settle)}
-  .bar.warn>i{background:var(--led-alert)}
-  .svc{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; font-size:11px}
-  .svc span{display:flex; align-items:center; gap:7px; padding:7px 9px; background:var(--surface-well);
-    border:1px solid var(--outline-soft); border-radius:9px; color:var(--ink-label); white-space:nowrap; overflow:hidden}
-  /* Olympus LED language: core + rim + glow */
-  .svc b{width:8px;height:8px;border-radius:50%;background:var(--led-ok);flex:0 0 auto;
-    box-shadow:0 0 0 2px rgba(117,217,179,.15), 0 0 8px rgba(117,217,179,.55)}
-  .svc b.d{background:var(--led-alert); box-shadow:0 0 0 2px rgba(255,138,120,.15), 0 0 8px rgba(255,138,120,.55)}
+  /* animated gradient keyline (smart-liger voice) */
+  .card::before{
+    content:""; position:absolute; inset:0;
+    border-radius:12px; padding:1.5px;
+    background:linear-gradient(120deg,
+      rgba(217,251,255,.35), rgba(134,185,245,.12) 30%,
+      rgba(117,217,179,.25) 60%, rgba(217,251,255,.35));
+    background-size:300% 300%;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    pointer-events:none;
+  }
+  @keyframes borderFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .card::before{animation:borderFlow 9s ease-in-out infinite}
+  /* cursor glare (glare-cards voice) */
+  .card::after{
+    content:""; position:absolute; inset:0; border-radius:12px;
+    background:radial-gradient(220px circle at var(--gx,50%) var(--gy,50%),
+      rgba(217,251,255,.14), transparent 55%);
+    opacity:0; transition:opacity .25s; pointer-events:none;
+  }
+  .card:hover::after{opacity:1}
+  .card:hover{box-shadow:0 14px 40px rgba(3,6,8,.6)}
+  .wide{grid-column:1/-1}
+
+  .card h2{font-size:8px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-muted); font-weight:400; margin-bottom:3px}
+  .grid2{display:grid; grid-template-columns:auto 1fr; gap:3px 7px; align-items:center}
+  .big{font-family:var(--font-display); font-size:12px; font-weight:400; line-height:1.2; font-variant-numeric:tabular-nums}
+  .sub{color:var(--ink-muted); font-size:8px; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+  .donut{
+    --p:0;
+    width:38px; height:38px; border-radius:50%;
+    background:conic-gradient(var(--gcolor,var(--accent-busy)) calc(var(--p)*1%),
+      rgba(234,246,248,.08) 0);
+    -webkit-mask:radial-gradient(farthest-side, transparent 62%, #000 65%);
+    mask:radial-gradient(farthest-side, transparent 62%, #000 65%);
+    justify-self:center;
+    transition:background .5s var(--ease-settle);
+  }
+  .donut.warn{--gcolor:var(--led-alert)}
+  .dcenter{grid-row:1; grid-column:1; justify-self:center; align-self:center;
+    font-size:8px; font-weight:700; font-variant-numeric:tabular-nums}
+  .dwrap{display:grid; place-items:center}
+
+  .svc{display:grid; grid-template-columns:repeat(auto-fill,minmax(64px,1fr)); gap:3px; font-size:8px}
+  .svc span{display:flex; align-items:center; gap:3px; padding:2px 5px; background:var(--surface-well);
+    border:1px solid var(--outline-soft); border-radius:5px; color:var(--ink-label); white-space:nowrap; overflow:hidden}
+  .svc b{width:5px;height:5px;border-radius:50%;background:var(--led-ok);flex:0 0 auto;
+    box-shadow:0 0 0 1px rgba(117,217,179,.15), 0 0 4px rgba(117,217,179,.45)}
+  .svc b.d{background:var(--led-alert); box-shadow:0 0 0 1px rgba(255,138,120,.15), 0 0 4px rgba(255,138,120,.45)}
   .svc u{text-decoration:none; overflow:hidden; text-overflow:ellipsis}
-  .q{display:flex; flex-direction:column; gap:6px; font-size:13px}
-  .q .it{display:flex; gap:10px; align-items:baseline; padding:6px 10px; background:var(--surface-well);
-    border:1px solid var(--outline-soft); border-radius:8px}
-  .q .t{color:var(--ink-body); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:52%}
-  .q .s{color:var(--accent-busy); font-size:11px; text-transform:uppercase; letter-spacing:.08em}
-  .q .g{margin-left:auto; color:var(--ink-muted); font-variant-numeric:tabular-nums}
-  .pl .it{display:flex; gap:12px; align-items:center; padding:8px 10px; border:1px solid var(--outline-soft);
-    border-radius:8px; background:var(--surface-well)}
-  .pl .play{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;
-    border-left:11px solid var(--accent-corona); flex:0 0 auto}
-  .pl .prog{flex:0 0 90px; height:5px; background:var(--surface-well); border-radius:3px; overflow:hidden}
+  .q{display:flex; flex-direction:column; gap:3px; font-size:8px}
+  .q .it{display:flex; gap:5px; align-items:baseline; padding:3px 5px; background:var(--surface-well);
+    border:1px solid var(--outline-soft); border-radius:5px}
+  .q .t{color:var(--ink-body); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%}
+  .q .s{color:var(--accent-busy); font-size:8px; text-transform:uppercase; letter-spacing:.07em}
+  .q .g{margin-left:auto; color:var(--ink-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .pl .it{display:flex; gap:7px; align-items:center; padding:3px 6px; border:1px solid var(--outline-soft);
+    border-radius:5px; background:var(--surface-well)}
+  .pl .play{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;
+    border-left:7px solid var(--accent-corona); flex:0 0 auto}
+  .pl .prog{width:100%; height:3px; background:rgba(234,246,248,.09); border-radius:2px; overflow:hidden; margin-top:2px}
   .pl .prog>i{display:block;height:100%;background:var(--accent-busy)}
-  .empty{color:var(--ink-muted); font-size:13px; font-style:italic}
+  .empty{color:var(--ink-muted); font-size:9px; font-style:italic}
+
+  /* ---- right sidebar: avatar + chat ---- */
   aside{
     grid-row:2; grid-column:2; border-left:1px solid var(--outline-soft); background:var(--surface-plate-2);
     display:flex; flex-direction:column; overflow:hidden; min-height:0; min-width:0;
   }
-  .avi-wrap{display:flex; justify-content:center; padding:12px 0 4px}
-  #reply{flex:1; overflow:auto; padding:8px 18px 12px; font-size:14px; line-height:1.55;
+  /* tiny avatar switcher */
+  .avrow{display:flex; gap:6px; justify-content:center; padding:8px 0 0}
+  .avbtn{
+    background:transparent; border:1px solid transparent; color:var(--ink-muted);
+    font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:6px;
+  }
+  .avbtn:hover{color:var(--ink-heading); background:var(--surface-well)}
+  .avi-wrap{display:flex; justify-content:center; padding:6px 0 2px}
+  #avatar{width:180px; height:180px}
+  #reply{flex:1; overflow:auto; padding:4px 14px 10px; font-size:13px; line-height:1.55;
     color:var(--ink-body); white-space:pre-wrap; min-height:0}
-  #reply .m{color:var(--ink-muted); font-size:11px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:6px;
-    margin-top:14px}
+  #reply .m{color:var(--ink-muted); font-size:10px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:4px;
+    margin-top:12px}
   #reply .m:first-child{margin-top:0}
   .composer{display:flex; gap:8px; padding:10px 12px 12px; border-top:1px solid var(--outline-soft)}
   .composer>*{min-width:0}
@@ -97,7 +153,7 @@
   input#q:focus{border-color:var(--accent-corona); box-shadow:0 0 0 3px rgba(217,251,255,.12)}
   button{
     background:var(--accent-corona); border:none; color:var(--ink-on-corona); font-weight:700;
-    font-family:var(--font-body); border-radius:10px; padding:0 18px; font-size:14px; cursor:pointer;
+    font-family:var(--font-body); border-radius:10px; padding:0 16px; font-size:13px; cursor:pointer;
     transition:background var(--ease-settle) 90ms;
   }
   button:hover{background:#eafcff}
@@ -105,8 +161,39 @@
   #avatar .mouth{transform-origin:50% 60%}
   #avatar.talking .mouth{animation:talk .28s infinite alternate}
   @keyframes talk{from{transform:scaleY(.35)}to{transform:scaleY(1.15)}}
-  #avatar.talking{filter:drop-shadow(0 0 14px rgba(217,251,255,.45))}
-  @media (max-width:1100px){ .row.c3{grid-template-columns:1fr} .svc{grid-template-columns:repeat(2,1fr)} }
+  @media (prefers-reduced-motion:reduce){
+    .card{transform:none!important}
+    .card::before{animation:none}
+  }
+  @media (max-width:1100px){ main{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+  /* ---- click-to-expand popup ---- */
+  #popwrap{
+    position:fixed; inset:0; z-index:40; display:none;
+    background:rgba(2,5,8,.7); backdrop-filter:blur(3px);
+  }
+  #popwrap.open{display:grid; place-items:center}
+  #popcard{
+    width:min(720px, 86vw); max-height:76vh; overflow-y:auto; scrollbar-width:none;
+    background:linear-gradient(180deg, var(--surface-plate) 0%, var(--surface-plate-2) 100%);
+    border:1px solid var(--outline-soft); border-radius:16px;
+    padding:18px 22px; box-shadow:0 30px 80px rgba(0,0,0,.65);
+    transform:translateY(8px) scale(.97); opacity:0;
+    transition:transform .18s var(--ease-settle), opacity .18s var(--ease-settle);
+  }
+  #popwrap.open #popcard{transform:none; opacity:1}
+  #popcard::-webkit-scrollbar{display:none}
+  #popcard h3{font-family:var(--font-display); font-size:18px; font-weight:400; letter-spacing:.06em; margin-bottom:12px}
+  #popcard .stat{color:var(--ink-label); font-size:12px; padding:6px 0; border-bottom:1px solid var(--outline-soft);
+    display:flex; justify-content:space-between; gap:16px}
+  #popcard .stat b{color:var(--ink-heading); font-variant-numeric:tabular-nums; font-weight:700; text-align:right}
+  #popclose{
+    position:absolute; top:12px; right:14px; background:var(--surface-well); color:var(--ink-muted);
+    border:1px solid var(--outline-soft); border-radius:8px; padding:4px 10px; font-size:11px; cursor:pointer;
+  }
+  #popclose:hover{color:var(--ink-heading)}
+  .card.clickable{cursor:pointer}
+  .card.clickable:hover{border-color:rgba(217,251,255,.3)}
 </style>
 </head>
 <body>
@@ -115,27 +202,79 @@
   <div class="clock" id="clock">--:--</div>
 </header>
 
-<main>
-  <div class="row c4">
-    <div class="card"><h2>CPU load</h2><div class="big" id="load">–</div><div class="sub" id="loadsub">–</div></div>
-    <div class="card"><h2>Memory</h2><div class="big" id="mem">–</div><div class="sub" id="memsub">–</div>
-      <div class="bar" id="membar"><i style="width:0%"></i></div></div>
-    <div class="card"><h2>Storage</h2><div class="big" id="disk">–</div><div class="sub" id="disksub">–</div>
-      <div class="bar warn" id="diskbar"><i style="width:0%"></i></div></div>
-    <div class="card"><h2>Pi-hole</h2><div class="big" id="ph">–</div><div class="sub" id="phsub">queries blocked</div></div>
+<main id="board">
+  <div class="card" data-k="mem">
+    <h2>Memory</h2>
+    <div class="dwrap">
+      <div class="donut" id="memdonut"></div>
+      <div class="dcenter" id="memd">–</div>
+    </div>
+    <div class="sub" style="text-align:center" id="memsub">–</div>
   </div>
 
-  <div class="card"><h2>Services</h2><div class="svc" id="svcs"></div></div>
+  <div class="card" data-k="disk">
+    <h2>Storage</h2>
+    <div class="dwrap">
+      <div class="donut warn" id="diskdonut"></div>
+      <div class="dcenter" id="diskd">–</div>
+    </div>
+    <div class="sub" style="text-align:center" id="disksub">–</div>
+  </div>
 
-  <div class="row" style="grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start">
-    <div class="card"><h2>Now playing</h2>
-      <div class="pl q" id="plex"><div class="empty">Nothing playing</div></div></div>
-    <div class="card"><h2>Download queue</h2><div class="q" id="queue"><div class="empty">Queue empty</div></div></div>
+  <div class="card" data-k="ph">
+    <h2>Pi-hole</h2>
+    <div class="dwrap">
+      <div class="donut" id="phdonut" style="--gcolor:var(--led-ok)"></div>
+      <div class="dcenter" id="phd">–</div>
+    </div>
+    <div class="sub" style="text-align:center" id="phsub">queries blocked</div>
+  </div>
+
+  <div class="card" data-k="svc">
+    <h2>Services</h2>
+    <div class="dwrap">
+      <div class="donut" id="svcdonut" style="--gcolor:var(--led-ok)"></div>
+      <div class="dcenter" id="svcd">–</div>
+    </div>
+    <div class="sub" style="text-align:center" id="svcsub">of 13 up</div>
+  </div>
+
+  <div class="card" data-k="load">
+    <h2>CPU load</h2>
+    <div class="big" style="font-size:20px" id="load">–</div>
+    <div class="sub" style="text-align:center" id="loadsub">–</div>
+  </div>
+
+  <div class="card" data-k="ctr">
+    <h2>Containers</h2>
+    <div class="big" style="font-size:20px" id="ctr">–</div>
+    <div class="sub" style="text-align:center" id="ctrsub">docker containers</div>
+  </div>
+
+  <div class="card" data-k="plex">
+    <h2>Now playing</h2>
+    <div class="q pl" id="plex"><div class="empty">Nothing playing</div></div>
+  </div>
+
+  <div class="card" data-k="queue">
+    <h2>Download queue</h2>
+    <div class="q" id="queue"><div class="empty">Queue empty</div></div>
+  </div>
+
+  <div class="card wide" data-k="svcs">
+    <h2>Service detail</h2>
+    <div class="svc" id="svcs"></div>
   </div>
 </main>
 
 <aside>
-  <div class="avi-wrap" id="avatar" style="width:120px;height:120px" aria-hidden="true"></div>
+  <div class="avrow" role="group" aria-label="Avatar">
+    <button class="avbtn" data-m="kei" title="Kei">kei</button>
+    <button class="avbtn" data-m="rice" title="Rice">rice</button>
+    <button class="avbtn" data-m="jinx" title="Jinx">jinx</button>
+    <button class="avbtn" data-m="base" title="Base circle">base</button>
+  </div>
+  <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
   <div id="reply"></div>
   <div class="composer">
     <input id="q" placeholder="Say something to Hermes…" autocomplete="off">
@@ -143,33 +282,97 @@
   </div>
 </aside>
 
+<div id="popwrap" aria-modal="true" role="dialog">
+  <div id="popcard"><button id="popclose">close ✕</button><div id="popbody"></div></div>
+</div>
+<script src="/av/vendor/live2dcubismcore.min.js"></script>
+<script src="/av/vendor/pixi.min.js"></script>
+<script src="/av/vendor/pixi-live2d-display.min.js"></script>
+
 <script>
-/* ---- avatar: pure SVG, idle blink + talk animation ---- */
+/* ---- avatar: Live2D, eyes follow cursor, lipsync on talk ---- */
 const AV = document.getElementById('avatar');
-AV.innerHTML = `
-<svg viewBox="0 0 100 100">
-  <defs>
-    <radialGradient id="aura" cx="50%" cy="45%" r="55%">
-      <stop offset="0%" stop-color="rgba(217,251,255,.32)"/>
-      <stop offset="70%" stop-color="rgba(217,251,255,.08)"/>
-      <stop offset="100%" stop-color="rgba(217,251,255,0)"/>
-    </radialGradient>
-  </defs>
-  <circle cx="50" cy="50" r="48" fill="url(#aura)"/>
-  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(217,251,255,.25)" stroke-width="1.5"/>
-  <g class="eyes">
-    <circle cx="38" cy="44" r="4.5" fill="#d9fbff"/>
-    <circle cx="62" cy="44" r="4.5" fill="#d9fbff"/>
-  </g>
-  <g class="mouth">
+
+/* SVG fallback if Live2D fails to load (wall must always show a face) */
+function svgFallback(){
+  if (AV.dataset.fallback) return;
+  AV.dataset.fallback = 1;
+  // static string, no user data — safe
+  AV.outerHTML = `<svg id="avatar" viewBox="0 0 100 100" style="width:120px;height:120px">
+    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(217,251,255,.25)" stroke-width="1.5"/>
+    <circle cx="38" cy="44" r="4.5" fill="#d9fbff"/><circle cx="62" cy="44" r="4.5" fill="#d9fbff"/>
     <ellipse cx="50" cy="60" rx="9" ry="4" fill="#d9fbff" opacity=".85"/>
-  </g>
-</svg>`;
-setInterval(() => {
-  const eyes = AV.querySelector('.eyes');
-  if (!eyes) return;
-  eyes.style.opacity = 0; setTimeout(() => eyes.style.opacity = 1, 120);
-}, 3800 + Math.random() * 2500);
+  </svg>`;
+}
+/* Load via the cubism4 build: PIXI.live2d.Live2DModel.from(modelJsonUrl) */
+const AVATAR_MODELS = {
+  kei:  '/av/kei/kei_basic_free.model3.json',
+  rice: '/av/rice/rice_pro_t03.model3.json',
+  jinx: '/av/jinx/jinx.model3.json',
+};
+let model = null, pixiApp = null;
+const AVATAR_STORE = AVATAR_MODELS;
+
+async function loadAvatar(name){
+  if (!window.PIXI || !PIXI.live2d || !PIXI.live2d.Live2DModel) return svgFallback();
+  try{
+    if (!pixiApp){
+      pixiApp = new PIXI.Application({view: AV, width: 220, height: 220,
+        backgroundAlpha: 0, antialias: true});
+    }
+    if (model){ pixiApp.stage.removeChild(model); model.destroy(); model = null; }
+    model = await PIXI.live2d.Live2DModel.from(AVATAR_MODELS[name],
+      {autoInteract: false, autoUpdate: true});
+    pixiApp.stage.addChild(model);
+    // kei is a bust (taller than wide); ren is full-body — fit by whichever is tighter
+    // Live2D models carry large transparent margins — fit by actual DRAWN bounds, not raw width/height
+                                // ponytail: per-model hardcoded fit incl. art offset inside moc canvas (tuned via scale-ladder screenshots)
+    const FIT = {
+      //        scale   anchor in canvas fraction (art center)
+      kei:  {s: 0.40, fx: 0.50, fy: 0.50},
+      rice: {s: 0.068, fx: 0.50, fy: 0.45},
+      jinx: {s: 0.052, fx: 0.62, ay: -80},
+    }[name] || {s: 0.30, fx: 0.50, fy: 0.50};
+    model.scale.set(FIT.s);
+    // model.width ALREADY includes the scale — multiply once, not twice
+    model.x = 110 - model.width * FIT.fx;
+    model.y = (FIT.ay !== undefined) ? FIT.ay : 110 - model.height * FIT.fy;
+    document.getElementById('reply').style.opacity = 1;
+  }catch(e){ console.warn('live2d init failed for ' + name, e); model = null; svgFallback(); }
+}
+function setAvatar(name){
+  localStorage.setItem('avatar', name);
+  document.querySelectorAll('.avbtn').forEach(b =>
+    b.style.borderColor = b.dataset.m === name ? 'var(--accent-corona)' : 'transparent');
+  if (name === 'base'){
+    if (model){ pixiApp.stage.removeChild(model); model.destroy(); model = null; }
+    svgFallback(); // keeps the circle face
+    return;
+  }
+  loadAvatar(name);
+}
+document.querySelectorAll('.avbtn').forEach(b => b.onclick = () => setAvatar(b.dataset.m));
+setAvatar(AVATAR_STORE[localStorage.getItem('avatar')] ? localStorage.getItem('avatar') : 'kei');
+
+document.addEventListener('mousemove', e => {
+  if (!model) return;
+  const r = AV.getBoundingClientRect();
+  model.focus(e.clientX - r.left, e.clientY - r.top);
+});
+
+function avTalk(ms){
+  if (!model) return;
+  const t0 = Date.now(), until = t0 + ms;
+  const drive = () => {
+    if (Date.now() > until){
+      model.internalModel.coreModel.setParameterValueById('ParamMouthOpenY', 0); return;
+    }
+    model.internalModel.coreModel.setParameterValueById('ParamMouthOpenY',
+      0.25 + 0.55 * Math.abs(Math.sin(Date.now() / 110)));
+    requestAnimationFrame(drive);
+  };
+  drive();
+}
 
 /* reply bubbles: built with textContent (no innerHTML from network data) */
 const REPLY = document.getElementById('reply');
@@ -179,9 +382,7 @@ function bubble(text){
   const body = document.createElement('div'); body.textContent = text;
   wrap.appendChild(m); wrap.appendChild(body);
   REPLY.appendChild(wrap); REPLY.scrollTop = REPLY.scrollHeight;
-  AV.classList.add('talking');
-  clearTimeout(AV._t);
-  AV._t = setTimeout(() => AV.classList.remove('talking'), Math.min(30000, 1500 + body.textContent.length * 45));
+  avTalk(Math.min(30000, 1500 + text.length * 45));
 }
 
 const sendBtn = document.getElementById('send'), inp = document.getElementById('q');
@@ -208,67 +409,183 @@ function tick(){
 }
 tick(); setInterval(tick, 5000);
 
+/* ---- card tilt + glare follow ---- */
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+for (const card of document.querySelectorAll('.card')){
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+    card.style.setProperty('--gx', (px*100)+'%');
+    card.style.setProperty('--gy', (py*100)+'%');
+    if (!reduceMotion){
+      card.style.transform =
+        `perspective(700px) rotateY(${(px-0.5)*7}deg) rotateX(${(0.5-py)*7}deg)`;
+    }
+  });
+  card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+}
+
+
+/* ---- click-to-expand card popup (live detail snapshot, rebuilt each poll) ---- */
+let last = null;                      // latest /stats payload
+let openKey = null;                   // which card detail is open, to re-render live
+const POP = document.getElementById('popwrap');
+const POPBODY = document.getElementById('popbody');
+
+function closePop(){ POP.classList.remove('open'); openKey = null; }
+document.getElementById('popclose').onclick = closePop;
+POP.addEventListener('click', e => { if (e.target === POP) closePop(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') closePop(); });
+
+/* detail builders: [label, value][] per card key */
+function detailFor(key){
+  if (!last) return [];
+  const h = last.host || {};
+  const svcs = Object.entries(last.services || {});
+  const upN = svcs.filter(([,s]) => String(s).startsWith('up')).length;
+  const cN = Object.keys(last.containers || {});
+  const cUp = Object.values(last.containers || {}).filter(v => v === 'up' || v === 'healthy').length;
+  const cH  = Object.values(last.containers || {}).filter(v => v === 'healthy').length;
+  switch(key){
+    case 'mem':  return [
+      ['used', h.mem_used_gb + ' / ' + h.mem_total_gb + ' GB'],
+      ['percent', Math.round(h.mem_used_gb / h.mem_total_gb * 100) + '%'],
+      ['swap', h.swap_used_gb + ' / ' + h.swap_total_gb + ' GB'],
+      ['warn threshold', '85%']];
+    case 'disk': return [
+      ['used', h.disk_used_gb + ' / ' + h.disk_total_gb + ' GB'],
+      ['percent', h.disk_pct + '%'],
+      ['free', (h.disk_total_gb - h.disk_used_gb) + ' GB'],
+      ['warn threshold', '80%']];
+    case 'ph': {
+      const p = last.pihole;
+      return p && p.pct != null ? [
+        ['blocked', p.blocked + ' of ' + p.total],
+        ['percent blocked', p.pct + '%'],
+        ['note', 'live from Pi-hole v6 API']] : [['status', 'waiting (auth session cooling down)']];
+    }
+    case 'svc': return [
+      ['up', upN + ' / ' + svcs.length],
+      ...svcs.map(([n, s]) => [n, String(s)])];
+    case 'load': return [
+      ['1 min load', (h.load1||0).toFixed(2)],
+      ['cores', h.cpu_count],
+      ['load percent', Math.round((h.load1||0) / h.cpu_count * 100) + '%'],
+      ['memory pressure', Math.round(h.mem_used_gb / h.mem_total_gb * 100) + '%']];
+    case 'ctr': return [
+      ['total', cN.length],
+      ['up', cUp], ['healthy', cH],
+      ['sample', cN.slice(0, 8).join(', ') + (cN.length > 8 ? ', …' : '')]];
+    case 'svcs': return svcs.length ? svcs.map(([n, s]) => [n, String(s)]) : [['status','no data']];
+    case 'plex': {
+      const list = last.plex || [];
+      return list.length ? list.flatMap(v => [[v.title||'?','playing'], ['progress',(v.progress||0)+'%']])
+        : [['status', 'nothing playing']];
+    }
+    case 'queue': {
+      const items = [
+        ...(((last.arr||{}).radarr||{}).items||[]).map(x=>({...x, app:'radarr'})),
+        ...(((last.arr||{}).sonarr||{}).items||[]).map(x=>({...x, app:'sonarr'}))];
+      return items.length ? items.flatMap(it => [
+        [it.title||'(untitled)', it.app],
+        ['left', it.left_gb ? it.left_gb + ' GB' : (it.status || '-')]])
+        : [['status', 'queue empty']];
+    }
+    default: return [];
+  }
+}
+function renderPop(key){
+  const rows = detailFor(key);
+  POPBODY.innerHTML = '';   // container only; every child is built + textContent-filled
+  const h = document.createElement('h3'); h.textContent = key + ' · detail';
+  POPBODY.appendChild(h);
+  for (const [k, v] of rows){
+    const r = document.createElement('div'); r.className = 'stat';
+    const a = document.createElement('span'); a.textContent = k;
+    const b = document.createElement('b'); b.textContent = v;
+    r.appendChild(a); r.appendChild(b); POPBODY.appendChild(r);
+  }
+}
+function openPop(key){ openKey = key; renderPop(key); POP.classList.add('open'); }
+for (const card of document.querySelectorAll('.card')){
+  card.classList.add('clickable');
+  card.addEventListener('click', e => { if (!reduceMotion) openPop(card.dataset.k); });
+}
+
 /* ---- stats polling ---- */
+function setDonut(id, pct){
+  const d = document.getElementById(id);
+  d.style.setProperty('--p', Math.max(0, Math.min(100, pct)));
+}
 async function refresh(){
   try{
     const r = await fetch('/stats');
     if (!r.ok) return;
     const d = await r.json();
+    last = d;
+    if (openKey) renderPop(openKey);   // keep the open popup live
     const h = d.host;
     if (h){
       document.getElementById('load').textContent = h.load1.toFixed(2);
       document.getElementById('loadsub').textContent =
-        `${h.cpu_count} cores · ${d.containers ? Object.keys(d.containers).length : 0} containers`;
+        `${h.cpu_count} cores · ${(h.load1 / h.cpu_count * 100).toFixed(0)}% load`;
       const memTot = h.mem_total_gb, memUsed = h.mem_used_gb;
-      document.getElementById('mem').textContent = `${memUsed} / ${memTot} GB`;
-      document.getElementById('memsub').textContent = `swap ${h.swap_used_gb} / ${h.swap_total_gb} GB`;
       const memPct = Math.round(memUsed / memTot * 100);
-      document.getElementById('membar').firstElementChild.style.width = memPct + '%';
-      document.getElementById('membar').classList.toggle('warn', memPct > 85);
-      document.getElementById('disk').textContent = h.disk_used_gb + ' / ' + h.disk_total_gb + ' GB';
-      document.getElementById('disksub').textContent = h.disk_pct + '% used';
-      document.getElementById('diskbar').firstElementChild.style.width = h.disk_pct + '%';
-      document.getElementById('diskbar').classList.toggle('warn', h.disk_pct > 80);
+      document.getElementById('memd').textContent = memPct + '%';
+      document.getElementById('memsub').textContent = `${memUsed} / ${memTot} GB`;
+      setDonut('memdonut', memPct);
+      document.getElementById('memdonut').classList.toggle('warn', memPct > 85);
+      document.getElementById('diskd').textContent = h.disk_pct + '%';
+      document.getElementById('disksub').textContent = `${h.disk_used_gb} / ${h.disk_total_gb} GB`;
+      setDonut('diskdonut', h.disk_pct);
     }
 
-    // services — healthy/docker-state ports merged
+    // containers + services gauges; null-safe
+    const cNames = Object.keys(d.containers || {});
+    document.getElementById('ctr').textContent = cNames.length;
+    const svcEntries = Object.entries(d.services || {});
+    const upN = svcEntries.filter(([,s]) => String(s).startsWith('up')).length;
+    const svcPct = svcEntries.length ? Math.round(upN / svcEntries.length * 100) : 0;
+    document.getElementById('svcd').textContent = `${upN}/${svcEntries.length}`;
+    setDonut('svcdonut', svcPct);
+
+    // service detail pill grid
     const svcs = document.getElementById('svcs'); svcs.innerHTML = '';
-    const rows = [];
-    for (const [name, state] of Object.entries(d.services || {})){
-      if (state !== 'up' && state !== 'down'){
-        rows.push([name, state.startsWith('up') ? 'up' : 'down']); continue;
-      }
-      rows.push([name, state]);
-    }
-    for (const [n,s] of rows){
+    for (const [name, state] of svcEntries){
+      const s = String(state);
       const sp = document.createElement('span');
-      const dot = document.createElement('b'); dot.className = s === 'up' ? '' : 'd';
-      const u = document.createElement('u'); u.textContent = n;
+      const dot = document.createElement('b'); dot.className = s.startsWith('up') ? '' : 'd';
+      const u = document.createElement('u'); u.textContent = name;
       sp.appendChild(dot); sp.appendChild(u); svcs.appendChild(sp);
     }
 
-    // plex now playing
+    // plex now playing (compact: title + progress line, fits the quarter-width card)
     const pl = document.getElementById('plex'); pl.innerHTML = '';
     if (!(d.plex || []).length){
       const e = document.createElement('div'); e.className='empty'; e.textContent='Nothing playing'; pl.appendChild(e);
     } else {
       for (const v of d.plex){
         const it = document.createElement('div'); it.className='it';
-        const pw = document.createElement('div'); pw.className='play';
-        const title = document.createElement('div'); title.textContent = v.title; title.style.flex='1';
+        const left = document.createElement('div'); left.style.cssText='flex:1;min-width:0;overflow:hidden';
+        const t1 = document.createElement('div'); t1.className='t';
+        t1.textContent = v.title;
         const prog = document.createElement('div'); prog.className='prog';
         const inner = document.createElement('i'); inner.style.width = v.progress + '%'; prog.appendChild(inner);
-        it.appendChild(pw); it.appendChild(title); it.appendChild(prog); pl.appendChild(it);
+        left.appendChild(t1); left.appendChild(prog);
+        const pw = document.createElement('div'); pw.className='play';
+        it.appendChild(pw); it.appendChild(left); pl.appendChild(it);
       }
     }
 
-    // *arr queue
-    // Pi-hole (may be null while auth session cools down)
+    // Pi-hole (may be null while session cools down)
     if (d.pihole && d.pihole.pct != null){
-      document.getElementById('ph').textContent = d.pihole.pct + '%';
+      document.getElementById('phd').textContent = d.pihole.pct + '%';
       document.getElementById('phsub').textContent =
         `${d.pihole.blocked} of ${d.pihole.total} queries blocked`;
+      setDonut('phdonut', d.pihole.pct);
     }
+
+    // *arr queue
     const qu = document.getElementById('queue'); qu.innerHTML = '';
     const items = [
       ...((d.arr && d.arr.radarr && d.arr.radarr.items) || []).map(x => ({...x, app: 'radarr'})),
@@ -292,5 +609,6 @@ async function refresh(){
 }
 refresh(); setInterval(refresh, 15000);
 </script>
+
 </body>
 </html>

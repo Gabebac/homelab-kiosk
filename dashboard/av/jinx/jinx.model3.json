@@ -1,0 +1,34 @@
+{
+ "Version": 3,
+ "FileReferences": {
+  "Moc": "jinx.moc3",
+  "Textures": [
+   "jinx.4096/texture_00.png",
+   "jinx.4096/texture_01.png",
+   "jinx.4096/texture_02.png",
+   "jinx.4096/texture_03.png",
+   "jinx.4096/texture_04.png",
+   "jinx.4096/texture_05.png",
+   "jinx.4096/texture_06.png"
+  ],
+  "Physics": "jinx.physics3.json",
+  "DisplayInfo": "jinx.cdi3.json"
+ },
+ "Groups": [
+  {
+   "Target": "Parameter",
+   "Name": "EyeBlink",
+   "Ids": [
+    "ParamEyeLOpen",
+    "ParamEyeROpen"
+   ]
+  },
+  {
+   "Target": "Parameter",
+   "Name": "LipSync",
+   "Ids": [
+    "ParamMouthOpenY"
+   ]
+  }
+ ]
+}

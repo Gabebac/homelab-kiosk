@@ -10,7 +10,9 @@ xset -dpms
 xset s noblank
 openbox --sm-disable &
 sleep 1
-exec chromium --kiosk --no-sandbox --disable-gpu --disable-dev-shm-usage \
+exec chromium --kiosk --no-sandbox --disable-dev-shm-usage \
+    --enable-unsafe-swiftshader --use-gl=angle --use-angle=swiftshader \
     --touch-events=enabled --no-first-run --disable-infobars \
     --disable-session-crashed-bubble --hide-crash-restore-bubble \
+    --enable-logging=stderr --v=0 \
     "$KIOSK_URL"
