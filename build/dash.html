@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hermes — Wall</title>
+<style>
+  :root{
+    --bg:#0b0d12; --panel:#12151c; --panel2:#171b24; --line:#232a36;
+    --fg:#e8ebf2; --dim:#8b93a3; --accent:#e8b04b; --ok:#5dbb6f; --bad:#e15757;
+    font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:
+      radial-gradient(1200px 700px at 85% -10%, #1a2233 0%, transparent 60%),
+      var(--bg);
+    color:var(--fg);
+    display:grid;
+    grid-template-columns:1fr 340px;
+    grid-template-rows:64px 1fr;
+  }
+  header{
+    grid-column:1/3; display:flex; align-items:center; gap:16px;
+    padding:0 24px; border-bottom:1px solid var(--line); background:rgba(255,255,255,.02);
+  }
+  .logo{font-size:20px; font-weight:700; letter-spacing:.5px}
+  .logo b{color:var(--accent)}
+  .clock{margin-left:auto; font-variant-numeric:tabular-nums; font-size:26px; font-weight:600; color:var(--dim)}
+  main{padding:20px 24px; overflow:hidden; display:grid; gap:16px; grid-template-rows:auto auto 1fr}
+  .row{display:grid; gap:16px}
+  .row.c3{grid-template-columns:repeat(3,1fr)}
+  .card{
+    background:linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
+    border:1px solid var(--line); border-radius:14px; padding:16px 18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .card h2{font-size:11px; letter-spacing:1.6px; text-transform:uppercase; color:var(--dim); font-weight:600; margin-bottom:10px}
+  .big{font-size:44px; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums}
+  .sub{color:var(--dim); font-size:13px; margin-top:4px}
+  .bar{height:6px; background:#0d1117; border-radius:3px; overflow:hidden; margin-top:10px}
+  .bar>i{display:block; height:100%; background:var(--accent); border-radius:3px; transition:width .5s}
+  .bar.warn>i{background:var(--bad)}
+  .svc{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; font-size:12px}
+  .svc span{display:flex; align-items:center; gap:7px; padding:7px 9px; background:rgba(255,255,255,.02);
+    border:1px solid var(--line); border-radius:9px; color:var(--dim); white-space:nowrap; overflow:hidden}
+  .svc b{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:0 0 auto;
+    box-shadow:0 0 6px rgba(93,187,111,.7)}
+  .svc b.d{background:var(--bad); box-shadow:0 0 6px rgba(225,87,87,.7)}
+  .svc u{text-decoration:none; overflow:hidden; text-overflow:ellipsis}
+  .q{display:flex; flex-direction:column; gap:6px; font-size:13px}
+  .q .it{display:flex; gap:10px; align-items:baseline; padding:6px 10px; background:rgba(255,255,255,.02);
+    border:1px solid var(--line); border-radius:8px}
+  .q .t{color:var(--fg); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:52%}
+  .q .s{color:var(--accent); font-size:11px; text-transform:uppercase; letter-spacing:1px}
+  .q .g{margin-left:auto; color:var(--dim); font-variant-numeric:tabular-nums}
+  .pl .it{display:flex; gap:12px; align-items:center; padding:8px 10px; border:1px solid var(--line);
+    border-radius:8px; background:rgba(255,255,255,.02)}
+  .pl .play{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;
+    border-left:11px solid var(--accent); flex:0 0 auto}
+  .pl .prog{flex:0 0 90px; height:5px; background:#0d1117; border-radius:3px; overflow:hidden}
+  .pl .prog>i{display:block;height:100%;background:var(--accent)}
+  .empty{color:var(--dim); font-size:13px; font-style:italic}
+  aside{
+    grid-row:2; grid-column:2; border-left:1px solid var(--line); background:#0e1219;
+    display:flex; flex-direction:column; overflow:hidden; min-height:0;
+  }
+  .avi-wrap{display:flex; justify-content:center; padding:18px 0 6px}
+  #reply{flex:1; overflow:auto; padding:8px 18px 12px; font-size:14px; line-height:1.55;
+    white-space:pre-wrap; min-height:0}
+  #reply .m{color:var(--dim); font-size:11px; letter-spacing:1.2px; text-transform:uppercase; margin-bottom:6px;
+    margin-top:14px}
+  #reply .m:first-child{margin-top:0}
+  .composer{display:flex; gap:8px; padding:12px 14px 16px; border-top:1px solid var(--line)}
+  input#q{
+    flex:1; background:#0a0d13; border:1px solid var(--line); color:var(--fg);
+    border-radius:10px; padding:11px 13px; font-size:14px; outline:none;
+  }
+  input#q:focus{border-color:var(--accent)}
+  button{
+    background:var(--accent); border:none; color:#16130b; font-weight:700;
+    border-radius:10px; padding:0 18px; font-size:14px; cursor:pointer;
+  }
+  button:disabled{opacity:.4; cursor:default}
+  #avatar .mouth{transform-origin:50% 60%}
+  #avatar.talking .mouth{animation:talk .28s infinite alternate}
+  @keyframes talk{from{transform:scaleY(.35)}to{transform:scaleY(1.15)}}
+  #avatar.talking{filter:drop-shadow(0 0 14px rgba(232,176,75,.45))}
+  @media (max-width:1100px){ .row.c3{grid-template-columns:1fr} .svc{grid-template-columns:repeat(2,1fr)} }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Her<b>mes</b> <span style="color:var(--dim);font-weight:400;font-size:12px">· wall</span></div>
+  <div class="clock" id="clock">--:--</div>
+</header>
+
+<main>
+  <div class="row c3">
+    <div class="card"><h2>CPU load</h2><div class="big" id="load">–</div><div class="sub" id="loadsub">–</div></div>
+    <div class="card"><h2>Memory</h2><div class="big" id="mem">–</div><div class="sub" id="memsub">–</div>
+      <div class="bar" id="membar"><i style="width:0%"></i></div></div>
+    <div class="card"><h2>Storage</h2><div class="big" id="disk">–</div><div class="sub" id="disksub">–</div>
+      <div class="bar warn" id="diskbar"><i style="width:0%"></i></div></div>
+  </div>
+
+  <div class="card"><h2>Services</h2><div class="svc" id="svcs"></div></div>
+
+  <div class="row" style="grid-template-columns:1fr 1fr; align-items:start">
+    <div class="card"><h2>Now playing</h2>
+      <div class="pl q" id="plex"><div class="empty">Nothing playing</div></div></div>
+    <div class="card"><h2>Download queue</h2><div class="q" id="queue"><div class="empty">Queue empty</div></div></div>
+  </div>
+</main>
+
+<aside>
+  <div class="avi-wrap" id="avatar" style="width:120px;height:120px" aria-hidden="true"></div>
+  <div id="reply"></div>
+  <div class="composer">
+    <input id="q" placeholder="Say something to Hermes…" autocomplete="off">
+    <button id="send">Send</button>
+  </div>
+</aside>
+
+<script>
+/* ---- avatar: pure SVG, idle blink + talk animation ---- */
+const AV = document.getElementById('avatar');
+AV.innerHTML = `
+<svg viewBox="0 0 100 100">
+  <defs>
+    <radialGradient id="aura" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="rgba(232,176,75,.35)"/>
+      <stop offset="70%" stop-color="rgba(232,176,75,.08)"/>
+      <stop offset="100%" stop-color="rgba(232,176,75,0)"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#aura)"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#232a36" stroke-width="2"/>
+  <g class="eyes">
+    <circle cx="38" cy="44" r="4.5" fill="#e8b04b"/>
+    <circle cx="62" cy="44" r="4.5" fill="#e8b04b"/>
+  </g>
+  <g class="mouth">
+    <ellipse cx="50" cy="60" rx="9" ry="4" fill="#e8b04b" opacity=".85"/>
+  </g>
+</svg>`;
+setInterval(() => {
+  const eyes = AV.querySelector('.eyes');
+  if (!eyes) return;
+  eyes.style.opacity = 0; setTimeout(() => eyes.style.opacity = 1, 120);
+}, 3800 + Math.random() * 2500);
+
+/* reply bubbles: built with textContent (no innerHTML from network data) */
+const REPLY = document.getElementById('reply');
+function bubble(text){
+  const wrap = document.createElement('div');
+  const m = document.createElement('div'); m.className = 'm'; m.textContent = 'hermes';
+  const body = document.createElement('div'); body.textContent = text;
+  wrap.appendChild(m); wrap.appendChild(body);
+  REPLY.appendChild(wrap); REPLY.scrollTop = REPLY.scrollHeight;
+  AV.classList.add('talking');
+  clearTimeout(AV._t);
+  AV._t = setTimeout(() => AV.classList.remove('talking'), Math.min(30000, 1500 + body.textContent.length * 45));
+}
+
+const sendBtn = document.getElementById('send'), inp = document.getElementById('q');
+async function ask(){
+  const t = inp.value.trim();
+  if (!t || sendBtn.disabled) return;
+  inp.value = ''; sendBtn.disabled = true;
+  try{
+    const r = await fetch('/ask', {method:'POST',
+      headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: t})});
+    const j = await r.json();
+    bubble(r.ok ? (j.reply || '(no reply)') : (j.detail || 'error'));
+  }catch(e){ bubble('gateway unreachable'); }
+  finally{ sendBtn.disabled = false; inp.focus(); }
+}
+sendBtn.onclick = ask;
+inp.onkeydown = e => { if (e.key === 'Enter') ask(); };
+
+/* ---- clock ---- */
+function tick(){
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+tick(); setInterval(tick, 5000);
+
+/* ---- stats polling ---- */
+async function refresh(){
+  try{
+    const r = await fetch('/stats');
+    if (!r.ok) return;
+    const d = await r.json();
+    const h = d.host;
+    document.getElementById('load').textContent = h.load1.toFixed(2);
+    document.getElementById('loadsub').textContent =
+      `${h.cpu_count} cores · ${d.containers.up_count ?? Object.keys(d.containers).length} containers`;
+    const memTot = h.mem_total_gb, memUsed = h.mem_used_gb;
+    document.getElementById('mem').textContent = `${memUsed} / ${memTot} GB`;
+    document.getElementById('memsub').textContent = `swap ${h.swap_used_gb} / ${h.swap_total_gb} GB`;
+    const memPct = Math.round(memUsed / memTot * 100);
+    document.getElementById('membar').firstElementChild.style.width = memPct + '%';
+    document.getElementById('membar').classList.toggle('warn', memPct > 85);
+    document.getElementById('disk').textContent = h.disk_used_gb + ' / ' + h.disk_total_gb + ' GB';
+    document.getElementById('disksub').textContent = h.disk_pct + '% used';
+    document.getElementById('diskbar').firstElementChild.style.width = h.disk_pct + '%';
+    document.getElementById('diskbar').classList.toggle('warn', h.disk_pct > 80);
+
+    // services — healthy/docker-state ports merged
+    const svcs = document.getElementById('svcs'); svcs.innerHTML = '';
+    const rows = [];
+    for (const [name, state] of Object.entries(d.services)){
+      if (state !== 'up' && state !== 'down'){
+        rows.push([name, state.startsWith('up') ? 'up' : 'down']); continue;
+      }
+      // merge docker check for the containerized name form
+      const ckey = name.replace('-web','').replace('pihole','pihole').replace('hermes-kiosk-sidecar','stats-sidecar');
+      rows.push([name, state]);
+    }
+    for (const [n,s] of rows){
+      const sp = document.createElement('span');
+      const dot = document.createElement('b'); dot.className = s === 'up' ? '' : 'd';
+      const u = document.createElement('u'); u.textContent = n;
+      sp.appendChild(dot); sp.appendChild(u); svcs.appendChild(sp);
+    }
+
+    // plex now playing
+    const pl = document.getElementById('plex'); pl.innerHTML = '';
+    if (!d.plex.length){
+      const e = document.createElement('div'); e.className='empty'; e.textContent='Nothing playing'; pl.appendChild(e);
+    } else {
+      for (const v of d.plex){
+        const it = document.createElement('div'); it.className='it';
+        const pw = document.createElement('div'); pw.className='play';
+        const title = document.createElement('div'); title.textContent = v.title; title.style.flex='1';
+        const prog = document.createElement('div'); prog.className='prog';
+        const inner = document.createElement('i'); inner.style.width = v.progress + '%'; prog.appendChild(inner);
+        it.appendChild(pw); it.appendChild(title); it.appendChild(prog); pl.appendChild(it);
+      }
+    }
+
+    // *arr queue
+    const qu = document.getElementById('queue'); qu.innerHTML = '';
+    const items = [
+      ...(d.arr.radarr.items).map(x => ({...x, app: 'radarr'})),
+      ...(d.arr.sonarr.items).map(x => ({...x, app: 'sonarr'})),
+    ];
+    if (!items.length){
+      const e = document.createElement('div'); e.className='empty'; e.textContent='Queue empty'; qu.appendChild(e);
+    } else {
+      for (const it of items){
+        const row = document.createElement('div'); row.className='it';
+        const app = document.createElement('span'); app.className='s'; app.textContent = it.app;
+        const t = document.createElement('div'); t.className='t'; t.textContent = it.title || '(untitled)';
+        const g = document.createElement('span'); g.className='g';
+        g.textContent = it.left_gb ? it.left_gb + ' GB left' : (it.status || '');
+        row.appendChild(app); row.appendChild(t); row.appendChild(g); qu.appendChild(row);
+      }
+    }
+
+    // header sub: blocked count if any
+    if (d.piholedge) document.getElementById('piholedge').textContent = d.piholedge;
+  }catch(e){
+    // leave cards showing last good values; the wall keeps ticking
+  }
+}
+refresh(); setInterval(refresh, 15000);
+</script>
+</body>
+</html>

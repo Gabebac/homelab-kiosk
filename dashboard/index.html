@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hermes — Wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tilt+Neon&family=Alata&display=swap" rel="stylesheet">
+<style>
+  /* Olympus design system — aether (dark) tokens, from olympus:/opt/olympus/app/static/assets/index.*.css */
+  :root{
+    --surface-window:#050a0d; --surface-plate:#12212a; --surface-plate-2:#0c161c; --surface-well:#030608;
+    --ink-heading:#eaf6f8; --ink-body:#d8e4e8; --ink-label:#a6c2cc; --ink-muted:#8fa6b0;
+    --outline-soft:rgba(234,246,248,.14);
+    --accent-corona:#d9fbff; --ink-on-corona:#050a0d;
+    --led-ok:#75d9b3; --led-ok-rim:#1e8a61;
+    --led-alert:#ff8a78; --led-alert-rim:#b03a2c;
+    --accent-busy:#86b9f5;
+    --font-display:"Tilt Neon", system-ui, sans-serif;
+    --font-body:"Alata", system-ui, sans-serif;
+    --ease-settle:cubic-bezier(.2,0,0,1);
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:var(--font-body); line-height:1.65;
+    background:
+      radial-gradient(1200px 700px at 85% -10%, #0d1c26 0%, transparent 60%),
+      var(--surface-window);
+    color:var(--ink-heading);
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 240px;
+    grid-template-rows:52px 1fr;
+  }
+  header{
+    grid-column:1/3; display:flex; align-items:center; gap:16px;
+    padding:0 20px; border-bottom:1px solid var(--outline-soft); background:rgba(255,255,255,.02);
+  }
+  .logo{font-family:var(--font-display); font-size:18px; font-weight:400; letter-spacing:.08em}
+  .logo b{color:var(--accent-corona); font-weight:400}
+  .walltag{color:var(--ink-muted); font-weight:400; font-size:12px; letter-spacing:.025em}
+  .clock{margin-left:auto; font-family:var(--font-display); font-variant-numeric:tabular-nums; font-size:22px; color:var(--ink-label)}
+  main{padding:12px 16px; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; display:grid; gap:10px; grid-template-rows:auto auto auto; min-width:0}
+  main::-webkit-scrollbar{display:none}
+  main>*{min-width:0}
+  .row{display:grid; gap:10px}
+  .row.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .row.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .card{
+    background:linear-gradient(180deg, var(--surface-plate) 0%, var(--surface-plate-2) 100%);
+    border:1px solid var(--outline-soft); border-radius:10px; padding:10px 12px;
+    box-shadow:0 10px 30px rgba(3,6,8,.5);
+  }
+  .card h2{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-muted); font-weight:400; margin-bottom:6px}
+  .big{font-size:17px; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums}
+  .sub{color:var(--ink-muted); font-size:11px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .bar{height:5px; background:var(--surface-well); border-radius:3px; overflow:hidden; margin-top:8px}
+  .bar>i{display:block; height:100%; background:var(--accent-busy); border-radius:3px; transition:width .5s var(--ease-settle)}
+  .bar.warn>i{background:var(--led-alert)}
+  .svc{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; font-size:11px}
+  .svc span{display:flex; align-items:center; gap:7px; padding:7px 9px; background:var(--surface-well);
+    border:1px solid var(--outline-soft); border-radius:9px; color:var(--ink-label); white-space:nowrap; overflow:hidden}
+  /* Olympus LED language: core + rim + glow */
+  .svc b{width:8px;height:8px;border-radius:50%;background:var(--led-ok);flex:0 0 auto;
+    box-shadow:0 0 0 2px rgba(117,217,179,.15), 0 0 8px rgba(117,217,179,.55)}
+  .svc b.d{background:var(--led-alert); box-shadow:0 0 0 2px rgba(255,138,120,.15), 0 0 8px rgba(255,138,120,.55)}
+  .svc u{text-decoration:none; overflow:hidden; text-overflow:ellipsis}
+  .q{display:flex; flex-direction:column; gap:6px; font-size:13px}
+  .q .it{display:flex; gap:10px; align-items:baseline; padding:6px 10px; background:var(--surface-well);
+    border:1px solid var(--outline-soft); border-radius:8px}
+  .q .t{color:var(--ink-body); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:52%}
+  .q .s{color:var(--accent-busy); font-size:11px; text-transform:uppercase; letter-spacing:.08em}
+  .q .g{margin-left:auto; color:var(--ink-muted); font-variant-numeric:tabular-nums}
+  .pl .it{display:flex; gap:12px; align-items:center; padding:8px 10px; border:1px solid var(--outline-soft);
+    border-radius:8px; background:var(--surface-well)}
+  .pl .play{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;
+    border-left:11px solid var(--accent-corona); flex:0 0 auto}
+  .pl .prog{flex:0 0 90px; height:5px; background:var(--surface-well); border-radius:3px; overflow:hidden}
+  .pl .prog>i{display:block;height:100%;background:var(--accent-busy)}
+  .empty{color:var(--ink-muted); font-size:13px; font-style:italic}
+  aside{
+    grid-row:2; grid-column:2; border-left:1px solid var(--outline-soft); background:var(--surface-plate-2);
+    display:flex; flex-direction:column; overflow:hidden; min-height:0; min-width:0;
+  }
+  .avi-wrap{display:flex; justify-content:center; padding:12px 0 4px}
+  #reply{flex:1; overflow:auto; padding:8px 18px 12px; font-size:14px; line-height:1.55;
+    color:var(--ink-body); white-space:pre-wrap; min-height:0}
+  #reply .m{color:var(--ink-muted); font-size:11px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:6px;
+    margin-top:14px}
+  #reply .m:first-child{margin-top:0}
+  .composer{display:flex; gap:8px; padding:10px 12px 12px; border-top:1px solid var(--outline-soft)}
+  .composer>*{min-width:0}
+  input#q{
+    flex:1 1 0; background:var(--surface-well); border:1px solid var(--outline-soft); color:var(--ink-heading);
+    border-radius:10px; padding:9px 11px; font-size:13px; font-family:var(--font-body); outline:none;
+  }
+  input#q:focus{border-color:var(--accent-corona); box-shadow:0 0 0 3px rgba(217,251,255,.12)}
+  button{
+    background:var(--accent-corona); border:none; color:var(--ink-on-corona); font-weight:700;
+    font-family:var(--font-body); border-radius:10px; padding:0 18px; font-size:14px; cursor:pointer;
+    transition:background var(--ease-settle) 90ms;
+  }
+  button:hover{background:#eafcff}
+  button:disabled{opacity:.4; cursor:default}
+  #avatar .mouth{transform-origin:50% 60%}
+  #avatar.talking .mouth{animation:talk .28s infinite alternate}
+  @keyframes talk{from{transform:scaleY(.35)}to{transform:scaleY(1.15)}}
+  #avatar.talking{filter:drop-shadow(0 0 14px rgba(217,251,255,.45))}
+  @media (max-width:1100px){ .row.c3{grid-template-columns:1fr} .svc{grid-template-columns:repeat(2,1fr)} }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Her<b>mes</b> <span class="walltag">· wall</span></div>
+  <div class="clock" id="clock">--:--</div>
+</header>
+
+<main>
+  <div class="row c4">
+    <div class="card"><h2>CPU load</h2><div class="big" id="load">–</div><div class="sub" id="loadsub">–</div></div>
+    <div class="card"><h2>Memory</h2><div class="big" id="mem">–</div><div class="sub" id="memsub">–</div>
+      <div class="bar" id="membar"><i style="width:0%"></i></div></div>
+    <div class="card"><h2>Storage</h2><div class="big" id="disk">–</div><div class="sub" id="disksub">–</div>
+      <div class="bar warn" id="diskbar"><i style="width:0%"></i></div></div>
+    <div class="card"><h2>Pi-hole</h2><div class="big" id="ph">–</div><div class="sub" id="phsub">queries blocked</div></div>
+  </div>
+
+  <div class="card"><h2>Services</h2><div class="svc" id="svcs"></div></div>
+
+  <div class="row" style="grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start">
+    <div class="card"><h2>Now playing</h2>
+      <div class="pl q" id="plex"><div class="empty">Nothing playing</div></div></div>
+    <div class="card"><h2>Download queue</h2><div class="q" id="queue"><div class="empty">Queue empty</div></div></div>
+  </div>
+</main>
+
+<aside>
+  <div class="avi-wrap" id="avatar" style="width:120px;height:120px" aria-hidden="true"></div>
+  <div id="reply"></div>
+  <div class="composer">
+    <input id="q" placeholder="Say something to Hermes…" autocomplete="off">
+    <button id="send">Send</button>
+  </div>
+</aside>
+
+<script>
+/* ---- avatar: pure SVG, idle blink + talk animation ---- */
+const AV = document.getElementById('avatar');
+AV.innerHTML = `
+<svg viewBox="0 0 100 100">
+  <defs>
+    <radialGradient id="aura" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="rgba(217,251,255,.32)"/>
+      <stop offset="70%" stop-color="rgba(217,251,255,.08)"/>
+      <stop offset="100%" stop-color="rgba(217,251,255,0)"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#aura)"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(217,251,255,.25)" stroke-width="1.5"/>
+  <g class="eyes">
+    <circle cx="38" cy="44" r="4.5" fill="#d9fbff"/>
+    <circle cx="62" cy="44" r="4.5" fill="#d9fbff"/>
+  </g>
+  <g class="mouth">
+    <ellipse cx="50" cy="60" rx="9" ry="4" fill="#d9fbff" opacity=".85"/>
+  </g>
+</svg>`;
+setInterval(() => {
+  const eyes = AV.querySelector('.eyes');
+  if (!eyes) return;
+  eyes.style.opacity = 0; setTimeout(() => eyes.style.opacity = 1, 120);
+}, 3800 + Math.random() * 2500);
+
+/* reply bubbles: built with textContent (no innerHTML from network data) */
+const REPLY = document.getElementById('reply');
+function bubble(text){
+  const wrap = document.createElement('div');
+  const m = document.createElement('div'); m.className = 'm'; m.textContent = 'hermes';
+  const body = document.createElement('div'); body.textContent = text;
+  wrap.appendChild(m); wrap.appendChild(body);
+  REPLY.appendChild(wrap); REPLY.scrollTop = REPLY.scrollHeight;
+  AV.classList.add('talking');
+  clearTimeout(AV._t);
+  AV._t = setTimeout(() => AV.classList.remove('talking'), Math.min(30000, 1500 + body.textContent.length * 45));
+}
+
+const sendBtn = document.getElementById('send'), inp = document.getElementById('q');
+async function ask(){
+  const t = inp.value.trim();
+  if (!t || sendBtn.disabled) return;
+  inp.value = ''; sendBtn.disabled = true;
+  try{
+    const r = await fetch('/ask', {method:'POST',
+      headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: t})});
+    const j = await r.json();
+    bubble(r.ok ? (j.reply || '(no reply)') : (j.detail || 'error'));
+  }catch(e){ bubble('gateway unreachable'); }
+  finally{ sendBtn.disabled = false; inp.focus(); }
+}
+sendBtn.onclick = ask;
+inp.onkeydown = e => { if (e.key === 'Enter') ask(); };
+
+/* ---- clock ---- */
+function tick(){
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+tick(); setInterval(tick, 5000);
+
+/* ---- stats polling ---- */
+async function refresh(){
+  try{
+    const r = await fetch('/stats');
+    if (!r.ok) return;
+    const d = await r.json();
+    const h = d.host;
+    if (h){
+      document.getElementById('load').textContent = h.load1.toFixed(2);
+      document.getElementById('loadsub').textContent =
+        `${h.cpu_count} cores · ${d.containers ? Object.keys(d.containers).length : 0} containers`;
+      const memTot = h.mem_total_gb, memUsed = h.mem_used_gb;
+      document.getElementById('mem').textContent = `${memUsed} / ${memTot} GB`;
+      document.getElementById('memsub').textContent = `swap ${h.swap_used_gb} / ${h.swap_total_gb} GB`;
+      const memPct = Math.round(memUsed / memTot * 100);
+      document.getElementById('membar').firstElementChild.style.width = memPct + '%';
+      document.getElementById('membar').classList.toggle('warn', memPct > 85);
+      document.getElementById('disk').textContent = h.disk_used_gb + ' / ' + h.disk_total_gb + ' GB';
+      document.getElementById('disksub').textContent = h.disk_pct + '% used';
+      document.getElementById('diskbar').firstElementChild.style.width = h.disk_pct + '%';
+      document.getElementById('diskbar').classList.toggle('warn', h.disk_pct > 80);
+    }
+
+    // services — healthy/docker-state ports merged
+    const svcs = document.getElementById('svcs'); svcs.innerHTML = '';
+    const rows = [];
+    for (const [name, state] of Object.entries(d.services || {})){
+      if (state !== 'up' && state !== 'down'){
+        rows.push([name, state.startsWith('up') ? 'up' : 'down']); continue;
+      }
+      rows.push([name, state]);
+    }
+    for (const [n,s] of rows){
+      const sp = document.createElement('span');
+      const dot = document.createElement('b'); dot.className = s === 'up' ? '' : 'd';
+      const u = document.createElement('u'); u.textContent = n;
+      sp.appendChild(dot); sp.appendChild(u); svcs.appendChild(sp);
+    }
+
+    // plex now playing
+    const pl = document.getElementById('plex'); pl.innerHTML = '';
+    if (!(d.plex || []).length){
+      const e = document.createElement('div'); e.className='empty'; e.textContent='Nothing playing'; pl.appendChild(e);
+    } else {
+      for (const v of d.plex){
+        const it = document.createElement('div'); it.className='it';
+        const pw = document.createElement('div'); pw.className='play';
+        const title = document.createElement('div'); title.textContent = v.title; title.style.flex='1';
+        const prog = document.createElement('div'); prog.className='prog';
+        const inner = document.createElement('i'); inner.style.width = v.progress + '%'; prog.appendChild(inner);
+        it.appendChild(pw); it.appendChild(title); it.appendChild(prog); pl.appendChild(it);
+      }
+    }
+
+    // *arr queue
+    // Pi-hole (may be null while auth session cools down)
+    if (d.pihole && d.pihole.pct != null){
+      document.getElementById('ph').textContent = d.pihole.pct + '%';
+      document.getElementById('phsub').textContent =
+        `${d.pihole.blocked} of ${d.pihole.total} queries blocked`;
+    }
+    const qu = document.getElementById('queue'); qu.innerHTML = '';
+    const items = [
+      ...((d.arr && d.arr.radarr && d.arr.radarr.items) || []).map(x => ({...x, app: 'radarr'})),
+      ...((d.arr && d.arr.sonarr && d.arr.sonarr.items) || []).map(x => ({...x, app: 'sonarr'})),
+    ];
+    if (!items.length){
+      const e = document.createElement('div'); e.className='empty'; e.textContent='Queue empty'; qu.appendChild(e);
+    } else {
+      for (const it of items){
+        const row = document.createElement('div'); row.className='it';
+        const app = document.createElement('span'); app.className='s'; app.textContent = it.app;
+        const t = document.createElement('div'); t.className='t'; t.textContent = it.title || '(untitled)';
+        const g = document.createElement('span'); g.className='g';
+        g.textContent = it.left_gb ? it.left_gb + ' GB left' : (it.status || '');
+        row.appendChild(app); row.appendChild(t); row.appendChild(g); qu.appendChild(row);
+      }
+    }
+  }catch(e){
+    // leave cards showing last good values; the wall keeps ticking
+  }
+}
+refresh(); setInterval(refresh, 15000);
+</script>
+</body>
+</html>
