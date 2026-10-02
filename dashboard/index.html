@@ -84,10 +84,10 @@
   .card:hover{box-shadow:0 14px 40px rgba(3,6,8,.6)}
   .wide{grid-column:1/-1}
 
-  .card h2{font-size:8px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-muted); font-weight:400; margin-bottom:3px}
-  .grid2{display:grid; grid-template-columns:auto 1fr; gap:3px 7px; align-items:center}
+  .card h2{font-size:8px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-muted); font-weight:400; margin-bottom:3px; text-align:center}
+  .grid2{display:grid; grid-template-columns:1fr; gap:3px; align-items:center; justify-items:center; text-align:center}
   .big{font-family:var(--font-display); font-size:12px; font-weight:400; line-height:1.2; font-variant-numeric:tabular-nums}
-  .sub{color:var(--ink-muted); font-size:8px; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .sub{color:var(--ink-muted); font-size:7px; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center}
 
   .donut{
     --p:0;
@@ -104,7 +104,8 @@
     font-size:8px; font-weight:700; font-variant-numeric:tabular-nums}
   .dwrap{display:grid; place-items:center}
 
-  .svc{display:grid; grid-template-columns:repeat(auto-fill,minmax(64px,1fr)); gap:3px; font-size:8px}
+  .svc{display:grid; grid-template-columns:repeat(auto-fill,minmax(58px,1fr)); gap:3px; font-size:7px; max-height:96px; overflow-y:auto; scrollbar-width:none}
+  .svc::-webkit-scrollbar{display:none}
   .svc span{display:flex; align-items:center; gap:3px; padding:2px 5px; background:var(--surface-well);
     border:1px solid var(--outline-soft); border-radius:5px; color:var(--ink-label); white-space:nowrap; overflow:hidden}
   .svc b{width:5px;height:5px;border-radius:50%;background:var(--led-ok);flex:0 0 auto;
@@ -269,6 +270,7 @@
 
 <aside>
   <div class="avrow" role="group" aria-label="Avatar">
+    <button class="avbtn" data-m="ren" title="Ren">ren</button>
     <button class="avbtn" data-m="kei" title="Kei">kei</button>
     <button class="avbtn" data-m="rice" title="Rice">rice</button>
     <button class="avbtn" data-m="jinx" title="Jinx">jinx</button>
@@ -285,6 +287,7 @@
 <div id="popwrap" aria-modal="true" role="dialog">
   <div id="popcard"><button id="popclose">close ✕</button><div id="popbody"></div></div>
 </div>
+<script>window.process = {env: {NODE_ENV: 'production'}};</script>
 <script src="/av/vendor/live2dcubismcore.min.js"></script>
 <script src="/av/vendor/pixi.min.js"></script>
 <script src="/av/vendor/pixi-live2d-display.min.js"></script>
@@ -306,6 +309,7 @@ function svgFallback(){
 }
 /* Load via the cubism4 build: PIXI.live2d.Live2DModel.from(modelJsonUrl) */
 const AVATAR_MODELS = {
+  ren:  '/av/ren/ren.model3.json',
   kei:  '/av/kei/kei_basic_free.model3.json',
   rice: '/av/rice/rice_pro_t03.model3.json',
   jinx: '/av/jinx/jinx.model3.json',
@@ -329,7 +333,8 @@ async function loadAvatar(name){
                                 // ponytail: per-model hardcoded fit incl. art offset inside moc canvas (tuned via scale-ladder screenshots)
     const FIT = {
       //        scale   anchor in canvas fraction (art center)
-      kei:  {s: 0.16, fx: 0.50, fy: 0.35},
+      ren:  {s: 0.045, fx: 0.50, fy: 0.40},   // full-body tiny canvas (needs Core 6)
+kei:  {s: 0.16, fx: 0.50, fy: 0.35},
       rice: {s: 0.068, fx: 0.50, fy: 0.45},
       jinx: {s: 0.052, fx: 0.62, ay: -80},
     }[name] || {s: 0.30, fx: 0.50, fy: 0.50};
