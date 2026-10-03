@@ -27,7 +27,7 @@
       var(--surface-window);
     color:var(--ink-heading);
     display:grid;
-    grid-template-columns:minmax(0,1fr) 240px;
+    grid-template-columns:minmax(0,1fr) 216px;
     grid-template-rows:52px 1fr;
   }
   header{
@@ -60,7 +60,7 @@
       "svcsup svcsup svcsup pihole"
       "svcsup svcsup svcsup pihole"
       "mem disk load ctr"
-      "mem disk plex queue"
+      "plex plex queue queue"
       "svcdetail svcdetail svcdetail svcdetail";
   }
   .card[data-k="svc"]{grid-area:svcsup}
@@ -80,7 +80,7 @@
     background:linear-gradient(180deg, var(--surface-plate) 0%, var(--surface-plate-2) 100%);
     border:1px solid var(--outline-soft);
     border-radius:12px;
-    padding:10px 12px;
+    padding:12px 14px;
     box-shadow:0 6px 24px rgba(3,6,8,.45);
     overflow:hidden;
   }
@@ -170,7 +170,7 @@
   }
   .avbtn:hover{color:var(--ink-heading); background:var(--surface-well)}
   .avi-wrap{display:flex; justify-content:center; padding:6px 0 2px}
-  #avatar{width:180px; height:180px}
+  #avatar{width:120px; height:120px}
   #reply{flex:1; overflow:auto; padding:4px 14px 10px; font-size:13px; line-height:1.55;
     color:var(--ink-body); white-space:pre-wrap; min-height:0}
   #reply .m{color:var(--ink-muted); font-size:10px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:4px; margin-top:12px}
@@ -190,7 +190,7 @@
   button:hover{background:#eafcff}
   button:disabled{opacity:.4; cursor:default}
   /* ---- AI orb avatar (odyssey orb, 'base' mode) — blinking eyes, breathing ring ---- */
-  .orb{width:130px;height:130px;border-radius:50%;position:relative;
+  .orb{width:96px;height:96px;border-radius:50%;position:relative;
     background:radial-gradient(circle at 35% 30%, #1e3d4d, #0a1a22 70%);
     box-shadow:0 0 40px rgba(134,185,245,.25), inset 0 0 30px rgba(134,185,245,.15);
     animation:orbBreath 3.2s ease-in-out infinite}
@@ -319,12 +319,14 @@
 
 
 <aside>
-  <div class="avrow" role="group" aria-label="Avatar">
-    <button class="avbtn" data-m="ren" title="Ren">ren</button>
-    <button class="avbtn" data-m="kei" title="Kei">kei</button>
-    <button class="avbtn" data-m="rice" title="Rice">rice</button>
-    <button class="avbtn" data-m="jinx" title="Jinx">jinx</button>
-    <button class="avbtn" data-m="base" title="Base circle">base</button>
+  <div class="avrow">
+    <select id="avpick" aria-label="Avatar" style="background:var(--surface-well); color:var(--ink-label); border:1px solid var(--outline-soft); border-radius:6px; font-size:10px; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; font-family:var(--font-body); outline:none">
+      <option value="ren">ren</option>
+      <option value="kei" selected>kei</option>
+      <option value="rice">rice</option>
+      <option value="jinx">jinx</option>
+      <option value="base">base</option>
+    </select>
   </div>
   <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
   <div id="reply"></div>
@@ -402,8 +404,11 @@ function setAvatar(name){
   }
   loadAvatar(name);
 }
-document.querySelectorAll('.avbtn').forEach(b => b.onclick = () => setAvatar(b.dataset.m));
-setAvatar(AVATAR_STORE[localStorage.getItem('avatar')] ? localStorage.getItem('avatar') : 'kei');
+const avpick = document.getElementById('avpick');
+avpick.onchange = () => setAvatar(avpick.value);
+const savedAv = localStorage.getItem('avatar');
+if (AVATAR_STORE[savedAv] || savedAv === 'base') avpick.value = savedAv;
+setAvatar(avpick.value);
 
 document.addEventListener('mousemove', e => {
   if (!model) return;
