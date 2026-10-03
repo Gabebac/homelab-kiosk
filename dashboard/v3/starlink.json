@@ -1,1 +1,1 @@
-{"ok": true, "state": "OK", "uptime_h": 15, "down_mbps": 0.6, "up_mbps": 0.7, "latency_ms": 17.8, "quality": 1.0, "obstructed_pct": 1.08, "currently_obstructed": false, "alerts": [], "hw": "mini1_prod3", "sw": "2026.09.24.cr87636.3", "ts": 1791064738.5590158}
+{"ok": true, "state": "OK", "uptime_h": 16, "down_mbps": 0.6, "up_mbps": 2.4, "latency_ms": 20.5, "quality": 0.99, "obstructed_pct": 1.08, "currently_obstructed": false, "alerts": [], "hw": "mini1_prod3", "sw": "2026.09.24.cr87636.3", "ts": 1791067526.5999606}
