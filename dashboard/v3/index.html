@@ -38,8 +38,8 @@
     grid-template-rows:118px 118px minmax(140px, 1fr);
     grid-template-areas:
       "mem disk load ctr"
-      "eco eco plex queue"
-      "preqs preqs svcs svcs"}
+      "eco eco eco svcs"
+      "preqs preqs preqs chat"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -47,10 +47,9 @@
   .card[data-k="load"]{grid-area:load}
   .card[data-k="ctr"]{grid-area:ctr}
   .card[data-k="eco"]{grid-area:eco}
-  .card[data-k="plex"]{grid-area:plex}
-  .card[data-k="queue"]{grid-area:queue}
   .card[data-k="preqs"]{grid-area:preqs}
   .card[data-k="svcs"]{grid-area:svcs}
+  .card[data-k="chat"]{grid-area:chat}
 
   .card{--h:110px;perspective:900px;background:transparent;border:none}
   .flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;
@@ -107,7 +106,7 @@
 
 
   /* ==== GLARE CARD (ported framer-motion glare-cards, vanilla) ==== */
-  .card.g { transform-style:preserve-3d; transition:transform .35s ease, box-shadow .5s ease; will-change:transform; }
+  .card.g { transform-style:preserve-3d; transition:transform .35s ease, box-shadow .5s ease; will-change:transform; overflow:hidden; clip-path:inset(0 round 12px); }
   .card.g .gglare, .card.g .gshine { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .5s ease; z-index:5; border-radius:inherit; }
   .card.g .gshine { background:linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent); width:200%; left:-50%; transform:rotate(15deg); }
   .card.g:hover { box-shadow:0 0 50px -12px rgba(0,0,0,.8), 0 0 24px rgba(6,234,255,.12); }
@@ -142,6 +141,46 @@
   .chatbtn{width:100%;padding:7px 10px;margin:0 0 6px;border-radius:8px;border:1px solid var(--faint);
     background:transparent;color:var(--dim);font:600 9px var(--f-disp);letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
   .chatbtn:hover{color:var(--cream);border-color:var(--orange)}
+
+  .card[data-k="mem"] .big, .card[data-k="disk"] .big, .card[data-k="load"] .big{max-width:70%}
+
+  .preq{overflow-y:auto;scrollbar-width:none}
+  .preq::-webkit-scrollbar{display:none}
+  .face[data-k="preqs"], .card[data-k="preqs"] .face{display:flex;flex-direction:column}
+  .card[data-k="preqs"] hr{border:0;border-top:1px dashed rgba(110,110,110,.35);margin:6px 0 4px}
+  .card[data-k="preqs"] .preq:first-of-type{flex:1 1 44%;min-height:0}
+  .card[data-k="preqs"] .preq:last-of-type{flex:1 1 36%;min-height:0}
+
+  /* ==== chat card ==== */
+  .chatface{display:flex;flex-direction:column}
+  .avpick-wrap{position:absolute;top:10px;right:12px;z-index:5}
+  .avpick-wrap select{background:#0b0b0b;color:#8a8a8a;border:1px solid #1a1a1a;border-radius:6px;font:600 9px var(--f-disp);padding:3px 6px;letter-spacing:.08em}
+  .avi-wrap{position:absolute;right:10px;bottom:46px;width:88px;height:88px;pointer-events:none;z-index:4}
+  #avatar{width:88px;height:88px}
+  .chatrow{margin-top:auto;display:flex;gap:6px;align-items:center;position:relative;z-index:6}
+  .chatrow input{flex:1;min-width:0;background:#0b0b0b;border:1px solid #1a1a1a;color:#fafafa;
+    border-radius:8px;padding:8px 10px;font:12px var(--f-body)}
+  .chatrow .send{border-radius:8px;border:1px solid rgba(6,234,255,.4);background:rgba(6,234,255,.12);
+    color:#06eaff;font:600 11px var(--f-disp);letter-spacing:.08em;padding:8px 12px;cursor:pointer}
+  .dropup{position:absolute;left:10px;right:10px;bottom:88px;max-height:220px;overflow:hidden;display:none;z-index:7;
+    background:rgba(5,5,5,.96);border:1px solid #1a1a1a;border-radius:10px}
+  .dropup.open{display:block}
+  .dr-msgs{max-height:220px;overflow-y:auto;padding:8px 10px;font-size:11px;line-height:1.5;color:#cfcfcf}
+  .dr-msgs .d{margin-bottom:6px}
+  .dr-msgs .m{color:#06eaff;font:600 8px var(--f-disp);letter-spacing:.1em;text-transform:uppercase}
+  .dr-msgs .m.user{color:#fafafa}
+  /* ==== ring charts ==== */
+  .ring{position:absolute;right:12px;top:50%;margin-top:-24px;width:48px;height:48px;transform:rotate(-90deg)}
+  .ring .rbg{fill:none;stroke:rgba(6,234,255,.12);stroke-width:4}
+  .ring .rfg{fill:none;stroke:#06eaff;stroke-width:4;stroke-linecap:round;
+    stroke-dasharray:119.4;stroke-dashoffset:119.4;transition:stroke-dashoffset .8s cubic-bezier(.3,1,.4,1);
+    filter:drop-shadow(0 0 4px rgba(6,234,255,.6))}
+  .ring text{fill:var(--cream);font:700 9px var(--f-body);transform:rotate(90deg);transform-origin:center}
+
+  .ringw{position:absolute;right:10px;top:50%;margin-top:-26px;width:52px;height:52px}
+  .ringw .ring{position:absolute;left:0;top:0;margin:0;width:52px;height:52px}
+  .rpct{position:absolute;left:0;top:0;width:52px;height:52px;display:flex;align-items:center;justify-content:center;
+    font:700 9px var(--f-body);color:var(--cream)}
   /* ==== right chat column ==== */
   aside{position:fixed;right:14px;bottom:14px;width:290px;height:430px;display:none;flex-direction:column;
     border:1px solid var(--faint);border-radius:16px;overflow:hidden;z-index:60;
@@ -201,21 +240,21 @@
 <main id="board">
   <div class="card" data-k="mem" data-h="110" style="--h:110px">
     <div class="flip">
-      <div class="face front"><h2>Memory</h2><div class="spark" id="memspark"></div><div class="big" id="memd">–</div>
+      <div class="face front"><h2>Memory</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="memring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="mempct"></b></div><div class="spark" id="memspark"></div><div class="big" id="memd">–</div>
         <div class="sub" id="memsub">–</div><div class="extra" id="memx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="memback"></div>
     </div>
   </div>
   <div class="card" data-k="disk" style="--h:110px">
     <div class="flip">
-      <div class="face front"><h2>Storage</h2><div class="big" id="diskd">–</div>
+      <div class="face front"><h2>Storage</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="diskring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="diskpct"></b></div><div class="big" id="diskd">–</div>
         <div class="sub" id="disksub">–</div><div class="extra" id="diskx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="diskback"></div>
     </div>
   </div>
   <div class="card" data-k="load" style="--h:110px">
     <div class="flip">
-      <div class="face front"><h2>CPU load</h2><div class="big" id="load">–</div>
+      <div class="face front"><h2>CPU load</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="loadring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="loadpct"></b></div><div class="big" id="load">–</div>
         <div class="sub" id="loadsub">–</div><div class="extra" id="loadx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="loadback"></div>
     </div>
@@ -241,22 +280,16 @@
       <div class="face back" id="ecoback"><div class="bchart" id="ecobars"></div></div>
     </div>
   </div>
-  <div class="card" data-k="plex" style="--h:150px">
-    <div class="flip">
-      <div class="face front"><h2>Now playing</h2><div class="q pl" id="plex"><div class="empty">Nothing playing</div></div></div>
       <div class="face back" id="plexback"></div>
     </div>
   </div>
-  <div class="card" data-k="queue" style="--h:150px">
-    <div class="flip">
-      <div class="face front"><h2>Download queue</h2><div class="q" id="queue"><div class="empty">Queue empty</div></div></div>
       <div class="face back" id="queueback"></div>
     </div>
   </div>
 
   <div class="card" data-k="preqs" style="--h:150px">
     <div class="flip">
-      <div class="face front"><h2>Plex · last 5 requests</h2><div id="preqs" class="preq"></div><hr><h2>Last 5 added</h2><div id="preqsad" class="preq"></div></div>
+      <div class="face front"><h2>Plex · last requests</h2><div id="preqs" class="preq"></div><hr><h2>Last added</h2><div id="preqsad" class="preq"></div></div>
       <div class="face back" id="preqsback"></div>
     </div>
   </div>
@@ -266,27 +299,31 @@
       <div class="face back" id="svcsback"></div>
     </div>
   </div>
+  <div class="card" data-k="chat" style="--h:150px">
+    <div class="face front chatface">
+      <div class="avpick-wrap">
+        <select id="avpick" aria-label="Avatar">
+          <option value="ren">ren</option>
+          <option value="kei" selected>kei</option>
+          <option value="rice">rice</option>
+          <option value="jinx">jinx</option>
+          <option value="base">base</option>
+        </select>
+      </div>
+          <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
+      <div class="dropup" id="dropup">
+        <div class="dr-msgs" id="drmsgs"></div>
+      </div>
+      <div class="chatrow">
+        <button id="dropbtn" title="Chat messages" style="background:#0b0b0b;color:#06eaff;border:1px solid #1a1a1a">≡</button>
+        <input id="q" placeholder="Say something to Hermes…" autocomplete="off">
+        <button class="send" id="send">Send</button>
+      </div>
+    </div>
+  </div>
 </main>
 
-<aside>
-  <button class="chatbtn" id="chatclose">Close ✕</button>
-  <div class="avrow">
-    <select id="avpick" aria-label="Avatar">
-      <option value="ren">ren</option>
-      <option value="kei" selected>kei</option>
-      <option value="rice">rice</option>
-      <option value="jinx">jinx</option>
-      <option value="base">base</option>
-    </select>
-  </div>
-  <div id="reply"></div>
-  <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
-  <div id="chatdock">
-    <div class="orb" aria-hidden="true"></div>
-    <input id="q" placeholder="Say something to Hermes…" autocomplete="off">
-    <button class="send" id="send">Send</button>
-  </div>
-</aside>
+
 
 <script>window.process = {env: {NODE_ENV: 'production'}};</script>
 <script src="/av/vendor/live2dcubismcore.min.js"></script>
@@ -375,11 +412,23 @@ async function loadAvatar(name){
     model.scale.set(FIT.s);
     model.x = 110 - model.width * FIT.fx;
     model.y = (FIT.ay !== undefined) ? FIT.ay : 110 - model.height * FIT.fy;
-    document.getElementById('reply').style.opacity = 1;
+    
   }catch(e){ console.warn('live2d init failed for ' + name, e); model = null; svgFallback(); }
 }
 const avpick = document.getElementById('avpick');
 avpick.onchange = () => setAvatar(avpick.value);
+setTimeout(() => { // still nothing after 4s? paint a simple neon face on the canvas
+  if (!model && !AV.dataset.fallback){
+    const c = AV.getContext('2d'); if (!c) return;
+    c.clearRect(0,0,AV.width,AV.height);
+    c.strokeStyle = 'rgba(6,234,255,.5)'; c.lineWidth = 3;
+    c.beginPath(); c.arc(110,110,80,0,Math.PI*2); c.stroke();
+    c.fillStyle = '#fafafa';
+    c.beginPath(); c.arc(82,92,9,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(138,92,9,0,Math.PI*2); c.fill();
+    c.beginPath(); c.ellipse(110,132,18,8,0,0,Math.PI*2); c.fill();
+  }
+}, 4000);
 const savedAv = localStorage.getItem('avatar');
 if (AVATAR_STORE[savedAv] || savedAv === 'base') avpick.value = savedAv;
 function setAvatar(name){
@@ -412,7 +461,7 @@ function avTalk(ms){
 }
 
 /* ==== chat with thinking orb ==== */
-const REPLY = document.getElementById('reply');
+const REPLY = document.getElementById('drmsgs');
 function bubble(text){
   const wrap = document.createElement('div');
   const m = document.createElement('div'); m.className = 'm'; m.textContent = 'hermes';
@@ -427,23 +476,28 @@ async function ask(){
   if (!t || sendBtn.disabled) return;
   inp.value = ''; sendBtn.disabled = true;
   document.body.classList.add('thinking');
-  // morph: dock orb swaps for the dotted thinking orb with cycling labels
+  // user message in dropup
+  const um = document.createElement('div'); um.className = 'd';
+  const uml = document.createElement('div'); uml.className = 'm user'; uml.textContent = 'you';
+  const umb = document.createElement('div'); umb.textContent = t;
+  um.appendChild(uml); um.appendChild(umb); REPLY.appendChild(um);
+  // morph: dotted thinking orb + cycling labels
   const st = document.createElement('div'); st.className = 'mostat';
   const lbl = document.createElement('span'); lbl.textContent = 'Thinking';
   st.appendChild(lbl); REPLY.appendChild(st);
-  document.querySelector('#chatdock .orb').style.visibility = 'hidden';
   MO.cv.style.opacity = 1; st.insertBefore(MO.cv, lbl);
   MO.show();
   const labels = ['Thinking','Searching','Analyzing','Composing']; let li = 0;
   const cyc = setInterval(() => { li = (li + 1) % labels.length; lbl.textContent = labels[li]; }, 1150);
+  REPLY.scrollTop = REPLY.scrollHeight;
   try{
     const r = await fetch('/ask', {method:'POST',
       headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: t})});
     const j = await r.json();
     st.remove(); clearInterval(cyc); MO.hide();
-    document.querySelector('#chatdock .orb').style.visibility = '';
     bubble(r.ok ? (j.reply || '(no reply)') : (j.detail || 'error'));
-  }catch(e){ st.remove(); clearInterval(cyc); MO.hide(); document.querySelector('#chatdock .orb').style.visibility = ''; bubble('gateway unreachable'); }
+    document.getElementById('dropup').classList.add('open');
+  }catch(e){ st.remove(); clearInterval(cyc); MO.hide(); bubble('gateway unreachable'); }
   finally{ sendBtn.disabled = false; document.body.classList.remove('thinking'); inp.focus(); }
 }
 sendBtn.onclick = ask;
@@ -507,7 +561,13 @@ const MO = (() => {
   return {cv, show, hide, get alpha(){return alpha;}};
 })();
 
-addEventListener('DOMContentLoaded', () => { document.getElementById('chatfab').onclick = () => document.body.classList.add('chat-open'); document.getElementById('chatclose').onclick = () => document.body.classList.remove('chat-open'); });
+addEventListener('DOMContentLoaded', () => {
+  document.getElementById('dropbtn').onclick = () => {
+    const d = document.getElementById('dropup');
+    d.classList.toggle('open');
+    REPLY.scrollTop = REPLY.scrollHeight;
+  };
+});
 /* ==== clock ==== */
 function tick(){
   const now = new Date();
@@ -558,8 +618,8 @@ for (const c of document.querySelectorAll('.card')) {
     const r = c.getBoundingClientRect();
     const nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
     // tilt the card itself; the inner .flip keeps its own rotateY — they compose
-    c.style.transform = `rotateX(${-ny*10}deg) rotateY(${nx*12}deg)`;
-    gl.style.background = `radial-gradient(circle at ${100 - nx*100}% ${100 - ny*100}%, rgba(6,234,255,.25) 0%, transparent 80%)`;
+    c.style.transform = `rotateX(${-ny*6}deg) rotateY(${nx*7}deg)`;
+    gl.style.background = `radial-gradient(circle at ${50 - nx*40}% ${50 - ny*40}%, rgba(6,234,255,.18) 0%, transparent 55%)`;
     sh.style.transform = `rotate(15deg) translateX(${-nx*30}%)`;
   });
   c.addEventListener('mouseleave', () => { c.style.transform = ''; });
@@ -577,6 +637,17 @@ function spark(cid, arr, maxv){
     const h = Math.max(4, Math.min(26, Math.round((v / maxv) * 26)));
     return `<i style="height:${h}px;left:${i * 6.9}%"></i>`;
   }).join('');
+}
+
+
+/* ==== ring charts ==== */
+function setRing(rid, pid, val, maxv){
+  const svg = document.getElementById(rid); if (!svg) return;
+  const C = 2 * Math.PI * 19; // 119.4
+  const pct = Math.max(0, Math.min(100, (val / maxv) * 100));
+  svg.querySelector('.rfg').style.strokeDashoffset = C * (1 - pct / 100);
+  const pl = document.getElementById(pid);
+  if (pl) pl.textContent = Math.round(pct) + '%';
 }
 
 /* ==== stats polling ==== */
@@ -616,6 +687,10 @@ async function refresh(){
         ['load percent', Math.round(h.load1 / h.cpu_count * 100) + '%']]);
       CH.mem.push(memPct); CH.disk.push(h.disk_pct);
       CH.load.push(Math.round(h.load1 / h.cpu_count * 100));
+      const cpuPct = Math.round(h.load1 / h.cpu_count * 100);
+      setRing('memring', 'mempct', memPct, 100);
+      setRing('diskring', 'diskpct', h.disk_pct, 100);
+      setRing('loadring', 'loadpct', cpuPct, 100);
       for (const k of Object.keys(CH)) if (CH[k].length > 40) CH[k].shift();
       spark('memd', CH.mem, 100);
       spark('diskd', CH.disk, 100);
@@ -628,41 +703,6 @@ document.getElementById('ctr').textContent = Object.keys(d.containers || {}).len
         ['total', Object.keys(d.containers || {}).length],
         ['services', Object.keys(d.services || {}).length],
         ['up services', Object.values(d.services || {}).filter(v => String(v).startsWith('up')).length]]);
-    }
-    // plex + queue (same as V2)
-    const pl = document.getElementById('plex'); pl.innerHTML = '';
-    if (!(d.plex || []).length){
-      const e = document.createElement('div'); e.className='empty'; e.textContent='Nothing playing'; pl.appendChild(e);
-    } else {
-      for (const v of d.plex){
-        const it = document.createElement('div'); it.className='it';
-        const left = document.createElement('div'); left.style.cssText='flex:1;min-width:0;overflow:hidden';
-        const t1 = document.createElement('div'); t1.className='t'; t1.textContent = v.title;
-        const prog = document.createElement('div'); prog.className='prog';
-        const inner = document.createElement('i'); inner.style.width = v.progress + '%'; prog.appendChild(inner);
-        left.appendChild(t1); left.appendChild(prog);
-        const pw = document.createElement('div'); pw.className='play';
-        it.appendChild(pw); it.appendChild(left); pl.appendChild(it);
-      }
-    }
-    const qu = document.getElementById('queue'); qu.innerHTML = '';
-    const items = [
-      ...((d.arr && d.arr.radarr && d.arr.radarr.items) || []).map(x => ({...x, app: 'radarr'})),
-      ...((d.arr && d.arr.sonarr && d.arr.sonarr.items) || []).map(x => ({...x, app: 'sonarr'})),
-    ];
-    if (!items.length){
-      const e = document.createElement('div'); e.className='empty'; e.textContent='Queue empty'; qu.appendChild(e);
-    } else {
-      for (const it of items){
-        const row = document.createElement('div'); row.className='it';
-        const app = document.createElement('span'); app.className='s'; app.textContent = it.app;
-        const t = document.createElement('div'); t.className='t'; t.textContent = it.title || '(untitled)';
-        const gg = document.createElement('span'); gg.className='g';
-        gg.textContent = it.left_gb ? it.left_gb + ' GB left' : (it.status || '');
-        row.appendChild(app); row.appendChild(t); row.appendChild(gg); qu.appendChild(row);
-      }
-      statRows(document.getElementById('queueback'), items.slice(0,6).flatMap(it => [[it.title||'(untitled)', it.app],['left', it.left_gb ? it.left_gb+' GB' : (it.status||'-')]]));
-      document.getElementById('queueback').style.display = 'none';
     }
   renderSvc(d);
   fetch('/plexreqs').then(r=>r.json()).then(d => {
@@ -717,6 +757,5 @@ refreshEco = async function(){
   }catch(e){}
 }
 </script>
-<button id="chatfab" aria-label="Chat with Hermes"></button>
 </body>
 </html>
