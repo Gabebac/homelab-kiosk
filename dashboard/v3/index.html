@@ -39,7 +39,7 @@
     grid-template-areas:
       "mem disk load ctr"
       "eco eco plex queue"
-      "gh gh gh gh"}
+      "svcs svcs svcs svcs"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -49,7 +49,7 @@
   .card[data-k="eco"]{grid-area:eco}
   .card[data-k="plex"]{grid-area:plex}
   .card[data-k="queue"]{grid-area:queue}
-  .card[data-k="gh"]{grid-area:gh}
+  .card[data-k="svcs"]{grid-area:svcs}
 
   .card{--h:110px;perspective:900px;background:transparent;border:none}
   .flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;
@@ -101,10 +101,6 @@
   .batt .pct{font-family:var(--f-disp);font-size:22px;font-weight:700;color:var(--cream)}
   .batt .meta{font-size:8px;color:var(--dim);line-height:1.5}
   .batt .meta b{color:var(--orange);font-weight:600}
-
-  /* github skyline canvas */
-  #ghcard .face{display:flex;flex-direction:column}
-  #sky{width:100%;height:82px;display:block}
 
   /* ==== right chat column ==== */
   aside{grid-row:2;grid-column:2;display:flex;flex-direction:column;border-left:1px solid var(--faint);
@@ -216,12 +212,10 @@
     </div>
   </div>
 
-  <div class="card" data-k="gh" style="--h:150px">
+  <div class="card" data-k="svcs" style="--h:150px">
     <div class="flip">
-      <div class="face front" id="ghcard"><h2>GitHub skyline · Gabebac</h2>
-        <canvas id="sky"></canvas>
-        <div class="sub" id="ghsub" style="margin-top:2px">–</div></div>
-      <div class="face back" id="ghback"></div>
+      <div class="face front"><h2>Service detail</h2><div class="svc" id="svcs"></div></div>
+      <div class="face back" id="svcsback"></div>
     </div>
   </div>
 </main>
@@ -418,39 +412,19 @@ function statRows(el, rows){
   }
 }
 
-/* ==== github skyline (isometric columns, canvas) ==== */
-let ghDays = [];
-async function drawSky(){
-  try{
-    const r = await fetch('/gh'); const g = await r.json();
-    ghDays = g.days.slice(-90);
-    const cv = document.getElementById('sky'), ctx = cv.getContext('2d');
-    const rect = cv.parentElement.getBoundingClientRect();
-    const cw = cv.width = Math.floor(rect.width - 24);
-    cv.height = Math.max(80, Math.floor(rect.height - 58));
-    const days = ghDays, n = days.length;
-    const cell = Math.min(12, cw / n - 0.5), W = cw, H = cv.height;
-    document.getElementById('ghsub').textContent =
-      g.total + ' events · ' + days.filter(d=>d.c>0).length + ' active days (90)';
-    ctx.clearRect(0,0,cw,H);
-    const maxC = Math.max(1, ...days.map(d=>d.c));
-    for (let i=0;i<n;i++){
-      const x = 8 + i * (cw-16)/n;
-      const hgt = (days[i].c / maxC) * (H - 22);
-      ctx.fillStyle = days[i].c ? 'rgba(232,84,4,'+(0.35 + 0.65*days[i].c/maxC)+')' : 'rgba(70,101,108,.25)';
-      // isometric block: top face + two sides
-      const tw = cell, th = hgt;
-      ctx.beginPath();
-      ctx.moveTo(x, H-8-th); ctx.lineTo(x+tw*.6, H-8-th+3); ctx.lineTo(x+tw*.3, H-8-th+6); ctx.lineTo(x-tw*.1, H-8-th+3); ctx.closePath();
-      ctx.fill();
-      ctx.fillRect(x, H-8-th, tw*.6, th);
-      ctx.beginPath();
-      ctx.moveTo(x+tw*.6, H-8-th); ctx.lineTo(x+tw*.6, H-8); ctx.lineTo(x+tw*.3, H-8+4); ctx.lineTo(x+tw*.3, H-8-th+6); ctx.closePath();
-      ctx.fillStyle = 'rgba(232,84,4,.55)'; ctx.fill();
-    }
-  }catch(e){}
+/* ==== service pills ==== */
+function renderSvc(d){
+  const svcs = document.getElementById('svcs'); svcs.innerHTML = '';
+  const entries = Object.entries(d.services || {});
+  for (const [name, state] of entries){
+    const s = String(state);
+    const sp = document.createElement('span');
+    const dot = document.createElement('b'); dot.className = s.startsWith('up') ? '' : 'd';
+    const u = document.createElement('u'); u.textContent = name;
+    sp.appendChild(dot); sp.appendChild(u); svcs.appendChild(sp);
+  }
+  statRows(document.getElementById('svcsback'), entries.map(([n,s]) => [n, String(s)]));
 }
-
 /* ==== stats polling ==== */
 async function refresh(){
   try{
@@ -523,6 +497,7 @@ async function refresh(){
       statRows(document.getElementById('queueback'), items.slice(0,6).flatMap(it => [[it.title||'(untitled)', it.app],['left', it.left_gb ? it.left_gb+' GB' : (it.status||'-')]]));
       document.getElementById('queueback').style.display = 'none';
     }
+  renderSvc(d);
   }catch(e){ /* keep last good values */ }
 }
 function memUsed(x){ const h = last.host; return h ? h.mem_used_gb : '–'; }
@@ -545,7 +520,6 @@ async function refreshEco(){
 }
 refresh(); setInterval(refresh, 15000);
 refreshEco(); setInterval(refreshEco, 30000);
-drawSky();
 </script>
 </body>
 </html>
