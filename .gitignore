@@ -11,3 +11,4 @@ captures/
 _*.css
 _ui_*.html
 _api*.json
+dashboard/v2/_probe.html
