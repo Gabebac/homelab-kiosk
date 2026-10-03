@@ -31,21 +31,21 @@
   #phsparkwrap i:last-child{background:#06eaff;opacity:1;box-shadow:0 0 4px rgba(6,234,255,.25)}
 
   /* ==== avatar model dropup (bottom-right corner) ==== */
-  .avdrop{position:fixed;right:6px;bottom:6px;z-index:50;font-family:var(--f-disp)}
+  .avdrop{position:fixed;right:4px;bottom:3px;z-index:50;font-family:var(--f-disp)}
   .avdrop #avtab{background:#0b0b0b;color:var(--cream);border:1px solid #1a1a1a;border-radius:8px;
-    font:600 9px var(--f-disp);letter-spacing:.1em;padding:4px 9px;cursor:pointer;text-transform:uppercase;opacity:.75}
+    font:600 8px var(--f-disp);letter-spacing:.1em;padding:3px 7px;cursor:pointer;text-transform:uppercase;opacity:.65}
   .avdrop #avtab:hover{border-color:rgba(6,234,255,.5)}
   .avmenu{display:none;position:absolute;right:0;bottom:38px;background:rgba(5,5,5,.97);border:1px solid #1a1a1a;
     border-radius:10px;overflow:hidden;min-width:110px;box-shadow:0 12px 30px rgba(0,0,0,.6)}
   .avdrop.open .avmenu{display:block}
   .avmenu button{display:block;width:100%;text-align:left;background:none;border:none;color:#cfcfcf;
-    font:600 9px var(--f-disp);letter-spacing:.08em;padding:5px 12px;cursor:pointer;text-transform:uppercase}
+    font:600 9px var(--f-disp);letter-spacing:.08em;padding:4px 10px;cursor:pointer;text-transform:uppercase}
   .avmenu button:hover{background:rgba(6,234,255,.08);color:#06eaff}
   .avmenu button.on{color:#06eaff}
   /* avatar cell */
   .avcard{perspective:none}
-  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-46%);width:150px;height:150px;pointer-events:none}
-  #avatar{width:150px;height:150px}
+  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-48%);width:170px;height:170px;pointer-events:none}
+  #avatar{width:170px;height:170px}
   /* ==== pihole bars ==== */
     header,main,aside,#chatdock{position:relative;z-index:1}
 
@@ -64,7 +64,7 @@
     grid-template-areas:
       "mem mem disk disk load load ctr ctr"
       "eco eco eco eco ph ph ph ph"
-      "preqs preqs preqs chat chat chat chat av"}
+      "preqs preqs chat chat chat chat av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -176,6 +176,7 @@
 
   /* ==== chat card ==== */
   .chatface{display:flex;flex-direction:column}
+  .chatface .chatrow{margin-top:auto;margin-bottom:2px}
 splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   .chatrow input{flex:1;min-width:0;background:#0b0b0b;border:1px solid #1a1a1a;color:#fafafa;
     border-radius:8px;padding:8px 10px;font:12px var(--f-body)}
