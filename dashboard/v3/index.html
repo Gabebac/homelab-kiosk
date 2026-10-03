@@ -39,7 +39,7 @@
     grid-template-areas:
       "mem disk load ctr"
       "eco eco plex queue"
-      "svcs svcs svcs svcs"}
+      "preqs preqs svcs svcs"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -102,6 +102,20 @@
   .batt .meta{font-size:8px;color:var(--dim);line-height:1.5}
   .batt .meta b{color:var(--orange);font-weight:600}
 
+
+  /* ==== GLARE CARD (ported framer-motion glare-cards, vanilla) ==== */
+  .card.g { transform-style:preserve-3d; transition:transform .35s ease, box-shadow .5s ease; will-change:transform; }
+  .card.g .gglare, .card.g .gshine { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .5s ease; z-index:5; border-radius:inherit; }
+  .card.g .gshine { background:linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent); width:200%; left:-50%; transform:rotate(15deg); }
+  .card.g:hover { box-shadow:0 0 50px -12px rgba(0,0,0,.8); }
+  .card.g:hover .gglare, .card.g:hover .gshine { opacity:1; }
+  .card.g:hover .gshine { opacity:.10; }
+  .card.g .inner { transform:translateZ(30px); height:100%; }
+
+  .preq{display:flex;flex-direction:column;gap:4px;margin-top:2px}
+  .preq div{display:flex;gap:6px;align-items:baseline;font-size:8px;color:var(--cream);white-space:nowrap;overflow:hidden}
+  .preq b{color:var(--orange);font-size:8px}
+  .preq span{color:var(--dim);overflow:hidden;text-overflow:ellipsis}
   /* ==== right chat column ==== */
   aside{grid-row:2;grid-column:2;display:flex;flex-direction:column;border-left:1px solid var(--faint);
     background:rgba(3,18,22,.55);backdrop-filter:blur(4px);min-height:0;min-width:0;position:relative}
@@ -212,6 +226,12 @@
     </div>
   </div>
 
+  <div class="card" data-k="preqs" style="--h:150px">
+    <div class="flip">
+      <div class="face front"><h2>Plex adds · last 5</h2><div id="preqs" class="preq"></div></div>
+      <div class="face back" id="preqsback"></div>
+    </div>
+  </div>
   <div class="card" data-k="svcs" style="--h:150px">
     <div class="flip">
       <div class="face front"><h2>Service detail</h2><div class="svc" id="svcs"></div></div>
@@ -425,6 +445,24 @@ function renderSvc(d){
   }
   statRows(document.getElementById('svcsback'), entries.map(([n,s]) => [n, String(s)]));
 }
+
+/* ==== glare tilt ==== */
+for (const c of document.querySelectorAll('.card')) {
+  c.classList.add('g');
+  const gl = document.createElement('div'); gl.className = 'gglare';
+  const sh = document.createElement('div'); sh.className = 'gshine';
+  c.appendChild(gl); c.appendChild(sh);
+  c.addEventListener('mousemove', e => {
+    const r = c.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
+    // tilt the card itself; the inner .flip keeps its own rotateY — they compose
+    c.style.transform = `rotateX(${-ny*10}deg) rotateY(${nx*12}deg)`;
+    gl.style.background = `radial-gradient(circle at ${100 - nx*100}% ${100 - ny*100}%, rgba(232,84,4,.25) 0%, transparent 80%)`;
+    sh.style.transform = `rotate(15deg) translateX(${-nx*30}%)`;
+  });
+  c.addEventListener('mouseleave', () => { c.style.transform = ''; });
+}
+
 /* ==== stats polling ==== */
 async function refresh(){
   try{
@@ -498,6 +536,12 @@ async function refresh(){
       document.getElementById('queueback').style.display = 'none';
     }
   renderSvc(d);
+  fetch('/plexreqs').then(r=>r.json()).then(rs => {
+    const el = document.getElementById('preqs');
+    if (el) el.innerHTML = rs.map(x => `<div><b>${x.kind==='movie'?'MOV':'EP'}</b><span>${x.title}</span></div>`).join('') || '<div class="empty">no adds yet</div>';
+    statRows(document.getElementById('preqsback'), rs.map(x => [x.date.slice(0,10), x.title]));
+  }).catch(()=>{});
+
   }catch(e){ /* keep last good values */ }
 }
 function memUsed(x){ const h = last.host; return h ? h.mem_used_gb : '–'; }

@@ -464,7 +464,39 @@ def ecoflow():
 
 app.mount("/v3", StaticFiles(directory=DASH_DIR / "v3", html=True), name="v3")
 
+# ---- V3: last 5 add requests (radarr+sonarr grabbed) ----
+_arrcreds = DASH_DIR / "arrcreds.json"   # {"radarr": key, "sonarr": key} — gitignored
 
+def plex_add_requests():
+    try:
+        creds = json.loads(_arrcreds.read_text())
+    except Exception:
+        return []
+    out = []
+    for name, port, kind in (("radarr", 7878, "movie"), ("sonarr", 8989, "series")):
+        key = creds.get(name)
+        if not key: continue
+        try:
+            with urllib.request.urlopen(
+                f"http://127.0.0.1:{port}/api/v3/history?sortKey=date&sortDirection=descending&pageSize=100&apikey={key}",
+                timeout=10) as f:
+                d = json.load(f)
+            recs = d.get("records", d if isinstance(d, list) else [])
+            for rec in recs:
+                if rec.get("eventType") == "grabbed":
+                    title = rec.get("sourceTitle", "")
+                    t = re.sub(r"[.\-_]+", " ", title).strip()
+                    t = re.sub(r"\s+", " ", t)
+                    t = re.sub(r"\b(1080p|2160p|720p|BluRay|WEB-DL|WEBRip|x264|x265|HEVC|10bit|DDP5|DD|Atmos|REMASTERED|AMZN|NF|H-SBS|REPACK).*$", "", t, flags=re.I).strip(" -")
+                    out.append({"kind": kind, "date": rec["date"], "title": t[:60] or title[:60]})
+        except Exception:
+            continue
+    out.sort(key=lambda x: x["date"], reverse=True)
+    return out[:5]
+
+@app.get("/plexreqs")
+def plexreqs():
+    return plex_add_requests()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8644, log_level="warning")
