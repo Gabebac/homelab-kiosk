@@ -23,10 +23,10 @@
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
   /* ==== pihole card ==== */
-  .phleft{position:absolute;left:14px;top:44px;display:flex;flex-direction:column;gap:2px}
+  .phleft{position:absolute;left:14px;top:44px;display:flex;flex-direction:column;gap:5px}
   .phbig{font:700 34px var(--f-disp);color:var(--cream);line-height:1}
-  .phsub{font:600 10px var(--f-disp);letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
-  #phsparkwrap{position:absolute;left:190px;right:14px;top:40px;bottom:12px;display:flex;align-items:flex-end;gap:5px}
+  .phsub{font:600 9px var(--f-disp);letter-spacing:.05em;color:var(--dim);text-transform:uppercase;line-height:1.5}
+  #phsparkwrap{position:absolute;left:14px;right:14px;bottom:10px;top:118px;display:flex;align-items:flex-end;gap:5px}
   #phsparkwrap i{flex:0 1 20px;min-height:4px;background:linear-gradient(180deg,#06eaff,#0684d0);opacity:.8;border-radius:2px 2px 0 0}
   #phsparkwrap i:last-child{background:#06eaff;opacity:1;box-shadow:0 0 4px rgba(6,234,255,.25)}
 
@@ -60,11 +60,11 @@
   main{height:calc(100vh - 52px);padding:12px 16px 12px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
     display:grid;gap:10px;min-width:0;
     grid-template-columns:repeat(8,minmax(0,1fr));
-    grid-template-rows:118px 118px minmax(140px, 1fr);
+    grid-template-rows:118px 180px minmax(120px, 1fr);
     grid-template-areas:
       "mem mem disk disk load load ctr ctr"
-      "eco eco eco eco ph ph ph ph"
-      "preqs preqs chat chat chat chat av av"}
+      "eco eco ph ph preqs preqs preqs preqs"
+      "chat chat chat chat chat chat av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -89,8 +89,8 @@
     text-transform:uppercase;color:var(--dim);margin-bottom:4px}
   .face .big{font-family:var(--f-disp);font-size:22px;font-weight:700;color:var(--cream);line-height:1.2;
     font-variant-numeric:tabular-nums}
-  .face .sub{color:var(--dim);font-size:11px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .face .extra{color:var(--cream);opacity:.65;font-size:10px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .face .sub{color:var(--cream);font-size:13px;margin-top:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+  .face .extra{color:var(--dim);font-size:10px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .face .big{margin-top:6px}
   .face.back .stat{display:flex;justify-content:space-between;gap:10px;font-size:10px;color:var(--dim);
     padding:2px 0;border-bottom:1px dashed rgba(255,255,255,.08)}
@@ -131,14 +131,8 @@
   .batt .meta b{color:var(--orange);font-weight:600}
 
 
-  /* ==== GLARE CARD (ported framer-motion glare-cards, vanilla) ==== */
-  .card.g { transform-style:preserve-3d; transition:transform .35s ease, box-shadow .5s ease; will-change:transform; overflow:hidden; clip-path:inset(0 round 12px); }
-  .card.g .gglare, .card.g .gshine { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .5s ease; z-index:5; border-radius:inherit; }
-  .card.g .gshine { background:linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent); width:200%; left:-50%; transform:rotate(15deg); }
-  .card.g:hover { box-shadow:0 0 30px -12px rgba(0,0,0,.8), 0 0 12px rgba(6,234,255,.06); }
-  .card.g:hover .gglare, .card.g:hover .gshine { opacity:1; }
-  .card.g:hover .gshine { opacity:.10; }
-  .card.g .inner { transform:translateZ(30px); height:100%; }
+  /* ==== card shell (tilt only, no glare) ==== */
+  .card { transform-style:preserve-3d; transition:transform .35s ease; will-change:transform; overflow:hidden; clip-path:inset(0 round 12px); }
 
   .preq{display:flex;flex-direction:column;gap:4px;margin-top:2px}
   .preq div{display:flex;gap:6px;align-items:baseline;font-size:12px;color:var(--cream);white-space:nowrap;overflow:hidden}
@@ -157,7 +151,6 @@
   /* ==== chat FAB ==== */
   #chatfab{position:fixed;right:16px;bottom:16px;z-index:70;width:54px;height:54px;border-radius:50%;
     border:1px solid rgba(6,234,255,.35);background:radial-gradient(circle at 35% 30%, rgba(6,234,255,.35), rgba(6,234,255,.08) 60%, transparent);
-    box-shadow:0 0 10px rgba(6,234,255,.15), inset 0 0 6px rgba(6,234,255,.10);
     cursor:pointer;display:flex;align-items:center;justify-content:center}
   #chatfab::before{content:"";width:22px;height:22px;border-radius:50%;
     background:radial-gradient(circle at 35% 30%, #d8fdff, #06eaff 55%, #015b66)}
@@ -190,16 +183,16 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   .dr-msgs .m{color:#06eaff;font:600 8px var(--f-disp);letter-spacing:.1em;text-transform:uppercase}
   .dr-msgs .m.user{color:#fafafa}
   
-  .ringw{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:64px;height:64px}
+  .ringw{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:56px;height:56px}
   .ringw .ring{position:absolute;inset:0;width:64px;height:64px;margin:0}
-  .rpct{position:absolute;left:0;top:0;width:64px;height:64px;display:flex;align-items:center;justify-content:center;
-    font:700 11px var(--f-disp);color:var(--cream)}
+  .rpct{position:absolute;left:0;top:0;width:56px;height:56px;display:flex;align-items:center;justify-content:center;
+    font:700 14px var(--f-disp);color:var(--cream)}
   .ring .rbg{fill:none;stroke:rgba(6,234,255,.10);stroke-width:4}
   .ring .rfg{fill:none;stroke:#06eaff;stroke-width:4;stroke-linecap:round;
     stroke-dasharray:119.4;stroke-dashoffset:119.4;transition:stroke-dashoffset .8s cubic-bezier(.3,1,.4,1);
     filter:drop-shadow(0 0 2px rgba(6,234,255,.25))}
-  .card[data-k="mem"] .sub,.card[data-k="disk"] .sub,.card[data-k="load"] .sub,
-  .card[data-k="mem"] .extra,.card[data-k="disk"] .extra,.card[data-k="load"] .extra{margin-left:80px;max-width:calc(100% - 90px)}
+  .card[data-k="mem"] .sub,.card[data-k="disk"] .sub,.card[data-k="load"] .sub{position:absolute;left:76px;top:calc(50% - 9px);max-width:calc(100% - 150px)}
+  .card[data-k="mem"] .extra,.card[data-k="disk"] .extra,.card[data-k="load"] .extra{position:absolute;left:76px;top:calc(50% + 7px);max-width:calc(100% - 90px)}
   .card[data-k="mem"] .spark,.card[data-k="disk"] .spark,.card[data-k="load"] .spark{left:auto;right:10px;margin-left:0}
   .card[data-k="mem"] h2,.card[data-k="disk"] h2,.card[data-k="load"] h2{margin-left:0}
 /* ==== right chat column ==== */
@@ -219,7 +212,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     background:#0b0b0b;align-items:center}
   .orb{width:30px;height:30px;border-radius:50%;flex:0 0 auto;position:relative;
     background:radial-gradient(circle at 35% 30%, rgba(255,1,64,.85), rgba(255,1,64,.15) 65%, transparent);
-    box-shadow:0 0 8px rgba(255,1,64,.25)}
+}
   .orb::before{content:"";position:absolute;inset:-6px;border-radius:50%;
     border:1.5px solid rgba(255,1,64,.5);animation:orbpulse 1.6s ease-out infinite}
   @keyframes orbpulse{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.5);opacity:0}}
@@ -378,14 +371,23 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 
 /* ==== avatar (same proven loader as V2) ==== */
 const AV = document.getElementById('avatar');
-function svgFallback(){
+function svgFallback(){ // canvas stays in DOM (pixiApp binds to it); overlay placeholder instead of swapping
   if (AV.dataset.fallback) return;
-  AV.dataset.fallback = 1;
-  AV.outerHTML = `<svg id="avatar" viewBox="0 0 100 100" style="width:96px;height:96px">
-    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,1,64,.35)" stroke-width="1.5"/>
-    <circle cx="38" cy="44" r="4.5" fill="#f1d7c8"/><circle cx="62" cy="44" r="4.5" fill="#f1d7c8"/>
-    <ellipse cx="50" cy="60" rx="9" ry="4" fill="#f1d7c8" opacity=".85"/>
-  </svg>`;
+  AV.dataset.fallback = '1';
+  AV.style.opacity = '0';
+  const wrap = AV.closest('.avi-wrap') || AV.parentElement;
+  const d = document.createElement('div');
+  d.id = 'avfb';
+  d.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%,-48%);width:64px;height:64px;border-radius:50%;border:1.5px solid rgba(255,1,64,.35);display:flex;align-items:center;justify-content:center;font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);text-transform:uppercase';
+  d.textContent = 'no avatar';
+  wrap.appendChild(d);
+}
+function clearAvFallback(){
+  if (!AV.dataset.fallback) return;
+  delete AV.dataset.fallback;
+  AV.style.opacity = '';
+  const fb = document.getElementById('avfb');
+  if (fb) fb.remove();
 }
 const AVATAR_MODELS = {
   ren:  '/av/ren/ren.model3.json',
@@ -406,11 +408,12 @@ async function loadAvatar(name){
     model = await PIXI.live2d.Live2DModel.from(AVATAR_MODELS[name],
       {autoInteract: false, autoUpdate: true});
     pixiApp.stage.addChild(model);
+    clearAvFallback();
     const FIT = {
       ren:  {s: 0.07, fx: 0.50, fy: 0.18},
       kei:  {s: 0.16, fx: 0.50, fy: 0.35},
       rice: {s: 0.068, fx: 0.50, fy: 0.45},
-      jinx: {s: 0.095, fx: 0.50, fy: 0.14},
+      jinx: {s: 0.095, fx: 0.50, fy: 0.20},
     }[name] || {s: 0.30, fx: 0.50, fy: 0.50};
     model.scale.set(FIT.s);
     model.x = 110 - model.width * FIT.fx;
@@ -453,6 +456,7 @@ function setAvatar(name){
     svgFallback();
     return;
   }
+  AV.style.opacity = '';
   loadAvatar(name);
 }
 setAvatar(startAv);
@@ -613,17 +617,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 /* ==== glare tilt ==== */
 for (const c of document.querySelectorAll('.card')) {
-  c.classList.add('g');
-  const gl = document.createElement('div'); gl.className = 'gglare';
-  const sh = document.createElement('div'); sh.className = 'gshine';
-  c.appendChild(gl); c.appendChild(sh);
   c.addEventListener('mousemove', e => {
     const r = c.getBoundingClientRect();
     const nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
-    // tilt the card itself; the inner .flip keeps its own rotateY — they compose
-    c.style.transform = `rotateX(${-ny*6}deg) rotateY(${nx*7}deg)`;
-    gl.style.background = `radial-gradient(circle at ${50 - nx*40}% ${50 - ny*40}%, rgba(6,234,255,.10) 0%, transparent 50%)`;
-    sh.style.transform = `rotate(15deg) translateX(${-nx*30}%)`;
+    c.style.transform = `rotateX(${-ny*5}deg) rotateY(${nx*6}deg)`;
   });
   c.addEventListener('mouseleave', () => { c.style.transform = ''; });
 }
