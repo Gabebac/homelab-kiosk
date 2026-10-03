@@ -22,16 +22,24 @@
 
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
+  /* ==== pihole card ==== */
+  .phleft{position:absolute;left:14px;top:44px;display:flex;flex-direction:column;gap:2px}
+  .phbig{font:700 34px var(--f-disp);color:var(--cream);line-height:1}
+  .phsub{font:600 10px var(--f-disp);letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
+  #phsparkwrap{position:absolute;left:190px;right:14px;top:40px;bottom:12px;display:flex;align-items:flex-end;gap:5px}
+  #phsparkwrap i{flex:0 1 20px;min-height:4px;background:linear-gradient(180deg,#06eaff,#0684d0);opacity:.8;border-radius:2px 2px 0 0}
+  #phsparkwrap i:last-child{background:#06eaff;opacity:1;box-shadow:0 0 4px rgba(6,234,255,.25)}
+
   /* ==== avatar model dropup (bottom-right corner) ==== */
-  .avdrop{position:fixed;right:10px;bottom:8px;z-index:50;font-family:var(--f-disp)}
+  .avdrop{position:fixed;right:6px;bottom:6px;z-index:50;font-family:var(--f-disp)}
   .avdrop #avtab{background:#0b0b0b;color:var(--cream);border:1px solid #1a1a1a;border-radius:8px;
-    font:600 10px var(--f-disp);letter-spacing:.1em;padding:7px 12px;cursor:pointer;text-transform:uppercase}
+    font:600 9px var(--f-disp);letter-spacing:.1em;padding:4px 9px;cursor:pointer;text-transform:uppercase;opacity:.75}
   .avdrop #avtab:hover{border-color:rgba(6,234,255,.5)}
   .avmenu{display:none;position:absolute;right:0;bottom:38px;background:rgba(5,5,5,.97);border:1px solid #1a1a1a;
     border-radius:10px;overflow:hidden;min-width:110px;box-shadow:0 12px 30px rgba(0,0,0,.6)}
   .avdrop.open .avmenu{display:block}
   .avmenu button{display:block;width:100%;text-align:left;background:none;border:none;color:#cfcfcf;
-    font:600 11px var(--f-disp);letter-spacing:.08em;padding:8px 14px;cursor:pointer;text-transform:uppercase}
+    font:600 9px var(--f-disp);letter-spacing:.08em;padding:5px 12px;cursor:pointer;text-transform:uppercase}
   .avmenu button:hover{background:rgba(6,234,255,.08);color:#06eaff}
   .avmenu button.on{color:#06eaff}
   /* avatar cell */
@@ -39,11 +47,7 @@
   .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-46%);width:150px;height:150px;pointer-events:none}
   #avatar{width:150px;height:150px}
   /* ==== pihole bars ==== */
-  .phbig{position:absolute;right:12px;top:22px;font:700 18px var(--f-disp);color:var(--cream)}
-  #phsparkwrap{position:absolute;left:12px;right:12px;bottom:14px;top:64px;display:flex;align-items:flex-end;gap:4px}
-  #phsparkwrap i{flex:0 1 22px;background:linear-gradient(180deg,#06eaff,#0684d0);opacity:.85;border-radius:2px 2px 0 0;
-    box-shadow:0 0 4px rgba(6,234,255,.18)}
-  header,main,aside,#chatdock{position:relative;z-index:1}
+    header,main,aside,#chatdock{position:relative;z-index:1}
 
   header{grid-column:1/2;display:flex;align-items:center;gap:14px;padding:0 20px;
     border-bottom:1px solid var(--faint);background:#0b0b0b;backdrop-filter:blur(4px)}
@@ -55,12 +59,12 @@
   /* ==== small flip cards (card-14 port) ==== */
   main{height:calc(100vh - 52px);padding:12px 16px 12px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
     display:grid;gap:10px;min-width:0;
-    grid-template-columns:repeat(4,minmax(0,1fr));
+    grid-template-columns:repeat(8,minmax(0,1fr));
     grid-template-rows:118px 118px minmax(140px, 1fr);
     grid-template-areas:
-      "mem disk load ctr"
-      "eco eco ph ph"
-      "preqs preqs chat av"}
+      "mem mem disk disk load load ctr ctr"
+      "eco eco eco eco ph ph ph ph"
+      "preqs preqs preqs chat chat chat chat av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -313,7 +317,11 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   </div>
     <div class="card" data-k="ph" style="--h:110px">
     <div class="face front"><h2>Pi-hole · blocked</h2>
-      <div id="phsparkwrap"></div><div class="sub" id="phsub">–</div><div class="phbig" id="phbig"></div>
+      <div class="phleft">
+        <div class="phbig" id="phbig">–</div>
+        <div class="phsub" id="phsub">–</div>
+      </div>
+      <div id="phsparkwrap"></div>
     </div>
   </div>
 </main>
