@@ -22,6 +22,11 @@
 
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
+  /* ==== pihole bars ==== */
+  .phbig{position:absolute;right:12px;top:22px;font:700 18px var(--f-disp);color:var(--cream)}
+  #phsparkwrap{position:absolute;left:12px;right:12px;bottom:14px;top:64px;display:flex;align-items:flex-end;gap:4px}
+  #phsparkwrap i{flex:1;background:linear-gradient(180deg,#06eaff,#0684d0);opacity:.85;border-radius:2px 2px 0 0;
+    box-shadow:0 0 6px rgba(6,234,255,.4)}
   header,main,aside,#chatdock{position:relative;z-index:1}
 
   header{grid-column:1/2;display:flex;align-items:center;gap:14px;padding:0 20px;
@@ -38,8 +43,8 @@
     grid-template-rows:118px 118px minmax(140px, 1fr);
     grid-template-areas:
       "mem disk load ctr"
-      "eco eco chat chat"
-      "preqs preqs ph ph"}
+      "eco eco ph ph"
+      "preqs preqs chat av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -50,6 +55,7 @@
   .card[data-k="preqs"]{grid-area:preqs}
   .card[data-k="chat"]{grid-area:chat}
   .card[data-k="ph"]{grid-area:ph}
+  .card[data-k="av"]{grid-area:av}
 
   .card{--h:110px;perspective:900px;background:transparent;border:none}
   .flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;
@@ -147,15 +153,16 @@
   .preq{overflow-y:auto;scrollbar-width:none}
   .preq::-webkit-scrollbar{display:none}
   .face[data-k="preqs"], .card[data-k="preqs"] .face{display:flex;flex-direction:column}
-  .card[data-k="preqs"] hr{border:0;border-top:1px dashed rgba(110,110,110,.35);margin:6px 0 4px}
-  .card[data-k="preqs"] .preq:first-of-type{flex:1 1 44%;min-height:0}
+    .card[data-k="preqs"] .preq:first-of-type{flex:1 1 44%;min-height:0}
   .card[data-k="preqs"] .preq:last-of-type{flex:1 1 36%;min-height:0}
 
   /* ==== chat card ==== */
   .chatface{display:flex;flex-direction:column}
   .avpick-wrap{position:fixed;right:16px;bottom:116px;z-index:9}
   .avpick-wrap select{background:#0b0b0b;color:#8a8a8a;border:1px solid #1a1a1a;border-radius:6px;font:600 9px var(--f-disp);padding:3px 6px;letter-spacing:.08em}
-  .avi-wrap{position:fixed;right:16px;bottom:8px;width:100px;height:100px;pointer-events:none;z-index:8}
+  .avcard{perspective:none}
+  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-42%);width:100px;height:100px;pointer-events:none}
+  .avcard .avpick-wrap{position:absolute;top:10px;right:12px}
   #avatar{width:100px;height:100px}
   .chatrow{margin-top:auto;display:flex;gap:6px;align-items:center;position:relative;z-index:6}
   .chatrow input{flex:1;min-width:0;background:#0b0b0b;border:1px solid #1a1a1a;color:#fafafa;
@@ -169,7 +176,14 @@
   .dr-msgs .d{margin-bottom:7px}
   .dr-msgs .m{color:#06eaff;font:600 8px var(--f-disp);letter-spacing:.1em;text-transform:uppercase}
   .dr-msgs .m.user{color:#fafafa}
-  /* ==== ring charts ==== */
+  
+/* ==== pihole bar chart (history of % blocked) ==== */
+function piholeBars(arr){
+  const el = document.getElementById('phsparkwrap'); if (!el) return;
+  el.innerHTML = arr.slice(-24).map(v => `<i style="height:${Math.max(6, Math.min(100, (v/40)*100))}%"></i>`).join('');
+}
+
+/* ==== ring charts ==== */
   .ring{position:absolute;right:12px;top:50%;margin-top:-24px;width:48px;height:48px;transform:rotate(-90deg)}
   .ring .rbg{fill:none;stroke:rgba(6,234,255,.12);stroke-width:4}
   .ring .rfg{fill:none;stroke:#06eaff;stroke-width:4;stroke-linecap:round;
@@ -235,7 +249,7 @@
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo">Her<b>mes</b> <span style="font-weight:400;color:var(--dim);font-size:12px">· wall v3.1</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:12px">· kiosk v3.1</span></div>
   <div class="clock" id="clock">--:--</div>
 </header>
 
@@ -269,30 +283,23 @@
     </div>
   </div>
 
-  <div class="card" data-k="eco" style="--h:150px">
-    <div class="flip">
-      <div class="face front"><h2>EcoFlow · RIVER 2 Pro</h2>
-        <div class="batt">
-          <div class="bwrap"><div class="fill" id="ecofill" style="--soc:0%"></div></div>
-          <div>
-            <div class="pct" id="ecosoc">–</div>
-            <div class="meta"><b id="ecoin">▼ 0W</b> in · <b id="ecoout">▲ 0W</b> out</div>
-          </div>
-        </div><div class="more">hover ⤿</div></div>
-      <div class="face back" id="ecoback"><div class="bchart" id="ecobars"></div></div>
-    </div>
-  </div>
-      <div class="face back" id="plexback"></div>
-    </div>
-  </div>
-      <div class="face back" id="queueback"></div>
+  <div class="card" data-k="eco" style="--h:110px">
+    <div class="face front"><h2>EcoFlow · RIVER 2 Pro</h2>
+      <div class="batt">
+        <div class="bwrap"><div class="fill" id="ecofill" style="--soc:0%"></div></div>
+        <div>
+          <div class="pct" id="ecosoc">–</div>
+          <div class="meta"><b id="ecoin">▼ 0W</b> in · <b id="ecoout">▲ 0W</b> out</div>
+        </div>
+      </div>
+      <div class="bchart" id="ecobars"></div>
     </div>
   </div>
 
   <div class="card" data-k="preqs" style="--h:150px">
     <div class="flip">
-      <div class="face front"><h2>Plex · last requests</h2><div id="preqs" class="preq"></div><hr><h2>Last added</h2><div id="preqsad" class="preq"></div></div>
-      <div class="face back" id="preqsback"></div>
+      <div class="face front"><h2>Plex · last requests</h2><div id="preqs" class="preq"></div><div class="more">hover ⤿ added</div></div>
+      <div class="face back"><h2>Plex · last added</h2><div id="preqsad" class="preq"></div></div>
     </div>
   </div>
     <div class="card" data-k="chat" style="--h:150px">
@@ -315,11 +322,9 @@
   </div>
   <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
   <div class="dropup" id="dropup"><div class="dr-msgs" id="drmsgs"></div></div>
-  <div class="card" data-k="ph" style="--h:110px">
-    <div class="flip">
-      <div class="face front"><h2>Pi-hole · blocked</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="phring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="phpct"></b></div>
-        <div class="spark" id="phspark"></div><div class="sub" id="phsub">–</div><div class="more">hover ⤿</div></div>
-      <div class="face back" id="phback"></div>
+    <div class="card" data-k="ph" style="--h:110px">
+    <div class="face front"><h2>Pi-hole · blocked</h2>
+      <div id="phsparkwrap"></div><div class="sub" id="phsub">–</div><div class="phbig" id="phbig"></div>
     </div>
   </div>
 </main>
@@ -338,40 +343,29 @@
   let W, H;
   function fit(){ const r = host.getBoundingClientRect(); W = cv.width = Math.max(60, r.width); H = cv.height = Math.max(60, r.height); }
   fit(); addEventListener('resize', fit);
-  let mx = .5, my = .5, warp = 0;
+  let mx = .5, my = .5;
   addEventListener('mousemove', e => {
-    const hr = host.getBoundingClientRect();
-    const nx = (e.clientX - hr.left)/Math.max(1, hr.width) - .5, ny = (e.clientY - hr.top)/Math.max(1, hr.height) - .5;
-    warp = Math.min(1, warp + Math.hypot(nx-mx, ny-my)*3);
-    mx = nx; my = ny;
-    setTimeout(()=>warp = Math.max(0, warp - .05), 80);
+    mx = (e.clientX / innerWidth - .5) * 2;
+    my = (e.clientY / innerHeight - .5) * 2;
   });
-  function frame(t){
-    warp = Math.max(0, warp - .015);
-    ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle = 'rgba(241,215,200,.22)';
-    ctx.lineWidth = 1;
-    const hz = H*.42, speed = (t*.00006) + warp*.01;
-    const px0 = (mx-.5)*80, py0 = (my-.5)*30;
-    // horizontal lines receding
-    for (let i=0;i<26;i++){
-      const p = ((i/26 + speed))%1;
-      const y = hz + p*p*(H-hz);
-      ctx.globalAlpha = p*.8;
-      ctx.beginPath(); ctx.moveTo(0, y+py0*p); ctx.lineTo(W, y+py0*p); ctx.stroke();
+  function frame(){
+    ctx.clearRect(0, 0, W, H);
+    const gap = 26;
+    const ox = ((mx * 10) % gap + gap) % gap, oy = ((my * 10) % gap + gap) % gap;
+    for (let y = oy - gap/2; y < H + gap; y += gap){
+      for (let x = ox - gap/2; x < W + gap; x += gap){
+        // parallax drift by distance from center for subtle depth
+        const dx = (x - W/2) / W, dy = (y - H/2) / H;
+        const px = x - mx * 14 * (0.4 + Math.abs(dx)), py = y - my * 14 * (0.4 + Math.abs(dy));
+        ctx.beginPath();
+        ctx.arc(px, py, 1.1, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(6,234,255,.16)';
+        ctx.fill();
+      }
     }
-    // verticals converging to vanishing point
-    for (let i=-14;i<=14;i++){
-      ctx.globalAlpha = .5;
-      ctx.beginPath();
-      ctx.moveTo(W/2 + i*24*Math.max(.2,(mx*2)), H);
-      ctx.lineTo(W/2 + i*(24+px0)*.02, hz+py0);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
     requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  frame();
 })();
 
 /* ==== avatar (same proven loader as V2) ==== */
@@ -405,10 +399,10 @@ async function loadAvatar(name){
       {autoInteract: false, autoUpdate: true});
     pixiApp.stage.addChild(model);
     const FIT = {
-      ren:  {s: 0.045, fx: 0.50, fy: 0.40},
+      ren:  {s: 0.07, fx: 0.50, fy: 0.18},
       kei:  {s: 0.16, fx: 0.50, fy: 0.35},
       rice: {s: 0.068, fx: 0.50, fy: 0.45},
-      jinx: {s: 0.052, fx: 0.62, ay: -80},
+      jinx: {s: 0.095, fx: 0.50, fy: 0.14},
     }[name] || {s: 0.30, fx: 0.50, fy: 0.50};
     model.scale.set(FIT.s);
     model.x = 110 - model.width * FIT.fx;
@@ -430,7 +424,7 @@ setTimeout(() => { // still nothing after 4s? paint a simple neon face on the ca
     c.beginPath(); c.ellipse(110,132,18,8,0,0,Math.PI*2); c.fill();
   }
 }, 4000);
-const savedAv = localStorage.getItem('avatar');
+const savedAv = new URLSearchParams(location.search).get('av') || localStorage.getItem('avatar');
 if (AVATAR_STORE[savedAv] || savedAv === 'base') avpick.value = savedAv;
 function setAvatar(name){
   localStorage.setItem('avatar', name);
@@ -629,6 +623,13 @@ function spark(cid, arr, maxv){
 }
 
 
+
+/* ==== pihole bar chart (history of % blocked) ==== */
+function piholeBars(arr){
+  const el = document.getElementById('phsparkwrap'); if (!el) return;
+  el.innerHTML = arr.slice(-24).map(v => `<i style="height:${Math.max(6, Math.min(100, (v/40)*100))}%"></i>`).join('');
+}
+
 /* ==== ring charts ==== */
 function setRing(rid, pid, val, maxv){
   const svg = document.getElementById(rid); if (!svg) return;
@@ -678,10 +679,10 @@ async function refresh(){
       setRing('diskring', 'diskpct', h.disk_pct, 100);
       setRing('loadring', 'loadpct', cpuPct, 100);
       if (d.pihole){
-        document.getElementById('phsub').textContent = `${d.pihole.blocked} / ${d.pihole.total} queries`;
+        document.getElementById('phsub').textContent = `${d.pihole.blocked} blocked / ${d.pihole.total} queries`;
+        document.getElementById('phbig').textContent = d.pihole.pct.toFixed(1) + '%';
         CH.ph.push(d.pihole.pct); if (CH.ph.length > 40) CH.ph.shift();
-        setRing('phring', 'phpct', d.pihole.pct, 100);
-        spark('phspark', CH.ph, 100);
+        piholeBars(CH.ph);
       }
       for (const k of Object.keys(CH)) if (CH[k].length > 40) CH[k].shift();
       spark('memspark', CH.mem, 100);
@@ -701,7 +702,7 @@ document.getElementById('ctr').textContent = Object.keys(d.containers || {}).len
     const el2 = document.getElementById('preqsad');
     if (el) el.innerHTML = (d.requests||[]).map(x => `<div><b>${x.kind==='movie'?'MOV':'EP'}</b><span>${x.title}</span></div>`).join('') || '<div class="empty">none yet</div>';
     if (el2) el2.innerHTML = (d.added||[]).map(x => `<div><b>${x.kind==='movie'?'MOV':'EP'}</b><span>${x.title}</span></div>`).join('') || '<div class="empty">none yet</div>';
-    statRows(document.getElementById('preqsback'), (d.requests||[]).map(x => [x.date.slice(5,10), x.title]));
+    
   }).catch(()=>{});
 
   }catch(e){ /* keep last good values */ }
