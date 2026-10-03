@@ -12,3 +12,6 @@ _*.css
 _ui_*.html
 _api*.json
 dashboard/v2/_probe.html
+
+dashboard/v3/ecoflow.json
+dashboard/v3/gh.json

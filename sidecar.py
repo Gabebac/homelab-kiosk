@@ -25,6 +25,7 @@ import re
 import socket
 import subprocess
 import time
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -423,6 +424,54 @@ def index():
 # avatar model assets (Live2D) + pages, same-origin so the model can fetch them
 app.mount("/av", StaticFiles(directory=DASH_DIR / "av"), name="av")
 app.mount("/v2", StaticFiles(directory=DASH_DIR / "v2", html=True), name="v2")
+
+# ---- V3: EcoFlow battery + GitHub contributions ----
+import hmac as _hmac, hashlib as _hl, time as _time
+_ECO_F = Path("/opt/data/kiosk/dashboard/v3/ecoflow.json")
+_gh_cache = {"t": 0, "days": []}
+
+def _eco_headers(creds, params: dict) -> dict:
+    ak, sk = creds["AK"], creds["SK"]
+    nonce = str(int(_time.time() * 1000) % 1000000).zfill(6)
+    ts = str(int(_time.time() * 1000))
+    # EcoFlow sign: request params in request order FIRST, then reserved params
+    pairs = [f"{k}={params[k]}" for k in params]
+    pairs += [f"accessKey={ak}", f"nonce={nonce}", f"timestamp={ts}"]
+    sign = _hmac.new(sk.encode(), "&".join(pairs).encode(), _hl.sha256).hexdigest()
+    return {"accessKey": ak, "nonce": nonce, "timestamp": ts, "sign": sign}
+
+@app.get("/ecoflow")
+def ecoflow():
+    try:
+        creds = json.loads(_ECO_F.read_text())
+        sn = creds["SN"]
+        q = urllib.parse.urlencode({"sn": sn})
+        req = urllib.request.Request(
+            f"https://api.ecoflow.com/iot-open/sign/device/quota/all?{q}",
+            headers=_eco_headers(creds, {"sn": sn}))
+        with urllib.request.urlopen(req, timeout=15) as f:
+            d = json.load(f)
+        if d.get("code") != "0":
+            return {"ok": False, "err": d.get("message")}
+        q = d.get("data", {})
+        return {"ok": True, "name": "RIVER 2 Pro", "sn": sn,
+                "soc": q.get("pd.soc", 0),
+                "outW": q.get("pd.wattsOutSum", 0),
+                "inW": (q.get("inv.inputWatts", 0) or 0) + (q.get("mppt.inWatts", 0) or 0),
+                "remainMin": q.get("bms_bmsStatus.remainTime", 0)}
+    except Exception as e:
+        return {"ok": False, "err": str(e)}
+
+@app.get("/gh")
+def gh_days():
+    # static file maintained by the agent; 30-min cache via mtime check is overkill
+    f = DASH_DIR / "v3" / "gh.json"
+    if f.exists():
+        return json.loads(f.read_text())
+    return {"total": 0, "days": []}
+
+app.mount("/v3", StaticFiles(directory=DASH_DIR / "v3", html=True), name="v3")
+
 
 
 if __name__ == "__main__":
