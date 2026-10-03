@@ -1,17 +1,1 @@
-{
- "generated": "2026-10-03T20:58:07.248054+00:00",
- "events": [
-  {
-   "name": "cerebellum-post-upgrade",
-   "next": "2026-10-05T09:00:00-03:00",
-   "last_status": "ok",
-   "schedule": "0 9 * * 1"
-  },
-  {
-   "name": "Gmail inbox assistant",
-   "next": "2026-10-04T09:00:00-03:00",
-   "last_status": "ok",
-   "schedule": "0 9 */3 * *"
-  }
- ]
-}
+{"generated": "2026-10-01T09:10:34.150631-03:00", "events": [{"name": "cerebellum-post-upgrade", "schedule": "0 9 * * 1", "next": "2026-10-05T09:00:00-03:00", "last": "ok"}, {"name": "Gmail inbox assistant", "schedule": "0 9 */3 * *", "next": "2026-10-04T09:00:00-03:00", "last": "ok"}]}

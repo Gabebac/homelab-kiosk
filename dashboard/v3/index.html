@@ -56,9 +56,9 @@
   .calhead{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
   .calmonth{font:700 14px var(--f-disp);letter-spacing:.02em;color:var(--cream)}
   .calmonth small{font:600 9px var(--f-disp);letter-spacing:.14em;color:var(--dim);margin-left:8px;text-transform:uppercase}
-  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:8px 0;align-items:center;justify-items:center;flex:1}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px 4px;margin:4px 0 2px;align-items:center;justify-items:center;flex:1}
   .calgrid .wd{font:600 8px var(--f-disp);letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
-  .calgrid button{width:16px;height:16px;border-radius:50%;border:none;background:none;color:var(--ink);
+  .calgrid button{width:15px;height:15px;border-radius:50%;border:none;background:none;color:var(--ink);
     font:600 10px var(--f-disp);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
   .calgrid button:disabled{color:var(--dim);cursor:default}
   .calgrid button.today{background:linear-gradient(135deg,#c96b5e,#d4b48c);color:#0a0d0b;font-weight:700}
@@ -82,13 +82,13 @@
   .clock b{color:var(--cream);font-weight:500}
 
   /* ==== small flip cards (card-14 port) ==== */
-  main{height:calc(100vh - 26px);padding:10px 16px;overflow:hidden;scrollbar-width:none;
+  main{height:calc(100vh - 26px);padding:10px 16px 2px;overflow:hidden;scrollbar-width:none;
     display:grid;gap:10px;min-width:0;
     grid-template-columns:repeat(12,minmax(0,1fr));
     grid-template-rows:repeat(3, minmax(0, 1fr));
     grid-template-areas:
-      "sys sys sys ctr ctr ctr cal cal cal cal cal cal"
-      "eco eco eco eco sl sl preqs preqs preqs preqs preqs preqs"
+      "sys sys sys sys ctr ctr ctr ctr cal cal cal cal"
+      "eco eco eco eco sl sl sl sl preqs preqs preqs preqs"
       "chat chat chat chat chat chat chat chat chat av av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
@@ -145,7 +145,7 @@
 
   /* ecoflow battery visuals */
   .batt{display:flex;align-items:center;gap:12px}
-  .batt .bwrap{width:120px;height:56px;border:2px solid var(--teal);border-radius:8px;position:relative;padding:4px}
+  .batt .bwrap{width:96px;height:44px;border:2px solid var(--teal);border-radius:8px;position:relative;padding:4px}
   .batt .bwrap::after{content:"";position:absolute;right:-7px;top:50%;transform:translateY(-50%);
     width:5px;height:20px;background:var(--teal);border-radius:0 3px 3px 0}
   .batt .fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#015b66,var(--orange));
@@ -215,7 +215,28 @@
   .card[data-k="preqs"] .preq:last-of-type{flex:1 1 36%;min-height:0}
 
   /* ==== chat card ==== */
-  .chatface{display:flex;flex-direction:column}
+  /* ==== chat: morph-orb pill (attached element port) ==== */
+  .dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px;flex:none}
+  .dot.ok{background:var(--ok)} .dot.bd{background:var(--warn)}
+  #ctrback{overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:3px}
+  #ctrback::-webkit-scrollbar{display:none}
+  #ctrback .row{display:flex;align-items:center;font:600 8.5px var(--f-disp);letter-spacing:.04em;color:var(--cream)}
+  #ctrback .row .st{margin-left:auto;color:var(--dim);font:600 7.5px var(--f-disp);text-transform:uppercase}
+
+  /* ==== chat: morph overlay + 2/3-screen expansion ==== */
+  #morphover{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;z-index:70;pointer-events:none;background:rgba(5,8,6,.45)}
+  #morphover.on{display:flex}
+  .mofield{margin-bottom:22vh;text-align:center;transition:opacity .3s}
+  .mofield span{display:block;margin-top:10px;font:600 10px var(--f-disp);letter-spacing:.14em;text-transform:uppercase;color:var(--ok)}
+
+  .card[data-k="chat"] .face{display:flex;align-items:center}
+  .mo-pillrow{flex:1;display:flex;align-items:center;gap:8px;background:#0b0b0b;border:1px solid #1a1a1a;border-radius:999px;padding:4px 6px 4px 14px;height:36px;max-height:36px;align-self:center;max-width:560px}
+  .mo-spark{width:14px;height:14px;color:var(--ok);flex:none}
+  .mo-pillrow input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--ink);font:500 11px var(--f-body)}
+  .mo-pillrow .send{width:26px;height:26px;border-radius:50%;margin:0;padding:0;display:flex;align-items:center;justify-content:center;line-height:0}
+  .mo-pillrow .send svg{width:12px;height:12px}
+
+  .chatface{display:flex;align-items:center}
   .chatface .chatrow{margin-top:auto;margin-bottom:2px;display:flex;gap:6px;align-items:center}
 splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   .chatrow input{flex:1;min-width:0;background:#0b0b0b;border:1px solid #1a1a1a;color:#fafafa;
@@ -254,13 +275,16 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     background:#fff;mix-blend-mode:exclusion;pointer-events:none;z-index:9999;opacity:0;
     will-change:transform,width,height,border-radius;backdrop-filter:contrast(1.35);-webkit-backdrop-filter:contrast(1.35)}
 
-  /* ==== starlink card ==== */
-  .card[data-k="sl"] .face{display:flex;flex-direction:column}
-  .slbig{font:700 12px var(--f-disp);color:var(--ok);letter-spacing:.08em;margin-top:2px}
-  .slbig.bad{color:var(--bad)}
-  .slmeta{margin-top:auto;display:flex;flex-direction:column;gap:4px}
-  .slr{display:flex;justify-content:space-between;font:600 8.5px var(--f-disp);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
-  .slr b{color:var(--cream);font:600 10px var(--f-disp);font-variant-numeric:tabular-nums}
+  /* ==== starlink viz ==== */
+  .slviz{position:relative;flex:1;display:flex;align-items:center;gap:10px;min-height:0}
+  #slarc{width:118px;height:118px;flex:none}
+  .slcenter{position:absolute;left:0;top:0;width:118px;height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .slcenter b{display:block;font:700 13px var(--f-disp);color:var(--ok);letter-spacing:.06em}
+  .slcenter b.bad{color:var(--bad)}
+  .slcenter span{font:600 7.5px var(--f-disp);color:var(--dim);letter-spacing:.08em}
+  .slbars{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
+  .slrow2{display:flex;justify-content:space-between;align-items:baseline;font:600 8.5px var(--f-disp);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+  .slrow2 b{color:var(--cream);font:700 11px var(--f-disp);font-variant-numeric:tabular-nums}
 
   /* ==== fused system ring chart (concentric port, vanilla) ==== */
   .card[data-k="sys"] .face{display:flex;flex-direction:column}
@@ -366,10 +390,10 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   </div>
     <div class="card" data-k="chat" style="--h:150px">
     <div class="face front chatface">
-      <div class="chatrow">
-        <button data-magnetic id="dropbtn" title="Chat messages" style="background:#0b0b0b;color:var(--ok);border:1px solid #1a1a1a">≡</button>
-        <input id="q" placeholder="Say something to Hermes…" autocomplete="off">
-        <button class="send" data-magnetic id="send">Send</button>
+      <div class="mo-pillrow">
+        <svg class="mo-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5l1.7 4.8 4.8 1.7-4.8 1.7L10 16.5l-1.7-4.8L3.5 10l4.8-1.7L10 3.5z"/><path d="M18 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z"/></svg>
+        <input id="q" placeholder="Ask anything…" autocomplete="off">
+        <button class="send" data-magnetic id="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5.5 11.5L12 5l6.5 6.5"/></svg></button>
       </div>
     </div>
   </div>
@@ -395,12 +419,21 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   </div>
       <div class="card" data-k="sl">
     <div class="face front"><h2>Starlink</h2>
-      <div class="slbig" id="slstate">–</div>
-      <div class="slmeta">
-        <div class="slr"><span>down</span><b id="sldown">–</b></div>
-        <div class="slr"><span>up</span><b id="slup">–</b></div>
-        <div class="slr"><span>latency</span><b id="sllat">–</b></div>
-        <div class="slr"><span>obstr</span><b id="slobs">–</b></div>
+      <div class="slviz">
+        <svg id="slarc" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(127,214,164,.10)" stroke-width="8"/>
+          <circle id="slq" cx="60" cy="60" r="52" fill="none" stroke="var(--ok)" stroke-width="8" stroke-linecap="round"
+            stroke-dasharray="326.7" stroke-dashoffset="326.7" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="40" fill="none" stroke="rgba(127,214,164,.10)" stroke-width="5"/>
+          <circle id="slob" cx="60" cy="60" r="40" fill="none" stroke="var(--warn)" stroke-width="5" stroke-linecap="round"
+            stroke-dasharray="251.3" stroke-dashoffset="251.3" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div class="slcenter"><b id="slstate">–</b><span id="sllat"></span></div>
+        <div class="slbars">
+          <div class="slrow2"><span>▼ down</span><b id="sldown">–</b></div>
+          <div class="slrow2"><span>▲ up</span><b id="slup">–</b></div>
+          <div class="slrow2"><span>obstr</span><b id="slobs">–</b></div>
+        </div>
       </div>
     </div>
   </div>
@@ -604,6 +637,21 @@ function setAvatar(name){
   const days = new Date(Y, M, 0).getDate();
   let htmlc = ['S','M','T','W','T','F','S'].map(d => `<span class="wd">${d}</span>`).join('');
   for (let i = 0; i < firstDow; i++) htmlc += '<span></span>';
+  let evDays = [];
+  try { const evs = (window.__CALEV = window.__CALEV || null); } catch(e){}
+  fetch('/v3/events.json').then(r=>r.json()).then(x=>{
+    (x.events||[]).forEach(e=>{
+      if (!e.next) return;
+      const d = new Date(e.next);
+      const p = new Intl.DateTimeFormat('en-CA',{timeZone:'America/Montevideo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
+      const g = t => p.find(q=>q.type===t).value;
+      if (+g('year')===Y && +g('month')===M) evDays.push(+g('day'));
+    });
+    grid.querySelectorAll('button').forEach(b=>{
+      const n = +b.textContent;
+      if (evDays.includes(n) && !b.classList.contains('today')) b.classList.add('ev');
+    });
+  }).catch(()=>{});
   for (let d = 1; d <= days; d++) htmlc += `<button ${d === +get('day') ? 'class="today" disabled' : ''}>${d}</button>`;
   grid.innerHTML = htmlc;
 }
@@ -639,7 +687,7 @@ function avTalk(ms){
     const CW = 300, CH = 300;
     const canvas = document.createElement('canvas');
     canvas.width = CW * DPR; canvas.height = CH * DPR;
-    canvas.style.width = '100%'; canvas.style.height = '100%'; canvas.style.display = 'block';
+    canvas.style.width = CW + 'px'; canvas.style.height = CH + 'px'; canvas.style.display = 'block';
     host.innerHTML = ''; host.appendChild(canvas);
 
     const CanvasRuntimeAPI = {
@@ -3175,10 +3223,10 @@ async function ask(){
     const r = await fetch('/ask', {method:'POST',
       headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: t})});
     const j = await r.json();
-    st.remove(); clearInterval(cyc); MO.hide();
+    clearInterval(cyc); MO.hide(); st.classList.remove('on');
     bubble(r.ok ? (j.reply || '(no reply)') : (j.detail || 'error'));
-    document.getElementById('dropup').classList.add('open');
-  }catch(e){ st.remove(); clearInterval(cyc); MO.hide(); bubble('gateway unreachable'); }
+    expandChat();
+  }catch(e){ clearInterval(cyc); MO.hide(); st.classList.remove('on'); bubble('gateway unreachable'); expandChat(); }
   finally{ sendBtn.disabled = false; document.body.classList.remove('thinking'); inp.focus(); }
 }
 sendBtn.onclick = ask;
@@ -3254,13 +3302,22 @@ addEventListener('DOMContentLoaded', () => {
     d.style.bottom = (window.innerHeight - card.bottom + 8) + 'px';
     d.style.maxHeight = '420px';
   };
-  document.getElementById('dropbtn').onclick = () => {
+  const _db = document.getElementById('dropbtn'); if (_db) _db.onclick = () => {
     place();
     d.classList.toggle('open');
     REPLY.scrollTop = REPLY.scrollHeight;
     if (d.classList.contains('open')) document.getElementById('qp').focus();
   };
   document.getElementById('dropclose').onclick = () => d.classList.remove('open');
+
+function expandChat(){
+  const d = document.getElementById('dropup');
+  place();
+  d.style.width = Math.floor(innerWidth * 2/3) + 'px';
+  d.classList.add('open');
+  REPLY.scrollTop = REPLY.scrollHeight;
+}
+
   if (location.search.includes('pop=1')){ place(); d.classList.add('open');
     REPLY.appendChild(Object.assign(document.createElement('div'),{className:'d',innerHTML:'<div class="m user">you</div><div>test message from pop auto-open</div>'}));
     REPLY.appendChild(Object.assign(document.createElement('div'),{className:'d',innerHTML:'<div class="m">hermes</div><div>answering so the popup has content to show</div>'}));
@@ -3333,12 +3390,16 @@ for (const c of document.querySelectorAll('.card')) {
 
 fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   if (!s.ok) return;
-  document.getElementById('slstate').textContent = s.state;
-  document.getElementById('slstate').className = 'slbig' + (s.state==='OK'?'':' bad');
+  const st = document.getElementById('slstate');
+  st.textContent = s.state;
+  st.className = s.state==='OK'?'':'bad';
   document.getElementById('sldown').textContent = s.down_mbps + ' Mb/s';
   document.getElementById('slup').textContent = s.up_mbps + ' Mb/s';
   document.getElementById('sllat').textContent = s.latency_ms + ' ms';
   document.getElementById('slobs').textContent = s.obstructed_pct + '%' + (s.currently_obstructed ? ' · blocked now' : '');
+  const q = document.getElementById('slq'), ob = document.getElementById('slob');
+  if (q){ q.setAttribute('stroke-dashoffset', (326.7*(1-Math.max(0,Math.min(1,s.quality||0)))).toFixed(1)); }
+  if (ob){ ob.setAttribute('stroke-dashoffset', (251.3*(1-Math.max(0,Math.min(1,(s.obstructed_pct||0)/100)))).toFixed(1)); }
 }).catch(()=>{});
 
 /* ==== stats polling ==== */
@@ -3364,26 +3425,22 @@ async function refresh(){
       _sysSet('dsk', h.disk_pct);
       if (d.pihole){ _sysSet('ph', d.pihole.pct); }
 
-document.getElementById('ctr').textContent = Object.keys(d.containers || {}).length;
-      document.getElementById('ctrsub').textContent = Object.keys(d.containers || {}).length + ' docker containers';
-      const cn = Object.keys(d.containers || {});
-      document.getElementById('ctrx').textContent = `${cn.filter(k => d.containers[k] === 'up').length}/${cn.length} up · ${cn.length} containers`;
-      const stl = document.getElementById('ctrlist');
-      if (stl){
-        const okI = '<svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="var(--ok)"/><path d="M5 8l2.5 2.5 3.5-4" stroke="#0f1411" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-        const wrI = '<svg width="13" height="13" viewBox="0 0 16 16"><path d="M8 1.5L14.5 13H1.5L8 1.5Z" fill="var(--warn)" stroke="var(--warn)"/><path d="M8 6v3M8 11h0" stroke="#0f1411" stroke-width="1.6" stroke-linecap="round"/></svg>';
-        const svc = Object.entries(d.services || {});
-        const downs = svc.filter(([,v]) => v !== 'up');
-        const rows = downs.map(([k,v]) => [k, v, wrI]).concat(
-          Object.entries(d.containers || {}).filter(([k,v]) => v === 'up').slice(0, 8).map(([k,v]) => [k, 'up', okI]));
-        const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-        stl.innerHTML = rows.slice(0, 9).map(([k,v,ic]) =>
-          `<div class="row">${ic}<span class="nm">${esc(k)}</span><span class="st">${v === 'up' ? 'run' : 'down'}</span></div>`).join('');
+const cn = Object.keys(d.containers || {});
+      const svc = Object.entries(d.services || {});
+      const svcUp = svc.filter(([,v]) => v === 'up');
+      document.getElementById('ctr').textContent = svcUp.length;
+      document.getElementById('ctrsub').textContent = svcUp.length + '/' + svc.length + ' key services up';
+      const downsAll = Object.entries(d.containers || {}).filter(([k,v]) => v !== 'up' && v !== 'healthy');
+      document.getElementById('ctrx').textContent = downsAll.length ? (downsAll.length + ' down: ' + downsAll.slice(0,2).map(e => e[0]).join(', ')) : 'no warnings';
+      // back face: full container list
+      const bk = document.getElementById('ctrback');
+      const okI = '<svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="var(--ok)"/><path d="M5 8l2.5 2.5 3.5-4" stroke="#0f1411" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const wrI = '<svg width="13" height="13" viewBox="0 0 16 16"><path d="M8 1.5L14.5 13H1.5L8 1.5Z" fill="var(--warn)" stroke="var(--warn)"/><path d="M8 6v3M8 11h0" stroke="#0f1411" stroke-width="1.6" stroke-linecap="round"/></svg>';
+      const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      if (bk){
+        bk.innerHTML = '<h2>All containers · ' + cn.length + '</h2>' + Object.entries(d.containers || {}).map(([k,v]) =>
+          `<div class="row">${v==='up'?'<i class="dot ok"></i>':'<i class="dot bd"></i>'}<span class="nm">${esc(k)}</span><span class="st">${esc(v)}</span></div>`).join('');
       }
-      statRows(document.getElementById('ctrback'), [
-        ['total', Object.keys(d.containers || {}).length],
-        ['services', Object.keys(d.services || {}).length],
-        ['up services', Object.values(d.services || {}).filter(v => String(v).startsWith('up')).length]]);
     }
     fetch('/plexreqs').then(r=>r.json()).then(d => {
     const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
