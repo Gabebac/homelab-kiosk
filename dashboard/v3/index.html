@@ -46,11 +46,11 @@
   /* ==== glass calendar (vanilla port) ==== */
   .card[data-k="cal"] .face{display:flex;flex-direction:column}
   .calhead{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
-  .calmonth{font:700 20px var(--f-disp);letter-spacing:.02em;color:var(--cream)}
+  .calmonth{font:700 14px var(--f-disp);letter-spacing:.02em;color:var(--cream)}
   .calmonth small{font:600 9px var(--f-disp);letter-spacing:.14em;color:var(--dim);margin-left:8px;text-transform:uppercase}
   .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:8px 0;align-items:center;justify-items:center;flex:1}
   .calgrid .wd{font:600 8px var(--f-disp);letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
-  .calgrid button{width:22px;height:22px;border-radius:50%;border:none;background:none;color:var(--ink);
+  .calgrid button{width:16px;height:16px;border-radius:50%;border:none;background:none;color:var(--ink);
     font:600 10px var(--f-disp);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
   .calgrid button:disabled{color:var(--dim);cursor:default}
   .calgrid button.today{background:linear-gradient(135deg,#c96b5e,#d4b48c);color:#0a0d0b;font-weight:700}
@@ -193,13 +193,19 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     border-radius:8px;padding:8px 10px;font:12px var(--f-body)}
   .chatrow .send{border-radius:8px;border:1px solid rgba(127,214,164,.4);background:rgba(127,214,164,.12);
     color:var(--ok);font:600 11px var(--f-disp);letter-spacing:.08em;padding:8px 12px;cursor:pointer}
-  .dropup{position:fixed;left:auto;right:16px;bottom:96px;width:340px;max-height:320px;overflow:hidden;display:none;z-index:60;
-    background:rgba(5,5,5,.97);border:1px solid #1a1a1a;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
-  .dropup.open{display:block}
-  .dr-msgs{max-height:320px;overflow-y:auto;padding:10px 12px;font-size:11px;line-height:1.5;color:#cfcfcf}
+  .dropup{position:fixed;overflow:hidden;display:none;z-index:60;
+    background:rgba(5,5,5,.98);border:1px solid #1a1a1a;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.7);
+    display:none;flex-direction:column}
+  .dropup.open{display:flex}
+  .dr-msgs{flex:1;overflow-y:auto;padding:12px 14px;font-size:11.5px;line-height:1.55;color:#cfcfcf;scrollbar-width:none}
+  .dr-msgs::-webkit-scrollbar{display:none}
   .dr-msgs .d{margin-bottom:7px}
-  .dr-msgs .m{color:var(--ok);font:600 8px var(--f-disp);letter-spacing:.1em;text-transform:uppercase}
+  .dr-msgs .m{color:var(--ok);font:600 8px var(--f-disp);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
   .dr-msgs .m.user{color:#fafafa}
+  .dr-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #151515}
+  .dr-head span{font:600 8px var(--f-disp);letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+  .dr-comp{padding:10px 12px;border-top:1px solid #151515}
+  .dr-comp .chatrow input{background:#111;border-color:#222}
   
   /* stat card flex layout: header row, centered ring+text, spark bottom */
   .card[data-k="mem"] .face,.card[data-k="disk"] .face,.card[data-k="load"] .face{display:flex;flex-direction:column}
@@ -323,7 +329,11 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
       </div>
     </div>
   </div>
-  <div class="dropup" id="dropup"><div class="dr-msgs" id="drmsgs"></div></div>
+  <div class="dropup" id="dropup">
+    <div class="dr-head"><span>Hermes · chat</span><button id="dropclose" style="background:none;border:none;color:var(--dim);cursor:pointer;font:600 10px var(--f-disp)">✕</button></div>
+    <div class="dr-msgs" id="drmsgs"></div>
+    <div class="dr-comp"><div class="chatrow"><input id="qp" placeholder="Say something to Hermes…" autocomplete="off"><button class="send" id="sendp">Send</button></div></div>
+  </div>
   <div class="card" data-k="cal">
     <div class="face front">
       <div class="calhead"><div class="calmonth" id="calmonth">–</div></div>
@@ -565,6 +575,8 @@ async function ask(){
 }
 sendBtn.onclick = ask;
 inp.onkeydown = e => { if (e.key === 'Enter') ask(); };
+document.getElementById('sendp').onclick = askPopup;
+document.getElementById('qp').onkeydown = e => { if (e.key === 'Enter') askPopup(); };
 
 
 /* ==== morphing thinking orb (ported: dotted canvas orb + label cycle + answer morph) ==== */
@@ -625,12 +637,37 @@ const MO = (() => {
 })();
 
 addEventListener('DOMContentLoaded', () => {
+  const d = document.getElementById('dropup');
+  const place = () => {
+    const card = document.querySelector('.card[data-k="chat"]').getBoundingClientRect();
+    const W = Math.max(360, card.width);
+    d.style.width = W + 'px';
+    d.style.left = card.left + 'px';
+    d.style.bottom = (window.innerHeight - card.bottom + 8) + 'px';
+    d.style.maxHeight = '420px';
+  };
   document.getElementById('dropbtn').onclick = () => {
-    const d = document.getElementById('dropup');
+    place();
     d.classList.toggle('open');
     REPLY.scrollTop = REPLY.scrollHeight;
+    if (d.classList.contains('open')) document.getElementById('qp').focus();
   };
+  document.getElementById('dropclose').onclick = () => d.classList.remove('open');
+  if (location.search.includes('pop=1')){ place(); d.classList.add('open');
+    REPLY.appendChild(Object.assign(document.createElement('div'),{className:'d',innerHTML:'<div class="m user">you</div><div>test message from pop auto-open</div>'}));
+    REPLY.appendChild(Object.assign(document.createElement('div'),{className:'d',innerHTML:'<div class="m">hermes</div><div>answering so the popup has content to show</div>'}));
+    REPLY.scrollTop = REPLY.scrollHeight; }
+  addEventListener('resize', () => { if (d.classList.contains('open')) place(); });
 });
+/* popup composer mirrors the card input into the same ask() flow */
+function askPopup(){
+  const qp = document.getElementById('qp');
+  const t = qp.value.trim();
+  if (!t) return;
+  qp.value = '';
+  inp.value = t;
+  ask();
+}
 /* ==== clock ==== */
 function tick(){
   const now = new Date();
