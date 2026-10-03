@@ -38,8 +38,8 @@
     grid-template-rows:118px 118px minmax(140px, 1fr);
     grid-template-areas:
       "mem disk load ctr"
-      "eco eco eco svcs"
-      "preqs preqs preqs chat"}
+      "eco eco chat chat"
+      "preqs preqs preqs preqs"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -48,7 +48,6 @@
   .card[data-k="ctr"]{grid-area:ctr}
   .card[data-k="eco"]{grid-area:eco}
   .card[data-k="preqs"]{grid-area:preqs}
-  .card[data-k="svcs"]{grid-area:svcs}
   .card[data-k="chat"]{grid-area:chat}
 
   .card{--h:110px;perspective:900px;background:transparent;border:none}
@@ -153,20 +152,20 @@
 
   /* ==== chat card ==== */
   .chatface{display:flex;flex-direction:column}
-  .avpick-wrap{position:absolute;top:10px;right:12px;z-index:5}
+  .avpick-wrap{position:fixed;right:16px;bottom:116px;z-index:9}
   .avpick-wrap select{background:#0b0b0b;color:#8a8a8a;border:1px solid #1a1a1a;border-radius:6px;font:600 9px var(--f-disp);padding:3px 6px;letter-spacing:.08em}
-  .avi-wrap{position:absolute;right:10px;bottom:46px;width:88px;height:88px;pointer-events:none;z-index:4}
-  #avatar{width:88px;height:88px}
+  .avi-wrap{position:fixed;right:16px;bottom:8px;width:100px;height:100px;pointer-events:none;z-index:8}
+  #avatar{width:100px;height:100px}
   .chatrow{margin-top:auto;display:flex;gap:6px;align-items:center;position:relative;z-index:6}
   .chatrow input{flex:1;min-width:0;background:#0b0b0b;border:1px solid #1a1a1a;color:#fafafa;
     border-radius:8px;padding:8px 10px;font:12px var(--f-body)}
   .chatrow .send{border-radius:8px;border:1px solid rgba(6,234,255,.4);background:rgba(6,234,255,.12);
     color:#06eaff;font:600 11px var(--f-disp);letter-spacing:.08em;padding:8px 12px;cursor:pointer}
-  .dropup{position:absolute;left:10px;right:10px;bottom:88px;max-height:220px;overflow:hidden;display:none;z-index:7;
-    background:rgba(5,5,5,.96);border:1px solid #1a1a1a;border-radius:10px}
+  .dropup{position:fixed;left:auto;right:16px;bottom:96px;width:340px;max-height:320px;overflow:hidden;display:none;z-index:60;
+    background:rgba(5,5,5,.97);border:1px solid #1a1a1a;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
   .dropup.open{display:block}
-  .dr-msgs{max-height:220px;overflow-y:auto;padding:8px 10px;font-size:11px;line-height:1.5;color:#cfcfcf}
-  .dr-msgs .d{margin-bottom:6px}
+  .dr-msgs{max-height:320px;overflow-y:auto;padding:10px 12px;font-size:11px;line-height:1.5;color:#cfcfcf}
+  .dr-msgs .d{margin-bottom:7px}
   .dr-msgs .m{color:#06eaff;font:600 8px var(--f-disp);letter-spacing:.1em;text-transform:uppercase}
   .dr-msgs .m.user{color:#fafafa}
   /* ==== ring charts ==== */
@@ -177,18 +176,20 @@
     filter:drop-shadow(0 0 4px rgba(6,234,255,.6))}
   .ring text{fill:var(--cream);font:700 9px var(--f-body);transform:rotate(90deg);transform-origin:center}
 
-  .ringw{position:absolute;right:10px;top:50%;margin-top:-26px;width:52px;height:52px}
-  .ringw .ring{position:absolute;left:0;top:0;margin:0;width:52px;height:52px}
-  .rpct{position:absolute;left:0;top:0;width:52px;height:52px;display:flex;align-items:center;justify-content:center;
-    font:700 9px var(--f-body);color:var(--cream)}
-  /* ==== right chat column ==== */
+  .ringw{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:96px;height:96px}
+  .ringw .ring{position:absolute;inset:0;width:96px;height:96px;margin:0}
+  .rpct{position:absolute;left:0;top:0;width:96px;height:96px;display:flex;align-items:center;justify-content:center;
+    font:700 15px var(--f-disp);color:var(--cream)}
+  .card[data-k="mem"] .sub,.card[data-k="disk"] .sub,.card[data-k="load"] .sub,
+  .card[data-k="mem"] .extra,.card[data-k="disk"] .extra,.card[data-k="load"] .extra{margin-left:104px;max-width:calc(100% - 112px)}
+  .card[data-k="mem"] .spark,.card[data-k="disk"] .spark,.card[data-k="load"] .spark{left:auto;right:10px;margin-left:0}
+  .card[data-k="mem"] h2,.card[data-k="disk"] h2,.card[data-k="load"] h2{margin-left:0}
+/* ==== right chat column ==== */
   aside{position:fixed;right:14px;bottom:14px;width:290px;height:430px;display:none;flex-direction:column;
     border:1px solid var(--faint);border-radius:16px;overflow:hidden;z-index:60;
     background:rgba(5,5,5,.92);backdrop-filter:blur(8px);box-shadow:0 20px 60px rgba(0,0,0,.7)}
   body.chat-open aside{display:flex}
-  /* avatar: sits so its bottom edge touches the top of the chat dock (composer) */
-  .avi-wrap{position:absolute;right:10px;bottom:52px;width:96px;height:96px;pointer-events:none}
-  #avatar{width:96px;height:96px}
+
   .avrow{position:absolute;top:10px;left:0;right:0;display:flex;justify-content:center}
   #avpick{background:rgba(3,18,22,.8);color:var(--dim);border:1px solid rgba(70,101,108,.6);
     border-radius:6px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;
@@ -240,22 +241,22 @@
 <main id="board">
   <div class="card" data-k="mem" data-h="110" style="--h:110px">
     <div class="flip">
-      <div class="face front"><h2>Memory</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="memring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="mempct"></b></div><div class="spark" id="memspark"></div><div class="big" id="memd">–</div>
+      <div class="face front"><h2>Memory</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="memring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="mempct"></b></div><div class="spark" id="memspark"></div>
         <div class="sub" id="memsub">–</div><div class="extra" id="memx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="memback"></div>
     </div>
   </div>
   <div class="card" data-k="disk" style="--h:110px">
     <div class="flip">
-      <div class="face front"><h2>Storage</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="diskring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="diskpct"></b></div><div class="big" id="diskd">–</div>
-        <div class="sub" id="disksub">–</div><div class="extra" id="diskx">–</div><div class="more">hover ⤿</div></div>
+      <div class="face front"><h2>Storage</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="diskring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="diskpct"></b></div>
+        <div class="spark" id="diskspark"></div><div class="sub" id="disksub">–</div><div class="extra" id="diskx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="diskback"></div>
     </div>
   </div>
   <div class="card" data-k="load" style="--h:110px">
     <div class="flip">
-      <div class="face front"><h2>CPU load</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="loadring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="loadpct"></b></div><div class="big" id="load">–</div>
-        <div class="sub" id="loadsub">–</div><div class="extra" id="loadx">–</div><div class="more">hover ⤿</div></div>
+      <div class="face front"><h2>CPU load</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="loadring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="loadpct"></b></div>
+        <div class="spark" id="loadspark"></div><div class="sub" id="loadsub">–</div><div class="extra" id="loadx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="loadback"></div>
     </div>
   </div>
@@ -293,27 +294,8 @@
       <div class="face back" id="preqsback"></div>
     </div>
   </div>
-  <div class="card" data-k="svcs" style="--h:150px">
-    <div class="flip">
-      <div class="face front"><h2>Service detail</h2><div class="svc" id="svcs"></div></div>
-      <div class="face back" id="svcsback"></div>
-    </div>
-  </div>
-  <div class="card" data-k="chat" style="--h:150px">
+    <div class="card" data-k="chat" style="--h:150px">
     <div class="face front chatface">
-      <div class="avpick-wrap">
-        <select id="avpick" aria-label="Avatar">
-          <option value="ren">ren</option>
-          <option value="kei" selected>kei</option>
-          <option value="rice">rice</option>
-          <option value="jinx">jinx</option>
-          <option value="base">base</option>
-        </select>
-      </div>
-          <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
-      <div class="dropup" id="dropup">
-        <div class="dr-msgs" id="drmsgs"></div>
-      </div>
       <div class="chatrow">
         <button id="dropbtn" title="Chat messages" style="background:#0b0b0b;color:#06eaff;border:1px solid #1a1a1a">≡</button>
         <input id="q" placeholder="Say something to Hermes…" autocomplete="off">
@@ -321,6 +303,17 @@
       </div>
     </div>
   </div>
+  <div class="avpick-wrap">
+    <select id="avpick" aria-label="Avatar">
+      <option value="ren">ren</option>
+      <option value="kei" selected>kei</option>
+      <option value="rice">rice</option>
+      <option value="jinx">jinx</option>
+      <option value="base">base</option>
+    </select>
+  </div>
+  <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
+  <div class="dropup" id="dropup"><div class="dr-msgs" id="drmsgs"></div></div>
 </main>
 
 
@@ -589,18 +582,6 @@ function statRows(el, rows){
 }
 
 /* ==== service pills ==== */
-function renderSvc(d){
-  const svcs = document.getElementById('svcs'); svcs.innerHTML = '';
-  const entries = Object.entries(d.services || {});
-  for (const [name, state] of entries){
-    const s = String(state);
-    const sp = document.createElement('span');
-    const dot = document.createElement('b'); dot.className = s.startsWith('up') ? '' : 'd';
-    const u = document.createElement('u'); u.textContent = name;
-    sp.appendChild(dot); sp.appendChild(u); svcs.appendChild(sp);
-  }
-  statRows(document.getElementById('svcsback'), entries.map(([n,s]) => [n, String(s)]));
-}
 
 /* ==== hyper-grid now lives in the chat panel ==== */
 document.addEventListener('DOMContentLoaded', () => {
@@ -659,13 +640,11 @@ async function refresh(){
     last = d;
     const h = d.host;
     if (h){
-      document.getElementById('load').textContent = h.load1.toFixed(2);
-      document.getElementById('loadsub').textContent = `${h.cpu_count} cores · ${(h.load1 / h.cpu_count * 100).toFixed(0)}% load`;
+            document.getElementById('loadsub').textContent = `${h.cpu_count} cores · ${(h.load1 / h.cpu_count * 100).toFixed(0)}% load`;
       const prevL = CH.load[CH.load.length - 1];
       const dL = prevL !== undefined ? Math.round((h.load1 / h.cpu_count * 100) - prevL) : 0;
       document.getElementById('loadx').textContent = prevL !== undefined ? `${dL >= 1 ? '▸' : dL <= -1 ? '▾' : '■'} trend vs prev ${Math.abs(dL)}%` : 'sampler warming up';
       const memPct = Math.round(h.mem_used_gb / h.mem_total_gb * 100);
-      document.getElementById('memd').textContent = memPct + '%';
       document.getElementById('memsub').textContent = `${h.mem_used_gb} GB of ${h.mem_total_gb} GB`;
       document.getElementById('memx').textContent = `swap ${h.swap_used_gb} / ${h.swap_total_gb} GB`;
       statRows(document.getElementById('memback'), [
@@ -673,8 +652,7 @@ async function refresh(){
         ['percent', memPct + '%'],
         ['swap', h.swap_used_gb + ' / ' + h.swap_total_gb + ' GB'],
         ['warn >', '85%']]);
-      document.getElementById('diskd').textContent = h.disk_pct + '%';
-      document.getElementById('disksub').textContent = `${h.disk_used_gb} GB used of ${h.disk_total_gb} GB`;
+            document.getElementById('disksub').textContent = `${h.disk_used_gb} GB used of ${h.disk_total_gb} GB`;
       document.getElementById('diskx').textContent = `${h.disk_total_gb - h.disk_used_gb} GB free`;
       statRows(document.getElementById('diskback'), [
         ['used', h.disk_used_gb + ' / ' + h.disk_total_gb + ' GB'],
@@ -692,9 +670,9 @@ async function refresh(){
       setRing('diskring', 'diskpct', h.disk_pct, 100);
       setRing('loadring', 'loadpct', cpuPct, 100);
       for (const k of Object.keys(CH)) if (CH[k].length > 40) CH[k].shift();
-      spark('memd', CH.mem, 100);
-      spark('diskd', CH.disk, 100);
-      spark('load', CH.load, 100);
+      spark('memspark', CH.mem, 100);
+      spark('diskspark', CH.disk, 100);
+      spark('loadspark', CH.load, 100);
 document.getElementById('ctr').textContent = Object.keys(d.containers || {}).length;
       document.getElementById('ctrsub').textContent = Object.keys(d.containers || {}).length + ' docker containers';
       const cn = Object.keys(d.containers || {});
@@ -704,8 +682,7 @@ document.getElementById('ctr').textContent = Object.keys(d.containers || {}).len
         ['services', Object.keys(d.services || {}).length],
         ['up services', Object.values(d.services || {}).filter(v => String(v).startsWith('up')).length]]);
     }
-  renderSvc(d);
-  fetch('/plexreqs').then(r=>r.json()).then(d => {
+    fetch('/plexreqs').then(r=>r.json()).then(d => {
     const el = document.getElementById('preqs');
     const el2 = document.getElementById('preqsad');
     if (el) el.innerHTML = (d.requests||[]).map(x => `<div><b>${x.kind==='movie'?'MOV':'EP'}</b><span>${x.title}</span></div>`).join('') || '<div class="empty">none yet</div>';
