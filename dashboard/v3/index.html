@@ -176,7 +176,7 @@
 
   /* ==== chat card ==== */
   .chatface{display:flex;flex-direction:column}
-  .chatface .chatrow{margin-top:auto;margin-bottom:2px}
+  .chatface .chatrow{margin-top:auto;margin-bottom:2px;display:flex;gap:6px;align-items:center}
 splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   .chatrow input{flex:1;min-width:0;background:#0b0b0b;border:1px solid #1a1a1a;color:#fafafa;
     border-radius:8px;padding:8px 10px;font:12px var(--f-body)}
@@ -229,8 +229,8 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   input#q{flex:1 1 0;background:#0b0b0b;border:1px solid #1a1a1a;color:var(--cream);
     border-radius:9px;padding:9px 11px;font-size:12px;font-family:var(--f-body);outline:none;min-width:0}
   input#q:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-soft)}
-  button.send{background:var(--orange);border:none;color:#031216;font-weight:600;font-family:var(--f-body);
-    border-radius:9px;padding:9px 14px;font-size:12px;cursor:pointer;transition:filter .12s}
+  button.send{border-radius:8px;border:1px solid rgba(6,234,255,.4);background:rgba(6,234,255,.12);
+    color:#06eaff;font:600 10px var(--f-disp);letter-spacing:.08em;padding:7px 10px;cursor:pointer;transition:filter .12s}
   button.send:hover{filter:brightness(1.12)}
   button.send:disabled{opacity:.4;cursor:default}
   #avatar .mouth{transform-origin:50% 60%}
