@@ -35,7 +35,7 @@
   main{height:calc(100vh - 52px);padding:12px 16px 12px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
     display:grid;gap:10px;min-width:0;
     grid-template-columns:repeat(4,minmax(0,1fr));
-    grid-template-rows:96px 96px minmax(140px, 1fr);
+    grid-template-rows:118px 118px minmax(140px, 1fr);
     grid-template-areas:
       "mem disk load ctr"
       "eco eco plex queue"
@@ -62,9 +62,11 @@
   .face.back{transform:rotateY(180deg);background:linear-gradient(180deg,var(--raised),var(--surface))}
   .face h2{font-family:var(--f-disp);font-size:8px;font-weight:500;letter-spacing:.14em;
     text-transform:uppercase;color:var(--dim);margin-bottom:4px}
-  .face .big{font-family:var(--f-disp);font-size:15px;font-weight:700;color:var(--cream);line-height:1.2;
+  .face .big{font-family:var(--f-disp);font-size:22px;font-weight:700;color:var(--cream);line-height:1.2;
     font-variant-numeric:tabular-nums}
-  .face .sub{color:var(--dim);font-size:8px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .face .sub{color:var(--dim);font-size:10px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .face .extra{color:var(--cream);opacity:.65;font-size:9px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .face .big{margin-top:6px}
   .face.back .stat{display:flex;justify-content:space-between;gap:10px;font-size:8px;color:var(--dim);
     padding:2px 0;border-bottom:1px dashed rgba(70,101,108,.4)}
   .face.back .stat b{color:var(--cream);font-weight:600;text-align:right}
@@ -200,28 +202,28 @@
   <div class="card" data-k="mem" data-h="110" style="--h:110px">
     <div class="flip">
       <div class="face front"><h2>Memory</h2><div class="spark" id="memspark"></div><div class="big" id="memd">–</div>
-        <div class="sub" id="memsub">–</div><div class="more">hover ⤿</div></div>
+        <div class="sub" id="memsub">–</div><div class="extra" id="memx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="memback"></div>
     </div>
   </div>
   <div class="card" data-k="disk" style="--h:110px">
     <div class="flip">
       <div class="face front"><h2>Storage</h2><div class="big" id="diskd">–</div>
-        <div class="sub" id="disksub">–</div><div class="more">hover ⤿</div></div>
+        <div class="sub" id="disksub">–</div><div class="extra" id="diskx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="diskback"></div>
     </div>
   </div>
   <div class="card" data-k="load" style="--h:110px">
     <div class="flip">
       <div class="face front"><h2>CPU load</h2><div class="big" id="load">–</div>
-        <div class="sub" id="loadsub">–</div><div class="more">hover ⤿</div></div>
+        <div class="sub" id="loadsub">–</div><div class="extra" id="loadx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="loadback"></div>
     </div>
   </div>
   <div class="card" data-k="ctr" style="--h:110px">
     <div class="flip">
       <div class="face front"><h2>Containers</h2><div class="big" id="ctr">–</div>
-        <div class="sub" id="ctrsub">docker containers</div><div class="more">hover ⤿</div></div>
+        <div class="sub" id="ctrsub">docker containers</div><div class="extra" id="ctrx">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="ctrback"></div>
     </div>
   </div>
@@ -588,16 +590,21 @@ async function refresh(){
     if (h){
       document.getElementById('load').textContent = h.load1.toFixed(2);
       document.getElementById('loadsub').textContent = `${h.cpu_count} cores · ${(h.load1 / h.cpu_count * 100).toFixed(0)}% load`;
+      const prevL = CH.load[CH.load.length - 1];
+      const dL = prevL !== undefined ? Math.round((h.load1 / h.cpu_count * 100) - prevL) : 0;
+      document.getElementById('loadx').textContent = prevL !== undefined ? `${dL >= 1 ? '▸' : dL <= -1 ? '▾' : '■'} trend vs prev ${Math.abs(dL)}%` : 'sampler warming up';
       const memPct = Math.round(h.mem_used_gb / h.mem_total_gb * 100);
       document.getElementById('memd').textContent = memPct + '%';
-      document.getElementById('memsub').textContent = `${memUsed(0)} GB`;
+      document.getElementById('memsub').textContent = `${h.mem_used_gb} GB of ${h.mem_total_gb} GB`;
+      document.getElementById('memx').textContent = `swap ${h.swap_used_gb} / ${h.swap_total_gb} GB`;
       statRows(document.getElementById('memback'), [
         ['used', h.mem_used_gb + ' / ' + h.mem_total_gb + ' GB'],
         ['percent', memPct + '%'],
         ['swap', h.swap_used_gb + ' / ' + h.swap_total_gb + ' GB'],
         ['warn >', '85%']]);
       document.getElementById('diskd').textContent = h.disk_pct + '%';
-      document.getElementById('disksub').textContent = `${h.disk_used_gb} / ${h.disk_total_gb} GB`;
+      document.getElementById('disksub').textContent = `${h.disk_used_gb} GB used of ${h.disk_total_gb} GB`;
+      document.getElementById('diskx').textContent = `${h.disk_total_gb - h.disk_used_gb} GB free`;
       statRows(document.getElementById('diskback'), [
         ['used', h.disk_used_gb + ' / ' + h.disk_total_gb + ' GB'],
         ['percent', h.disk_pct + '%'],
@@ -613,8 +620,10 @@ async function refresh(){
       spark('memd', CH.mem, 100);
       spark('diskd', CH.disk, 100);
       spark('load', CH.load, 100);
-      document.getElementById('ctr').textContent = Object.keys(d.containers || {}).length;
+document.getElementById('ctr').textContent = Object.keys(d.containers || {}).length;
       document.getElementById('ctrsub').textContent = Object.keys(d.containers || {}).length + ' docker containers';
+      const cn = Object.keys(d.containers || {});
+      document.getElementById('ctrx').textContent = `${cn.length} up · ${cn.filter(k => d.containers[k] === 'up').length} healthy`;
       statRows(document.getElementById('ctrback'), [
         ['total', Object.keys(d.containers || {}).length],
         ['services', Object.keys(d.services || {}).length],
