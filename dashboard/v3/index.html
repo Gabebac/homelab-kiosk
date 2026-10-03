@@ -245,6 +245,12 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   .ring .rfg{fill:none;stroke:var(--ok);stroke-width:4;stroke-linecap:round;
     stroke-dasharray:119.4;stroke-dashoffset:119.4;transition:stroke-dashoffset .8s cubic-bezier(.3,1,.4,1)}
 
+
+  /* ==== magnetic cursor (exclusion / liquid-glass negative contrast) ==== */
+  #mcur{position:fixed;left:0;top:0;width:24px;height:24px;border-radius:50%;
+    background:#fff;mix-blend-mode:exclusion;pointer-events:none;z-index:9999;opacity:0;
+    will-change:transform,width,height,border-radius;backdrop-filter:contrast(1.35);-webkit-backdrop-filter:contrast(1.35)}
+
   /* ==== starlink card ==== */
   .card[data-k="sl"] .face{display:flex;flex-direction:column}
   .slbig{font:700 12px var(--f-disp);color:var(--ok);letter-spacing:.08em;margin-top:2px}
@@ -359,16 +365,16 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     <div class="card" data-k="chat" style="--h:150px">
     <div class="face front chatface">
       <div class="chatrow">
-        <button id="dropbtn" title="Chat messages" style="background:#0b0b0b;color:var(--ok);border:1px solid #1a1a1a">≡</button>
+        <button data-magnetic id="dropbtn" title="Chat messages" style="background:#0b0b0b;color:var(--ok);border:1px solid #1a1a1a">≡</button>
         <input id="q" placeholder="Say something to Hermes…" autocomplete="off">
-        <button class="send" id="send">Send</button>
+        <button class="send" data-magnetic id="send">Send</button>
       </div>
     </div>
   </div>
   <div class="dropup" id="dropup">
     <div class="dr-head"><span>Hermes · chat</span><button id="dropclose" style="background:none;border:none;color:var(--dim);cursor:pointer;font:600 10px var(--f-disp)">✕</button></div>
     <div class="dr-msgs" id="drmsgs"></div>
-    <div class="dr-comp"><div class="chatrow"><input id="qp" placeholder="Say something to Hermes…" autocomplete="off"><button class="send" id="sendp">Send</button></div></div>
+    <div class="dr-comp"><div class="chatrow"><input id="qp" placeholder="Say something to Hermes…" autocomplete="off"><button class="send" data-magnetic id="sendp">Send</button></div></div>
   </div>
   <div class="card" data-k="cal">
     <div class="flip">
@@ -398,7 +404,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   </div>
 </main>
 <div class="avdrop">
-  <button id="avtab" aria-label="Avatar model">kei ▴</button>
+  <button data-magnetic id="avtab" aria-label="Avatar model">kei ▴</button>
   <div class="avmenu" id="avmenu">
     <button data-av="ren">ren</button>
     <button data-av="kei" class="on">kei</button>
@@ -415,6 +421,49 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <script src="/av/vendor/pixi.min.js"></script>
 <script src="/av/vendor/pixi-live2d-display.min.js"></script>
 <script>
+
+/* ==== magnetic cursor: exclusion-blend glass (magnetic-cursor port) ==== */
+(function(){
+  function initCur(){
+  const el = document.getElementById('mcur'); if (!el) return;
+  const pos={x:-100,y:-100,tx:-100,ty:-100,px:-100,py:-100};
+  let hover=false, detaching=false, seen=false;
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  function frame(){
+    if (!hover){
+      pos.x=lerp(pos.x,pos.tx,.18); pos.y=lerp(pos.y,pos.ty,.18);
+      const dx=pos.x-pos.px, dy=pos.y-pos.py;
+      pos.px=pos.x; pos.py=pos.y;
+      const speed=Math.min(1, Math.hypot(dx,dy)*.02);
+      if (detaching){ detaching=false;
+        el.style.width='24px'; el.style.height='24px'; el.style.borderRadius='50%'; }
+      el.style.transform=`translate(${pos.x-12}px,${pos.y-12}px)`+
+        (speed>.01?` rotate(${Math.atan2(dy,dx)}deg) scale(${1+speed},${1-speed*.6})`:'');
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+  addEventListener('pointermove',e=>{
+    pos.tx=e.clientX; pos.ty=e.clientY;
+    if (!seen){ seen=true; pos.x=pos.tx; pos.y=pos.ty; pos.px=pos.tx; pos.py=pos.ty; el.style.opacity=1; }
+    el.style.opacity = (e.clientX>=0&&e.clientX<=innerWidth&&e.clientY>=0&&e.clientY<=innerHeight)?1:0;
+    const t=e.target.closest('[data-magnetic]');
+    if (t && !hover){
+      const r=t.getBoundingClientRect(), pad=12;
+      hover=true;
+      el.style.width=(r.width+pad*2)+'px'; el.style.height=(r.height+pad*2)+'px';
+      el.style.borderRadius=getComputedStyle(t).borderRadius||'12px';
+      el.style.transform=`translate(${r.left+r.width/2-r.width/2-pad}px,${r.top+r.height/2-r.height/2-pad}px)`;
+    } else if (!t && hover){
+      hover=false; detaching=true;
+    }
+  },{passive:true});
+  document.addEventListener('mouseleave',()=>el.style.opacity=0);
+  document.addEventListener('mouseenter',()=>el.style.opacity=1);
+  }
+  if (document.readyState==='loading') addEventListener('DOMContentLoaded', initCur); else initCur();
+})();
+
 /* ==== hyper-grid: perspective 3D grid + cursor parallax + warp on mouse speed ==== */
 (function(){
   const cv = document.getElementById('hypergrid'), ctx = cv.getContext('2d');
@@ -926,5 +975,6 @@ refreshEco = async function(){
   }catch(e){}
 }
 </script>
+<div id="mcur"></div>
 </body>
 </html>
