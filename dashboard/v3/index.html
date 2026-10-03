@@ -9,22 +9,22 @@
 <style>
   /* ==== V3 palette — huemint brand-intersection 031216-46656c-e85404-f1d7c8 ==== */
   :root{
-    --bg:#031216; --grid:#0a2a33; --surface:#0a2730; --surface2:#0d3140; --raised:#123a47;
-    --teal:#46656c; --cream:#f1d7c8; --orange:#e85404; --orange-soft:rgba(232,84,4,.14);
-    --ink:#e9f4f4; --dim:#8fb0b0; --faint:rgba(241,215,200,.12);
-    --ok:#7ee0a3; --warn:#ffb15c; --bad:#ff6d4d;
+    --bg:#050505; --grid:#101010; --surface:#080808; --surface2:#0d0d0d; --raised:#141414;
+    --teal:#262626; --cream:#fafafa; --orange:#06eaff; --orange-soft:rgba(6,234,255,.14);
+    --red:#ff0140; --ink:#fafafa; --dim:#737373; --faint:rgba(250,250,250,.10);
+    --ok:#06eaff; --warn:#ffb15c; --bad:#ff0140;
     --f-disp:"Chakra Petch", sans-serif; --f-body:"Inter", sans-serif;
   }
   *{box-sizing:border-box;margin:0}
   html,body{height:100%;overflow:hidden}
   body{font-family:var(--f-body);color:var(--ink);background:var(--bg);
-    display:grid;grid-template-columns:minmax(0,1fr) 240px;grid-template-rows:52px 1fr}
+    display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:52px 1fr}
 
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
   header,main,aside,#chatdock{position:relative;z-index:1}
 
-  header{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 20px;
+  header{grid-column:1/2;display:flex;align-items:center;gap:14px;padding:0 20px;
     border-bottom:1px solid var(--faint);background:rgba(3,18,22,.6);backdrop-filter:blur(4px)}
   .logo{font-family:var(--f-disp);font-size:18px;font-weight:700;letter-spacing:.06em;color:var(--cream)}
   .logo b{color:var(--orange);font-weight:700}
@@ -97,7 +97,7 @@
   .batt .bwrap{width:120px;height:56px;border:2px solid var(--teal);border-radius:8px;position:relative;padding:4px}
   .batt .bwrap::after{content:"";position:absolute;right:-7px;top:50%;transform:translateY(-50%);
     width:5px;height:20px;background:var(--teal);border-radius:0 3px 3px 0}
-  .batt .fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--orange),#ff9a4d);
+  .batt .fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#015b66,var(--orange));
     width:var(--soc,50%);transition:width .8s}
   .batt .pct{font-family:var(--f-disp);font-size:22px;font-weight:700;color:var(--cream)}
   .batt .meta{font-size:8px;color:var(--dim);line-height:1.5}
@@ -108,7 +108,7 @@
   .card.g { transform-style:preserve-3d; transition:transform .35s ease, box-shadow .5s ease; will-change:transform; }
   .card.g .gglare, .card.g .gshine { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .5s ease; z-index:5; border-radius:inherit; }
   .card.g .gshine { background:linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent); width:200%; left:-50%; transform:rotate(15deg); }
-  .card.g:hover { box-shadow:0 0 50px -12px rgba(0,0,0,.8); }
+  .card.g:hover { box-shadow:0 0 50px -12px rgba(0,0,0,.8), 0 0 24px rgba(6,234,255,.12); }
   .card.g:hover .gglare, .card.g:hover .gshine { opacity:1; }
   .card.g:hover .gshine { opacity:.10; }
   .card.g .inner { transform:translateZ(30px); height:100%; }
@@ -120,7 +120,7 @@
 
   /* ==== eco watt history bars (spring) ==== */
   .bchart{position:absolute;inset:38px 12px 8px 12px;display:flex;align-items:flex-end;gap:6px}
-  .bchart i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--orange),rgba(232,84,4,.25));
+  .bchart i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--orange),rgba(6,234,255,.25));
     height:0;transition:height .9s cubic-bezier(.34,1.4,.4,1)}
   .bchart i.o{background:linear-gradient(180deg,var(--cream),rgba(241,215,200,.2))}
   .ecoback h2{position:relative;z-index:2}
@@ -128,9 +128,23 @@
 
   .mostat{display:flex;flex-direction:column;align-items:center;gap:6px;margin:10px 0;color:var(--dim);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
   #reply:empty + .mostat{display:none}
+
+  /* ==== chat FAB ==== */
+  #chatfab{position:fixed;right:16px;bottom:16px;z-index:70;width:54px;height:54px;border-radius:50%;
+    border:1px solid rgba(6,234,255,.35);background:radial-gradient(circle at 35% 30%, rgba(6,234,255,.35), rgba(6,234,255,.08) 60%, transparent);
+    box-shadow:0 0 24px rgba(6,234,255,.35), inset 0 0 12px rgba(6,234,255,.25);
+    cursor:pointer;display:flex;align-items:center;justify-content:center}
+  #chatfab::before{content:"";width:22px;height:22px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #d8fdff, #06eaff 55%, #015b66)}
+  body.chat-open #chatfab{display:none}
+  .chatbtn{width:100%;padding:7px 10px;margin:0 0 6px;border-radius:8px;border:1px solid var(--faint);
+    background:transparent;color:var(--dim);font:600 9px var(--f-disp);letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+  .chatbtn:hover{color:var(--cream);border-color:var(--orange)}
   /* ==== right chat column ==== */
-  aside{grid-row:2;grid-column:2;display:flex;flex-direction:column;border-left:1px solid var(--faint);
-    background:rgba(3,18,22,.55);backdrop-filter:blur(4px);min-height:0;min-width:0;position:relative}
+  aside{position:fixed;right:14px;bottom:14px;width:290px;height:430px;display:none;flex-direction:column;
+    border:1px solid var(--faint);border-radius:16px;overflow:hidden;z-index:60;
+    background:rgba(5,5,5,.92);backdrop-filter:blur(8px);box-shadow:0 20px 60px rgba(0,0,0,.7)}
+  body.chat-open aside{display:flex}
   /* avatar: sits so its bottom edge touches the top of the chat dock (composer) */
   .avi-wrap{position:absolute;right:10px;bottom:52px;width:96px;height:96px;pointer-events:none}
   #avatar{width:96px;height:96px}
@@ -253,6 +267,7 @@
 </main>
 
 <aside>
+  <button class="chatbtn" id="chatclose">Close ✕</button>
   <div class="avrow">
     <select id="avpick" aria-label="Avatar">
       <option value="ren">ren</option>
@@ -490,6 +505,7 @@ const MO = (() => {
   return {cv, show, hide, get alpha(){return alpha;}};
 })();
 
+addEventListener('DOMContentLoaded', () => { document.getElementById('chatfab').onclick = () => document.body.classList.add('chat-open'); document.getElementById('chatclose').onclick = () => document.body.classList.remove('chat-open'); });
 /* ==== clock ==== */
 function tick(){
   const now = new Date();
@@ -541,7 +557,7 @@ for (const c of document.querySelectorAll('.card')) {
     const nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
     // tilt the card itself; the inner .flip keeps its own rotateY — they compose
     c.style.transform = `rotateX(${-ny*10}deg) rotateY(${nx*12}deg)`;
-    gl.style.background = `radial-gradient(circle at ${100 - nx*100}% ${100 - ny*100}%, rgba(232,84,4,.25) 0%, transparent 80%)`;
+    gl.style.background = `radial-gradient(circle at ${100 - nx*100}% ${100 - ny*100}%, rgba(6,234,255,.25) 0%, transparent 80%)`;
     sh.style.transform = `rotate(15deg) translateX(${-nx*30}%)`;
   });
   c.addEventListener('mouseleave', () => { c.style.transform = ''; });
@@ -672,5 +688,6 @@ refreshEco = async function(){
   }catch(e){}
 }
 </script>
+<button id="chatfab" aria-label="Chat with Hermes"></button>
 </body>
 </html>
