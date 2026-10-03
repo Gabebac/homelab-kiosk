@@ -18,3 +18,7 @@ dashboard/v3/gh.json
 dashboard/arrcreds.json
 dashboard/gh.json
 dashboard/ecoflow.json
+starlink-grpc-tools/
+dishfeed.log
+dom*.html
+dom*.log

@@ -462,6 +462,7 @@ def ecoflow():
     except Exception as e:
         return {"ok": False, "err": str(e)}
 
+
 app.mount("/v3", StaticFiles(directory=DASH_DIR / "v3", html=True), name="v3")
 
 # ---- V3: last 5 add requests (radarr+sonarr grabbed) ----
