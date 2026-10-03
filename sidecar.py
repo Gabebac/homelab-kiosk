@@ -462,14 +462,6 @@ def ecoflow():
     except Exception as e:
         return {"ok": False, "err": str(e)}
 
-@app.get("/gh")
-def gh_days():
-    # static file maintained by the agent; 30-min cache via mtime check is overkill
-    f = DASH_DIR / "v3" / "gh.json"
-    if f.exists():
-        return json.loads(f.read_text())
-    return {"total": 0, "days": []}
-
 app.mount("/v3", StaticFiles(directory=DASH_DIR / "v3", html=True), name="v3")
 
 
