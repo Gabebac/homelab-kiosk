@@ -39,7 +39,7 @@
     grid-template-areas:
       "mem disk load ctr"
       "eco eco chat chat"
-      "preqs preqs preqs preqs"}
+      "preqs preqs ph ph"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -49,6 +49,7 @@
   .card[data-k="eco"]{grid-area:eco}
   .card[data-k="preqs"]{grid-area:preqs}
   .card[data-k="chat"]{grid-area:chat}
+  .card[data-k="ph"]{grid-area:ph}
 
   .card{--h:110px;perspective:900px;background:transparent;border:none}
   .flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;
@@ -314,6 +315,13 @@
   </div>
   <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
   <div class="dropup" id="dropup"><div class="dr-msgs" id="drmsgs"></div></div>
+  <div class="card" data-k="ph" style="--h:110px">
+    <div class="flip">
+      <div class="face front"><h2>Pi-hole · blocked</h2><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="phring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><b class="rpct" id="phpct"></b></div>
+        <div class="spark" id="phspark"></div><div class="sub" id="phsub">–</div><div class="more">hover ⤿</div></div>
+      <div class="face back" id="phback"></div>
+    </div>
+  </div>
 </main>
 
 
@@ -607,7 +615,7 @@ for (const c of document.querySelectorAll('.card')) {
 }
 
 /* ==== card sparklines (last ~14 samples) ==== */
-const CH = { mem: [], disk: [], load: [] };
+const CH = { mem: [], disk: [], load: [], ph: [] };
 function spark(cid, arr, maxv){
   const el = document.getElementById(cid); if (!el) return;
   const face = el.closest('.face') || el.parentElement;
@@ -669,6 +677,12 @@ async function refresh(){
       setRing('memring', 'mempct', memPct, 100);
       setRing('diskring', 'diskpct', h.disk_pct, 100);
       setRing('loadring', 'loadpct', cpuPct, 100);
+      if (d.pihole){
+        document.getElementById('phsub').textContent = `${d.pihole.blocked} / ${d.pihole.total} queries`;
+        CH.ph.push(d.pihole.pct); if (CH.ph.length > 40) CH.ph.shift();
+        setRing('phring', 'phpct', d.pihole.pct, 100);
+        spark('phspark', CH.ph, 100);
+      }
       for (const k of Object.keys(CH)) if (CH[k].length > 40) CH[k].shift();
       spark('memspark', CH.mem, 100);
       spark('diskspark', CH.disk, 100);
