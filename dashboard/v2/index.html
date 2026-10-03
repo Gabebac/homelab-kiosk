@@ -57,8 +57,8 @@
     grid-template-columns:repeat(4, minmax(0,1fr));
     grid-template-rows:repeat(5, minmax(60px, 1fr));
     grid-template-areas:
-      "svcsup svcsup svcsup pihole"
-      "svcsup svcsup svcsup pihole"
+      "svcsup svcsup pihole pihole"
+      "svcsup svcsup pihole pihole"
       "mem disk load ctr"
       "plex plex queue queue"
       "svcdetail svcdetail svcdetail svcdetail";
@@ -115,14 +115,14 @@
 
   .card h2{font-size:9px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-muted); font-weight:400; margin-bottom:3px}
   /* hero cell (services) gets bigger type */
-  .card.hero .big{font-size:30px}
-  .card.hero .dwrap{transform:scale(1.15); transform-origin:center top}
-  .big{font-family:var(--font-display); font-size:14px; font-weight:400; line-height:1.2; font-variant-numeric:tabular-nums}
+  .card.hero .big{font-size:22px}
+  .card.hero .dwrap{transform:scale(1.05); transform-origin:center top}
+  .big{font-family:var(--font-display); font-size:13px; font-weight:400; line-height:1.2; font-variant-numeric:tabular-nums}
   .sub{color:var(--ink-muted); font-size:8px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center}
 
   .donut{
     --p:0;
-    width:44px; height:44px; border-radius:50%;
+    width:36px; height:36px; border-radius:50%;
     background:conic-gradient(var(--gcolor,var(--accent-busy)) calc(var(--p)*1%),
       rgba(234,246,248,.08) 0);
     -webkit-mask:radial-gradient(farthest-side, transparent 60%, #000 62%);
@@ -132,7 +132,7 @@
   }
   .donut.warn{--gcolor:var(--led-alert)}
   .dcenter{grid-row:1; grid-column:1; justify-self:center; align-self:center;
-    font-size:9px; font-weight:700; font-variant-numeric:tabular-nums}
+    font-size:8px; font-weight:700; font-variant-numeric:tabular-nums}
   .dwrap{display:grid; place-items:center}
 
   .svc{display:grid; grid-template-columns:repeat(auto-fill,minmax(70px,1fr)); gap:4px; font-size:8px; max-height:72px; overflow-y:auto; scrollbar-width:none}
@@ -291,13 +291,13 @@
 
   <div class="card" data-k="load">
     <h2>CPU load</h2>
-    <div class="big" style="font-size:22px" id="load">–</div>
+    <div class="big" style="font-size:16px" id="load">–</div>
     <div class="sub" style="text-align:center" id="loadsub">–</div>
   </div>
 
   <div class="card" data-k="ctr">
     <h2>Containers</h2>
-    <div class="big" style="font-size:22px" id="ctr">–</div>
+    <div class="big" style="font-size:16px" id="ctr">–</div>
     <div class="sub" style="text-align:center" id="ctrsub">docker containers</div>
   </div>
 
