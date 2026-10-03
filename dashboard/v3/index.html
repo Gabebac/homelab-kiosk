@@ -18,7 +18,7 @@
   *{box-sizing:border-box;margin:0}
   html,body{height:100%;overflow:hidden}
   body{font-family:var(--f-body);color:var(--ink);background:var(--bg);
-    display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:52px 1fr}
+    display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:26px 1fr}
 
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
@@ -44,27 +44,27 @@
   .avmenu button.on{color:#06eaff}
   /* avatar cell */
   .avcard{perspective:none}
-  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-48%);width:170px;height:170px;pointer-events:none}
-  #avatar{width:170px;height:170px}
+  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);width:148px;height:148px;pointer-events:none}
+  #avatar{width:148px;height:148px}
   /* ==== pihole bars ==== */
     header,main,aside,#chatdock{position:relative;z-index:1}
 
-  header{grid-column:1/2;display:flex;align-items:center;gap:14px;padding:0 20px;
+  header{grid-column:1/2;display:flex;align-items:center;gap:10px;padding:0 14px;
     border-bottom:1px solid var(--faint);background:#0b0b0b;backdrop-filter:blur(4px)}
-  .logo{font-family:var(--f-disp);font-size:18px;font-weight:700;letter-spacing:.06em;color:var(--cream)}
+  .logo{font-family:var(--f-disp);font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--cream)}
   .logo b{color:var(--orange);font-weight:700}
-  .clock{margin-left:auto;font-family:var(--f-disp);font-variant-numeric:tabular-nums;font-size:20px;color:var(--dim)}
+  .clock{margin-left:auto;font-family:var(--f-disp);font-variant-numeric:tabular-nums;font-size:14px;color:var(--dim)}
   .clock b{color:var(--cream);font-weight:500}
 
   /* ==== small flip cards (card-14 port) ==== */
-  main{height:calc(100vh - 52px);padding:12px 16px 12px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
+  main{height:calc(100vh - 26px);padding:10px 16px;overflow:hidden;scrollbar-width:none;
     display:grid;gap:10px;min-width:0;
-    grid-template-columns:repeat(8,minmax(0,1fr));
-    grid-template-rows:118px 180px minmax(120px, 1fr);
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    grid-template-rows:repeat(3, minmax(0, 1fr));
     grid-template-areas:
-      "mem mem disk disk load load ctr ctr"
-      "eco eco ph ph preqs preqs preqs preqs"
-      "chat chat chat chat chat chat av av"}
+      "mem mem mem disk disk disk load load load ctr ctr ctr"
+      "eco eco eco eco ph ph ph ph preqs preqs preqs preqs"
+      "chat chat chat chat chat chat chat chat chat av av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="mem"]{grid-area:mem}
@@ -185,8 +185,9 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   
   .ringw{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:56px;height:56px}
   .ringw .ring{position:absolute;inset:0;width:64px;height:64px;margin:0}
-  .rpct{position:absolute;left:0;top:0;width:56px;height:56px;display:flex;align-items:center;justify-content:center;
-    font:700 14px var(--f-disp);color:var(--cream)}
+  .rpct{position:absolute;left:0;top:0;width:56px;height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+  .rpct b{font:700 13px var(--f-disp);color:var(--cream)}
+  .rpct small{font:600 6.5px var(--f-disp);letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
   .ring .rbg{fill:none;stroke:rgba(6,234,255,.10);stroke-width:4}
   .ring .rfg{fill:none;stroke:#06eaff;stroke-width:4;stroke-linecap:round;
     stroke-dasharray:119.4;stroke-dashoffset:119.4;transition:stroke-dashoffset .8s cubic-bezier(.3,1,.4,1);
@@ -242,9 +243,9 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:12px">· kiosk v3.1</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v3.1</span></div>
   <div class="clock" id="clock">--:--</div>
-  <div id="syncc" style="font:600 9px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:6px;padding:2px 8px;margin-right:6px;text-transform:uppercase">sync</div>
+  <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
 
 <main id="board">
@@ -413,7 +414,7 @@ async function loadAvatar(name){
       ren:  {s: 0.07, fx: 0.50, fy: 0.18},
       kei:  {s: 0.16, fx: 0.50, fy: 0.35},
       rice: {s: 0.068, fx: 0.50, fy: 0.45},
-      jinx: {s: 0.095, fx: 0.50, fy: 0.20},
+      jinx: {s: 0.085, fx: 0.50, fy: 0.22},
     }[name] || {s: 0.30, fx: 0.50, fy: 0.50};
     model.scale.set(FIT.s);
     model.x = 110 - model.width * FIT.fx;
@@ -655,7 +656,10 @@ function setRing(rid, pid, val, maxv){
   const pct = Math.max(0, Math.min(100, (val / maxv) * 100));
   svg.querySelector('.rfg').style.strokeDashoffset = C * (1 - pct / 100);
   const pl = document.getElementById(pid);
-  if (pl) pl.textContent = Math.round(val) + '%';
+  if (pl){
+    const num = pl.querySelector('b') || pl;
+    num.textContent = Math.round(val) + '%';
+  }
 }
 
 /* ==== stats polling ==== */
