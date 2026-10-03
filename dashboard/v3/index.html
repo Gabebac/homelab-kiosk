@@ -347,7 +347,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.1</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.2</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -466,7 +466,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   const lerp=(a,b,t)=>a+(b-a)*t;
   function frame(){
     if (!hover){
-      pos.x=lerp(pos.x,pos.tx,.75); pos.y=lerp(pos.y,pos.ty,.75);
+      pos.x=pos.tx; pos.y=pos.ty;
       const dx=pos.x-pos.px, dy=pos.y-pos.py;
       pos.px=pos.x; pos.py=pos.y;
       const speed=Math.min(1, Math.hypot(dx,dy)*.02);
@@ -482,7 +482,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     pos.tx=e.clientX; pos.ty=e.clientY;
     if (!seen){ seen=true; pos.x=pos.tx; pos.y=pos.ty; pos.px=pos.tx; pos.py=pos.ty; el.style.opacity=1; }
     el.style.opacity = (e.clientX>=0&&e.clientX<=innerWidth&&e.clientY>=0&&e.clientY<=innerHeight)?1:0;
-    const t=e.target.closest('[data-magnetic]');
+    const t=e.target instanceof Element ? e.target.closest('[data-magnetic]') : null;
     if (t && !hover){
       const r=t.getBoundingClientRect(), pad=12;
       hover=true;
