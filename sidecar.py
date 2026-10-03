@@ -422,6 +422,7 @@ def index():
 
 # avatar model assets (Live2D) + pages, same-origin so the model can fetch them
 app.mount("/av", StaticFiles(directory=DASH_DIR / "av"), name="av")
+app.mount("/v2", StaticFiles(directory=DASH_DIR / "v2", html=True), name="v2")
 
 
 if __name__ == "__main__":
