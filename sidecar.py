@@ -493,7 +493,15 @@ def plex_lists():
         except Exception:
             continue
     out.sort(key=lambda x: x["date"], reverse=True)
-    reqs = [x for x in out if x["ev"] == "grabbed"][:5]
+    # requests = what Hermes was ASKED to add (chat log export, written by Hermes to v3/chatreqs.json)
+    chatreqs = DASH_DIR / "v3" / "chatreqs.json"
+    reqs = []
+    try:
+        reqs = json.loads(chatreqs.read_text())[:5]
+    except Exception:
+        pass
+    if not reqs:
+        reqs = [x for x in out if x["ev"] == "grabbed"][:5]
     adds = [x for x in out if x["ev"] == "downloadFolderImported"][:5]
     return {"requests": reqs, "added": adds}
 

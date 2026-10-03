@@ -199,7 +199,7 @@
 <main id="board">
   <div class="card" data-k="mem" data-h="110" style="--h:110px">
     <div class="flip">
-      <div class="face front"><h2>Memory</h2><div class="big" id="memd">–</div>
+      <div class="face front"><h2>Memory</h2><div class="spark" id="memspark"></div><div class="big" id="memd">–</div>
         <div class="sub" id="memsub">–</div><div class="more">hover ⤿</div></div>
       <div class="face back" id="memback"></div>
     </div>
@@ -563,6 +563,20 @@ for (const c of document.querySelectorAll('.card')) {
   c.addEventListener('mouseleave', () => { c.style.transform = ''; });
 }
 
+/* ==== card sparklines (last ~14 samples) ==== */
+const CH = { mem: [], disk: [], load: [] };
+function spark(cid, arr, maxv){
+  const el = document.getElementById(cid); if (!el) return;
+  const face = el.closest('.face') || el.parentElement;
+  let sp = face.querySelector('.spark');
+  if (!sp){ sp = document.createElement('div'); sp.className = 'spark'; sp.id = cid + 'spark'; face.appendChild(sp); }
+  const pad = el.textContent && el.textContent.length ? '36px' : '20px';
+  sp.innerHTML = arr.slice(-14).map((v, i) => {
+    const h = Math.max(4, Math.min(26, Math.round((v / maxv) * 26)));
+    return `<i style="height:${h}px;left:${i * 6.9}%"></i>`;
+  }).join('');
+}
+
 /* ==== stats polling ==== */
 async function refresh(){
   try{
@@ -593,6 +607,12 @@ async function refresh(){
         ['1 min load', h.load1.toFixed(2)],
         ['cores', h.cpu_count],
         ['load percent', Math.round(h.load1 / h.cpu_count * 100) + '%']]);
+      CH.mem.push(memPct); CH.disk.push(h.disk_pct);
+      CH.load.push(Math.round(h.load1 / h.cpu_count * 100));
+      for (const k of Object.keys(CH)) if (CH[k].length > 40) CH[k].shift();
+      spark('memd', CH.mem, 100);
+      spark('diskd', CH.disk, 100);
+      spark('load', CH.load, 100);
       document.getElementById('ctr').textContent = Object.keys(d.containers || {}).length;
       document.getElementById('ctrsub').textContent = Object.keys(d.containers || {}).length + ' docker containers';
       statRows(document.getElementById('ctrback'), [
