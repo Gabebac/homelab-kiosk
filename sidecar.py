@@ -467,7 +467,7 @@ app.mount("/v3", StaticFiles(directory=DASH_DIR / "v3", html=True), name="v3")
 # ---- V3: last 5 add requests (radarr+sonarr grabbed) ----
 _arrcreds = DASH_DIR / "arrcreds.json"   # {"radarr": key, "sonarr": key} — gitignored
 
-def plex_add_requests():
+def plex_lists():
     try:
         creds = json.loads(_arrcreds.read_text())
     except Exception:
@@ -483,20 +483,23 @@ def plex_add_requests():
                 d = json.load(f)
             recs = d.get("records", d if isinstance(d, list) else [])
             for rec in recs:
-                if rec.get("eventType") == "grabbed":
+                ev = rec.get("eventType")
+                if ev in ("grabbed", "downloadFolderImported"):
                     title = rec.get("sourceTitle", "")
                     t = re.sub(r"[.\-_]+", " ", title).strip()
                     t = re.sub(r"\s+", " ", t)
                     t = re.sub(r"\b(1080p|2160p|720p|BluRay|WEB-DL|WEBRip|x264|x265|HEVC|10bit|DDP5|DD|Atmos|REMASTERED|AMZN|NF|H-SBS|REPACK).*$", "", t, flags=re.I).strip(" -")
-                    out.append({"kind": kind, "date": rec["date"], "title": t[:60] or title[:60]})
+                    out.append({"kind": kind, "ev": ev, "date": rec["date"], "title": t[:60] or title[:60]})
         except Exception:
             continue
     out.sort(key=lambda x: x["date"], reverse=True)
-    return out[:5]
+    reqs = [x for x in out if x["ev"] == "grabbed"][:5]
+    adds = [x for x in out if x["ev"] == "downloadFolderImported"][:5]
+    return {"requests": reqs, "added": adds}
 
 @app.get("/plexreqs")
 def plexreqs():
-    return plex_add_requests()
+    return plex_lists()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8644, log_level="warning")

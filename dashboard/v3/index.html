@@ -21,7 +21,7 @@
     display:grid;grid-template-columns:minmax(0,1fr) 240px;grid-template-rows:52px 1fr}
 
   /* ==== hyper-grid canvas background ==== */
-  #hypergrid{position:fixed;inset:0;z-index:0;opacity:.5}
+  #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
   header,main,aside,#chatdock{position:relative;z-index:1}
 
   header{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 20px;
@@ -49,6 +49,7 @@
   .card[data-k="eco"]{grid-area:eco}
   .card[data-k="plex"]{grid-area:plex}
   .card[data-k="queue"]{grid-area:queue}
+  .card[data-k="preqs"]{grid-area:preqs}
   .card[data-k="svcs"]{grid-area:svcs}
 
   .card{--h:110px;perspective:900px;background:transparent;border:none}
@@ -116,6 +117,17 @@
   .preq div{display:flex;gap:6px;align-items:baseline;font-size:8px;color:var(--cream);white-space:nowrap;overflow:hidden}
   .preq b{color:var(--orange);font-size:8px}
   .preq span{color:var(--dim);overflow:hidden;text-overflow:ellipsis}
+
+  /* ==== eco watt history bars (spring) ==== */
+  .bchart{position:absolute;inset:38px 12px 8px 12px;display:flex;align-items:flex-end;gap:6px}
+  .bchart i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--orange),rgba(232,84,4,.25));
+    height:0;transition:height .9s cubic-bezier(.34,1.4,.4,1)}
+  .bchart i.o{background:linear-gradient(180deg,var(--cream),rgba(241,215,200,.2))}
+  .ecoback h2{position:relative;z-index:2}
+  #ecoback{padding-top:30px}
+
+  .mostat{display:flex;flex-direction:column;align-items:center;gap:6px;margin:10px 0;color:var(--dim);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+  #reply:empty + .mostat{display:none}
   /* ==== right chat column ==== */
   aside{grid-row:2;grid-column:2;display:flex;flex-direction:column;border-left:1px solid var(--faint);
     background:rgba(3,18,22,.55);backdrop-filter:blur(4px);min-height:0;min-width:0;position:relative}
@@ -210,7 +222,7 @@
             <div class="meta"><b id="ecoin">▼ 0W</b> in · <b id="ecoout">▲ 0W</b> out</div>
           </div>
         </div><div class="more">hover ⤿</div></div>
-      <div class="face back" id="ecoback"></div>
+      <div class="face back" id="ecoback"><div class="bchart" id="ecobars"></div></div>
     </div>
   </div>
   <div class="card" data-k="plex" style="--h:150px">
@@ -228,7 +240,7 @@
 
   <div class="card" data-k="preqs" style="--h:150px">
     <div class="flip">
-      <div class="face front"><h2>Plex adds · last 5</h2><div id="preqs" class="preq"></div></div>
+      <div class="face front"><h2>Plex · last 5 requests</h2><div id="preqs" class="preq"></div><hr><h2>Last 5 added</h2><div id="preqsad" class="preq"></div></div>
       <div class="face back" id="preqsback"></div>
     </div>
   </div>
@@ -267,12 +279,14 @@
 /* ==== hyper-grid: perspective 3D grid + cursor parallax + warp on mouse speed ==== */
 (function(){
   const cv = document.getElementById('hypergrid'), ctx = cv.getContext('2d');
+  const host = cv.parentElement || document.body;
   let W, H;
-  function fit(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  function fit(){ const r = host.getBoundingClientRect(); W = cv.width = Math.max(60, r.width); H = cv.height = Math.max(60, r.height); }
   fit(); addEventListener('resize', fit);
   let mx = .5, my = .5, warp = 0;
   addEventListener('mousemove', e => {
-    const nx = e.clientX/innerWidth, ny = e.clientY/innerHeight;
+    const hr = host.getBoundingClientRect();
+    const nx = (e.clientX - hr.left)/Math.max(1, hr.width) - .5, ny = (e.clientY - hr.top)/Math.max(1, hr.height) - .5;
     warp = Math.min(1, warp + Math.hypot(nx-mx, ny-my)*3);
     mx = nx; my = ny;
     setTimeout(()=>warp = Math.max(0, warp - .05), 80);
@@ -280,7 +294,7 @@
   function frame(t){
     warp = Math.max(0, warp - .015);
     ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle = 'rgba(70,101,108,.25)';
+    ctx.strokeStyle = 'rgba(241,215,200,.22)';
     ctx.lineWidth = 1;
     const hz = H*.42, speed = (t*.00006) + warp*.01;
     const px0 = (mx-.5)*80, py0 = (my-.5)*30;
@@ -395,22 +409,86 @@ async function ask(){
   const t = inp.value.trim();
   if (!t || sendBtn.disabled) return;
   inp.value = ''; sendBtn.disabled = true;
-  document.body.classList.add('thinking');           // orb spins + shimmer
-  const wrap = document.createElement('div');
-  const m = document.createElement('div'); m.className = 'm'; m.textContent = 'hermes';
-  const tv = document.createElement('div'); tv.className = 'think'; tv.textContent = 'thinking';
-  wrap.appendChild(m); wrap.appendChild(tv); REPLY.appendChild(wrap); REPLY.scrollTop = REPLY.scrollHeight;
+  document.body.classList.add('thinking');
+  // morph: dock orb swaps for the dotted thinking orb with cycling labels
+  const st = document.createElement('div'); st.className = 'mostat';
+  const lbl = document.createElement('span'); lbl.textContent = 'Thinking';
+  st.appendChild(lbl); REPLY.appendChild(st);
+  document.querySelector('#chatdock .orb').style.visibility = 'hidden';
+  MO.cv.style.opacity = 1; st.insertBefore(MO.cv, lbl);
+  MO.show();
+  const labels = ['Thinking','Searching','Analyzing','Composing']; let li = 0;
+  const cyc = setInterval(() => { li = (li + 1) % labels.length; lbl.textContent = labels[li]; }, 1150);
   try{
     const r = await fetch('/ask', {method:'POST',
       headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: t})});
     const j = await r.json();
-    wrap.remove();
+    st.remove(); clearInterval(cyc); MO.hide();
+    document.querySelector('#chatdock .orb').style.visibility = '';
     bubble(r.ok ? (j.reply || '(no reply)') : (j.detail || 'error'));
-  }catch(e){ wrap.remove(); bubble('gateway unreachable'); }
+  }catch(e){ st.remove(); clearInterval(cyc); MO.hide(); document.querySelector('#chatdock .orb').style.visibility = ''; bubble('gateway unreachable'); }
   finally{ sendBtn.disabled = false; document.body.classList.remove('thinking'); inp.focus(); }
 }
 sendBtn.onclick = ask;
 inp.onkeydown = e => { if (e.key === 'Enter') ask(); };
+
+
+/* ==== morphing thinking orb (ported: dotted canvas orb + label cycle + answer morph) ==== */
+const MO = (() => {
+  const R = 66, SZ = 220;
+  const cv = document.createElement('canvas');
+  cv.width = SZ; cv.height = SZ; cv.style.cssText = 'width:'+SZ+'px;height:'+SZ+'px;margin:0 auto;display:block';
+  const ctx = cv.getContext('2d');
+  // dots: 16 rings sphere
+  const dots = [];
+  const TAU = Math.PI * 2;
+  for (let k = 0; k < 16; k++) {
+    const y = 1 - ((k + .5) / 16) * 2, r = Math.sqrt(1 - y * y);
+    const m = Math.max(4, Math.round(30 * r));
+    for (let j = 0; j < m; j++) {
+      const a = (j / m) * TAU + k * .35;
+      dots.push({x: Math.cos(a) * r, y, z: Math.sin(a) * r, s: Math.random() * 6.28});
+    }
+  }
+  let alpha = 0, spin = 0, rot = 0, t = 0, raf = 0, dead = false;
+  const lit = new Float32Array(dots.length);
+  function frame(now){
+    raf = 0;
+    if (dead) return;
+    const dt = Math.min(.05, (now - (frame.l || now)) / 1000); frame.l = now;
+    t += dt; spin = .6; rot += spin * dt;
+    ctx.clearRect(0,0,SZ,SZ);
+    const cyw = Math.cos(rot), syw = Math.sin(rot);
+    const CP = Math.cos(.35), SP = Math.sin(.35);
+    const N = dots.length;
+    for (let pass = 0; pass < 2; pass++){
+      for (let n = 0; n < N; n++){
+        const d = dots[n];
+        const x1 = d.x * cyw + d.z * syw, z1 = -d.x * syw + d.z * cyw;
+        const y2 = d.y * CP - z1 * SP, z2 = d.y * SP + z1 * CP;
+        const f = 2.8 / (2.8 - z2), depth = (z2 + 1) / 2;
+        // shimmer twinkle
+        const tw = .55 + .25 * Math.sin(d.s + t * 1.6) + .4 * depth * depth;
+        let a = tw * (alpha || 0);
+        a = Math.min(1, a);
+        if (a <= .01) continue;
+        if ((depth >= .5) !== (pass === 1)) continue;
+        const sx = SZ/2 + x1 * R * f, sy = SZ/2 - y2 * R * f;
+        const rad = 1.4 * (.45 + .75 * depth) * f;
+        // orange → cream blend by depth
+        const mix = depth * .6 + .25 * Math.sin(d.s + t);
+        ctx.fillStyle = `rgba(${232 + (241-232)*mix},${84 + (215-84)*mix},${4 + (200-4)*mix},${a.toFixed(3)})`;
+        ctx.beginPath(); ctx.arc(sx, sy, rad, 0, TAU); ctx.fill();
+      }
+    }
+    if (alpha > .002) raf = requestAnimationFrame(frame);
+    else ctx.clearRect(0,0,SZ,SZ);
+  }
+  function ensure(){ if (!raf && !dead && alpha > .002){ frame.l = performance.now(); raf = requestAnimationFrame(frame); } }
+  function show(){ alpha = 1; ensure(); }
+  function hide(){ alpha = 0; }
+  return {cv, show, hide, get alpha(){return alpha;}};
+})();
 
 /* ==== clock ==== */
 function tick(){
@@ -446,6 +524,12 @@ function renderSvc(d){
   statRows(document.getElementById('svcsback'), entries.map(([n,s]) => [n, String(s)]));
 }
 
+/* ==== hyper-grid now lives in the chat panel ==== */
+document.addEventListener('DOMContentLoaded', () => {
+  const hg = document.getElementById('hypergrid');
+  const aside = document.querySelector('aside');
+  if (hg && aside) aside.insertBefore(hg, aside.firstChild);
+});
 /* ==== glare tilt ==== */
 for (const c of document.querySelectorAll('.card')) {
   c.classList.add('g');
@@ -536,10 +620,12 @@ async function refresh(){
       document.getElementById('queueback').style.display = 'none';
     }
   renderSvc(d);
-  fetch('/plexreqs').then(r=>r.json()).then(rs => {
+  fetch('/plexreqs').then(r=>r.json()).then(d => {
     const el = document.getElementById('preqs');
-    if (el) el.innerHTML = rs.map(x => `<div><b>${x.kind==='movie'?'MOV':'EP'}</b><span>${x.title}</span></div>`).join('') || '<div class="empty">no adds yet</div>';
-    statRows(document.getElementById('preqsback'), rs.map(x => [x.date.slice(0,10), x.title]));
+    const el2 = document.getElementById('preqsad');
+    if (el) el.innerHTML = (d.requests||[]).map(x => `<div><b>${x.kind==='movie'?'MOV':'EP'}</b><span>${x.title}</span></div>`).join('') || '<div class="empty">none yet</div>';
+    if (el2) el2.innerHTML = (d.added||[]).map(x => `<div><b>${x.kind==='movie'?'MOV':'EP'}</b><span>${x.title}</span></div>`).join('') || '<div class="empty">none yet</div>';
+    statRows(document.getElementById('preqsback'), (d.requests||[]).map(x => [x.date.slice(5,10), x.title]));
   }).catch(()=>{});
 
   }catch(e){ /* keep last good values */ }
@@ -555,15 +641,36 @@ async function refreshEco(){
     fill.style.setProperty('--soc', d.soc + '%');
     document.getElementById('ecoin').textContent = '▼ ' + Math.round(d.inW) + 'W';
     document.getElementById('ecoout').textContent = '▲ ' + Math.round(d.outW) + 'W';
-    statRows(back, [
-      ['battery', d.soc + '%'],
-      ['input', Math.round(d.inW) + ' W'],
-      ['output', Math.round(d.outW) + ' W'],
-      ['status', d.inW > 0 ? 'charging' : 'discharging']]);
+
+    // back face = watt-history bars instead of static rows
   }catch(e){}
 }
 refresh(); setInterval(refresh, 15000);
 refreshEco(); setInterval(refreshEco, 30000);
+
+/* ==== eco watt history bars (spring) ==== */
+const ecoHist = [];
+function drawEcoBars(){
+  const el = document.getElementById('ecobars'); if (!el) return;
+  const N = 14;
+  while (ecoHist.length < N) ecoHist.unshift({in:0, out:0});
+  el.innerHTML = ecoHist.map((h, i) =>
+    `<i class="${i % 2 ? 'o' : ''}"></i>`).join('');
+  [...el.children].forEach((b, idx) => {
+    const h = ecoHist[idx] || {in:0, out:0};
+    const v = idx % 2 ? h.out : h.in;
+    const pct = Math.min(100, Math.max(3, (v / 500) * 100));
+    setTimeout(() => { b.style.height = pct + '%'; }, idx * 40);
+  });
+}
+const _origRefreshEco = refreshEco;
+refreshEco = async function(){
+  await _origRefreshEco.apply(this, arguments);
+  try{
+    const r = await fetch('/ecoflow'); const d = await r.json();
+    if (d.ok){ ecoHist.push({in: Math.round(d.inW), out: Math.round(d.outW)}); drawEcoBars(); }
+  }catch(e){}
+}
 </script>
 </body>
 </html>
