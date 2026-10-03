@@ -1,0 +1,1 @@
+{"ok": true, "state": "OK", "uptime_h": 14, "down_mbps": 0.6, "up_mbps": 0.9, "latency_ms": 18.7, "quality": 1.0, "obstructed_pct": 1.06, "currently_obstructed": false, "alerts": [], "hw": "mini1_prod3", "sw": "2026.09.24.cr87636.3", "ts": 1791062064.813913}

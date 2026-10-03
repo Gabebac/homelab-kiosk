@@ -22,11 +22,6 @@
 
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
-  /* ==== pihole card ==== */
-  .phleft{position:absolute;left:14px;top:44px;display:flex;flex-direction:column;gap:5px}
-  .phbig{font:700 17px var(--f-disp);color:var(--cream);line-height:1}
-  .phsub{font:600 8px var(--f-disp);letter-spacing:.05em;color:var(--dim);text-transform:uppercase;line-height:1.5}
-
   /* ==== avatar model dropup (bottom-right corner) ==== */
   .avdrop{position:fixed;right:4px;bottom:3px;z-index:50;font-family:var(--f-disp)}
   .avdrop #avtab{background:#0b0b0b;color:var(--cream);border:1px solid #1a1a1a;border-radius:8px;
@@ -43,6 +38,16 @@
   .avcard{perspective:none}
   .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);width:148px;height:148px;pointer-events:none}
   #avatar{width:148px;height:148px}
+
+  /* ==== calendar flip: week events back face ==== */
+  .card[data-k="cal"] .face{display:flex;flex-direction:column}
+  .wkl{flex:1;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:6px;margin-top:6px;min-height:0}
+  .wkl::-webkit-scrollbar{display:none}
+  .wkd{padding:6px 8px;background:rgba(127,214,164,.05);border:1px solid #1c231f;border-radius:8px}
+  .wkd .nm{font:600 10px var(--f-disp);color:var(--cream);letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wkd .when{font:600 8px var(--f-disp);color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+  .wkd .when b{color:var(--ok)}
+
   /* ==== glass calendar (vanilla port) ==== */
   .card[data-k="cal"] .face{display:flex;flex-direction:column}
   .calhead{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
@@ -79,21 +84,19 @@
     grid-template-columns:repeat(12,minmax(0,1fr));
     grid-template-rows:repeat(3, minmax(0, 1fr));
     grid-template-areas:
-      "mem mem mem disk disk load load ctr ctr cal cal cal"
-      "eco eco eco eco ph ph ph ph preqs preqs preqs preqs"
+      "sys sys sys ctr ctr ctr cal cal cal cal cal cal"
+      "eco eco eco eco sl sl preqs preqs preqs preqs preqs preqs"
       "chat chat chat chat chat chat chat chat chat av av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
-  .card[data-k="mem"]{grid-area:mem}
-  .card[data-k="disk"]{grid-area:disk}
-  .card[data-k="load"]{grid-area:load}
-  .card[data-k="ctr"]{grid-area:ctr}
+  .card[data-k="sys"]{grid-area:sys}
+      .card[data-k="ctr"]{grid-area:ctr}
   .card[data-k="eco"]{grid-area:eco}
   .card[data-k="preqs"]{grid-area:preqs}
   .card[data-k="chat"]{grid-area:chat}
-  .card[data-k="ph"]{grid-area:ph}
-  .card[data-k="av"]{grid-area:av}
+    .card[data-k="av"]{grid-area:av}
   .card[data-k="cal"]{grid-area:cal}
+  .card[data-k="sl"]{grid-area:sl}
 
   .card{--h:110px;perspective:900px;background:transparent;border:none}
   .flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;
@@ -166,6 +169,29 @@
   .mostat{display:flex;flex-direction:column;align-items:center;gap:6px;margin:10px 0;color:var(--dim);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
   #reply:empty + .mostat{display:none}
 
+
+  /* ==== thinking trace (thinking.tsx port) ==== */
+  .trace{margin:2px 0 6px}
+  .trace-head{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;
+    font:600 10px var(--f-disp);letter-spacing:.06em;color:var(--dim);padding:2px 0;text-transform:uppercase}
+  .trace-head:hover{color:var(--cream)}
+  .trace-head .shimmer{background:linear-gradient(90deg,var(--dim) 35%,var(--cream) 50%,var(--dim) 65%);
+    background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shimmer-text 1.4s linear infinite}
+  .trace-head .chev{transition:transform .3s}
+  .trace.open .trace-head .chev{transform:rotate(180deg)}
+  .trace-body{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .4s cubic-bezier(.23,1,.32,1),opacity .4s}
+  .trace.open .trace-body{grid-template-rows:1fr;opacity:1}
+  .trace-inner{overflow:hidden;margin-left:5px;padding-left:12px;position:relative}
+  .trace-inner::before{content:"";position:absolute;left:3px;top:0;bottom:2px;width:1px;background:#242a26}
+  .trace-row{display:flex;align-items:center;gap:7px;padding:3px 0;font:500 11px var(--f-body);color:#cfcfcf;animation:fadeup .32s cubic-bezier(.23,1,.32,1) both}
+  .trace-row .sec{color:var(--dim);font-size:10px}
+  .trace-row svg{flex:none;color:var(--dim)}
+  .trace-row .spin{width:11px;height:11px;border-radius:50%;border:1.5px solid #31373b;border-top-color:#cfcfcf;animation:spin .7s linear infinite;flex:none}
+  .trace-row.done svg{color:var(--ok)}
+  @keyframes shimmer-text{0%{background-position:150%}100%{background-position:-50%}}
+  @keyframes fadeup{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes spin{100%{transform:rotate(1turn)}}
   /* ==== chat FAB ==== */
   #chatfab{position:fixed;right:16px;bottom:16px;z-index:70;width:54px;height:54px;border-radius:50%;
     border:1px solid rgba(127,214,164,.35);background:radial-gradient(circle at 35% 30%, rgba(127,214,164,.35), rgba(127,214,164,.08) 60%, transparent);
@@ -218,6 +244,25 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   .ring .rbg{fill:none;stroke:rgba(127,214,164,.10);stroke-width:4}
   .ring .rfg{fill:none;stroke:var(--ok);stroke-width:4;stroke-linecap:round;
     stroke-dasharray:119.4;stroke-dashoffset:119.4;transition:stroke-dashoffset .8s cubic-bezier(.3,1,.4,1)}
+
+  /* ==== starlink card ==== */
+  .card[data-k="sl"] .face{display:flex;flex-direction:column}
+  .slbig{font:700 12px var(--f-disp);color:var(--ok);letter-spacing:.08em;margin-top:2px}
+  .slbig.bad{color:var(--bad)}
+  .slmeta{margin-top:auto;display:flex;flex-direction:column;gap:4px}
+  .slr{display:flex;justify-content:space-between;font:600 8.5px var(--f-disp);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+  .slr b{color:var(--cream);font:600 10px var(--f-disp);font-variant-numeric:tabular-nums}
+
+  /* ==== fused system ring chart (concentric port, vanilla) ==== */
+  .card[data-k="sys"] .face{display:flex;flex-direction:column}
+  .sysrow{flex:1;display:flex;align-items:center;gap:16px;min-height:0;margin-top:2px}
+  .sysrings{position:relative;flex:none}
+  .sysrings svg{display:block}
+  .sysrings svg circle{fill:none;stroke-linecap:round}
+  .sysleg{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+  .sysleg .li{display:flex;align-items:center;gap:7px;font:600 8px var(--f-disp);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+  .sysleg .li i{width:8px;height:8px;border-radius:3px;flex:none}
+  .sysleg .li b{margin-left:auto;color:var(--cream);font:700 10px var(--f-disp);font-variant-numeric:tabular-nums}
   .statrow{flex:1;display:flex;align-items:center;gap:14px;min-height:0}
   .card[data-k="mem"] .sub,.card[data-k="disk"] .sub,.card[data-k="load"] .sub{font-weight:600;font-size:10px;margin-top:0;line-height:1.4}
   .card[data-k="mem"] .extra,.card[data-k="disk"] .extra,.card[data-k="load"] .extra{margin-top:0}
@@ -275,25 +320,16 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 </header>
 
 <main id="board">
-  <div class="card" data-k="mem" data-h="110" style="--h:110px">
-    <div class="flip">
-      <div class="face front"><h2>Memory</h2><div class="statrow"><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="memring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><span class="rpct" id="mempct"><b>–</b><small>mem</small></span></div><div class="stattext"><div class="sub" id="memsub">–</div><div class="extra" id="memx">–</div></div></div></div>
-      <div class="face back" id="memback"></div>
+    <div class="card" data-k="sys" style="--h:110px">
+    <div class="face front">
+      <h2>System</h2>
+      <div class="sysrow">
+        <div class="sysrings" id="sysrings"></div>
+        <div class="syslegend" id="syslegend"></div>
+      </div>
     </div>
   </div>
-  <div class="card" data-k="disk" style="--h:110px">
-    <div class="flip">
-      <div class="face front"><h2>Storage</h2><div class="statrow"><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="diskring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><span class="rpct" id="diskpct"><b>–</b><small>dsk</small></span></div><div class="stattext"><div class="sub" id="disksub">–</div><div class="extra" id="diskx">–</div></div></div></div>
-      <div class="face back" id="diskback"></div>
-    </div>
-  </div>
-  <div class="card" data-k="load" style="--h:110px">
-    <div class="flip">
-      <div class="face front"><h2>CPU Load</h2><div class="statrow"><div class="ringw"><svg class="ring" viewBox="0 0 44 44" id="loadring"><circle class="rbg" cx="22" cy="22" r="19"/><circle class="rfg" cx="22" cy="22" r="19"/></svg><span class="rpct" id="loadpct"><b>–</b><small>cpu</small></span></div><div class="stattext"><div class="sub" id="loadsub">–</div><div class="extra" id="loadx">–</div></div></div></div>
-      <div class="face back" id="loadback"></div>
-    </div>
-  </div>
-  <div class="card" data-k="ctr" style="--h:110px">
+<div class="card" data-k="ctr" style="--h:110px">
     <div class="flip">
       <div class="face front"><h2>Containers</h2><div class="big" id="ctr">–</div>
         <div class="sub" id="ctrsub">docker containers</div><div class="extra" id="ctrx">–</div><div class="stl" id="ctrlist"></div></div>
@@ -335,21 +371,29 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     <div class="dr-comp"><div class="chatrow"><input id="qp" placeholder="Say something to Hermes…" autocomplete="off"><button class="send" id="sendp">Send</button></div></div>
   </div>
   <div class="card" data-k="cal">
-    <div class="face front">
-      <div class="calhead"><div class="calmonth" id="calmonth">–</div></div>
-      <div class="calgrid" id="calgrid"></div>
+    <div class="flip">
+      <div class="face front">
+        <div class="calhead"><div class="calmonth" id="calmonth">–</div></div>
+        <div class="calgrid" id="calgrid"></div>
+      </div>
+      <div class="face back">
+        <h2>This week</h2>
+        <div class="wkl" id="wkl"><div class="wkd">–</div></div>
+      </div>
     </div>
   </div>
   <div class="card avcard" data-k="av">
     <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
   </div>
-    <div class="card" data-k="ph" style="--h:110px">
-    <div class="face front"><h2>Pi-hole · blocked</h2>
-      <div class="phleft">
-        <div class="phbig" id="phbig">–</div>
-        <div class="phsub" id="phsub">–</div>
+      <div class="card" data-k="sl">
+    <div class="face front"><h2>Starlink</h2>
+      <div class="slbig" id="slstate">–</div>
+      <div class="slmeta">
+        <div class="slr"><span>down</span><b id="sldown">–</b></div>
+        <div class="slr"><span>up</span><b id="slup">–</b></div>
+        <div class="slr"><span>latency</span><b id="sllat">–</b></div>
+        <div class="slr"><span>obstr</span><b id="slobs">–</b></div>
       </div>
-      
     </div>
   </div>
 </main>
@@ -533,6 +577,60 @@ function avTalk(ms){
   drive();
 }
 
+
+/* ==== fused system ring chart (concentric port) ==== */
+const SYS = [
+  {key:'mem',  label:'mem',  max:100},
+  {key:'dsk',  label:'dsk',  max:100},
+  {key:'cpu',  label:'cpu',  max:100},
+  {key:'ph',   label:'ph',   max:100},
+];
+(function(){
+  const wrap = document.getElementById('sysrings');
+  const SIZE=96, C=SIZE/2, svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');
+  svg.setAttribute('width',SIZE); svg.setAttribute('height',SIZE);
+  svg.setAttribute('viewBox','0 0 '+SIZE+' '+SIZE);
+  const rings=[];
+  // outer→inner: mem, dsk, cpu, ph — concentric tracks
+  for (let i=0;i<SYS.length;i++){
+    const r = 42 - i*9;               // 42,33,24,15
+    const sw = 8 - i*0.5;             // slightly thinner inward
+    const circ=2*Math.PI*r;
+    const bg=document.createElementNS(svgNS,'circle');
+    bg.setAttribute('cx',C);bg.setAttribute('cy',C);bg.setAttribute('r',r);
+    bg.setAttribute('fill','none');bg.setAttribute('stroke','rgba(127,214,164,.10)');bg.setAttribute('stroke-width',sw);
+    const fg=document.createElementNS(svgNS,'circle');
+    fg.setAttribute('cx',C);fg.setAttribute('cy',C);fg.setAttribute('r',r);
+    fg.setAttribute('fill','none');
+    fg.setAttribute('stroke', i===2 ? 'var(--bad)' : 'var(--ok)');
+    fg.setAttribute('stroke-width',sw);
+    fg.setAttribute('stroke-linecap','round');
+    fg.setAttribute('stroke-dasharray',circ);
+    fg.setAttribute('stroke-dashoffset',circ*(1-0.0));
+    fg.setAttribute('transform','rotate(-90 '+C+' '+C+')');
+    fg.style.transition='stroke-dashoffset .8s cubic-bezier(.3,1,.4,1)';
+    svg.appendChild(bg); svg.appendChild(fg);
+    rings.push({fg, circ});
+  }
+  wrap.appendChild(svg);
+  window._sysSet = function(key,pct){
+    const idx = SYS.findIndex(s=>s.key===key); if (idx<0) return;
+    SYS[idx].val = pct;
+    const p = Math.max(0, Math.min(100, pct))/100;
+    rings[idx].fg.setAttribute('stroke-dashoffset', rings[idx].circ*(1-p));
+    const leg = document.getElementById('syslegend');
+    let li = leg.querySelector('[data-k="'+key+'"]');
+    if (!li){
+      li=document.createElement('div'); li.className='li'; li.dataset.k=key;
+      li.innerHTML='<i></i><span>'+SYS[idx].label+'</span><b>–</b>';
+      li.querySelector('i').style.background = (key==='cpu') ? getComputedStyle(document.documentElement).getPropertyValue('--bad') : getComputedStyle(document.documentElement).getPropertyValue('--ok');
+      leg.appendChild(li);
+    }
+    li.querySelector('b').textContent = Math.round(pct)+'%';
+  };
+})();
+
 /* ==== chat with thinking orb ==== */
 const REPLY = document.getElementById('drmsgs');
 function bubble(text){
@@ -668,6 +766,22 @@ function askPopup(){
   inp.value = t;
   ask();
 }
+
+/* ==== calendar back: this-week events (cron + reminders) ==== */
+fetch('/v3/events.json').then(r=>r.json()).then(x=>{
+  const wk = document.getElementById('wkl'); if (!wk) return;
+  const now = new Date();
+  const in7 = new Date(now.getTime() + 7*864e5);
+  const rows = (x.events||[]).filter(e => { const t=new Date(e.next); return t>=new Date(now-864e5) && t<=in7; })
+    .sort((a,b)=>new Date(a.next)-new Date(b.next));
+  wk.innerHTML = rows.length ? rows.map(e=>{
+    const d=new Date(e.next);
+    const day=d.toLocaleDateString('en-GB',{weekday:'short'});
+    const tm=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false});
+    return `<div class="wkd"><div class="nm">${esc(e.name)}</div><div class="when">${day} ${tm} · <b>${e.last_status==='ok'?'ok':e.last_status}</b></div></div>`;
+  }).join('') : '<div class="wkd"><div class="nm">No events this week</div><div class="when">cron idle</div></div>';
+}).catch(()=>{});
+
 /* ==== clock ==== */
 function tick(){
   const now = new Date();
@@ -706,36 +820,16 @@ for (const c of document.querySelectorAll('.card')) {
   c.addEventListener('mouseleave', () => { c.style.transform = ''; });
 }
 
-/* ==== card sparklines (last ~14 samples) ==== */
-const CH = { mem: [], disk: [], load: [], ph: [] };
-function spark(cid, arr, maxv){
-  const el = document.getElementById(cid); if (!el) return;
-  const face = el.closest('.face') || el.parentElement;
-  let sp = face.querySelector('.spark');
-  if (!sp){ sp = document.createElement('div'); sp.className = 'spark'; sp.id = cid + 'spark'; face.appendChild(sp); }
-  const pad = el.textContent && el.textContent.length ? '36px' : '20px';
-  sp.innerHTML = arr.slice(-14).map((v, i) => {
-    const h = Math.max(4, Math.min(26, Math.round((v / maxv) * 26)));
-    return `<i style="height:${h}px;left:${i * 6.9}%"></i>`;
-  }).join('');
-}
 
-
-
-/* ==== pihole bar chart (history of % blocked) ==== */
-
-/* ==== ring charts ==== */
-function setRing(rid, pid, val, maxv){
-  const svg = document.getElementById(rid); if (!svg) return;
-  const C = 2 * Math.PI * 19; // 119.4
-  const pct = Math.max(0, Math.min(100, (val / maxv) * 100));
-  svg.querySelector('.rfg').style.strokeDashoffset = C * (1 - pct / 100);
-  const pl = document.getElementById(pid);
-  if (pl){
-    const num = pl.querySelector('b') || pl;
-    num.textContent = Math.round(val) + '%';
-  }
-}
+fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
+  if (!s.ok) return;
+  document.getElementById('slstate').textContent = s.state;
+  document.getElementById('slstate').className = 'slbig' + (s.state==='OK'?'':' bad');
+  document.getElementById('sldown').textContent = s.down_mbps + ' Mb/s';
+  document.getElementById('slup').textContent = s.up_mbps + ' Mb/s';
+  document.getElementById('sllat').textContent = s.latency_ms + ' ms';
+  document.getElementById('slobs').textContent = s.obstructed_pct + '%' + (s.currently_obstructed ? ' · blocked now' : '');
+}).catch(()=>{});
 
 /* ==== stats polling ==== */
 let LAST_OK = 0;
@@ -754,42 +848,11 @@ async function refresh(){
     syncChip(true);
     const h = d.host;
     if (h){
-            document.getElementById('loadsub').textContent = `${h.cpu_count} cores · ${(h.load1 / h.cpu_count * 100).toFixed(0)}% load`;
-      const prevL = CH.load[CH.load.length - 1];
-      const dL = prevL !== undefined ? Math.round((h.load1 / h.cpu_count * 100) - prevL) : 0;
-      document.getElementById('loadx').textContent = prevL !== undefined ? `${dL >= 1 ? '▸' : dL <= -1 ? '▾' : '■'} trend vs prev ${Math.abs(dL)}%` : 'sampler warming up';
-      const memPct = Math.round(h.mem_used_gb / h.mem_total_gb * 100);
-      document.getElementById('memsub').textContent = `${h.mem_used_gb} GB of ${h.mem_total_gb} GB`;
-      document.getElementById('memx').textContent = `swap ${h.swap_used_gb} / ${h.swap_total_gb} GB`;
-      statRows(document.getElementById('memback'), [
-        ['used', h.mem_used_gb + ' / ' + h.mem_total_gb + ' GB'],
-        ['percent', memPct + '%'],
-        ['swap', h.swap_used_gb + ' / ' + h.swap_total_gb + ' GB'],
-        ['warn >', '85%']]);
-            document.getElementById('disksub').textContent = `${h.disk_used_gb} GB used of ${h.disk_total_gb} GB`;
-      document.getElementById('diskx').textContent = `${h.disk_total_gb - h.disk_used_gb} GB free`;
-      statRows(document.getElementById('diskback'), [
-        ['used', h.disk_used_gb + ' / ' + h.disk_total_gb + ' GB'],
-        ['percent', h.disk_pct + '%'],
-        ['free', (h.disk_total_gb - h.disk_used_gb) + ' GB'],
-        ['warn >', '80%']]);
-      statRows(document.getElementById('loadback'), [
-        ['1 min load', h.load1.toFixed(2)],
-        ['cores', h.cpu_count],
-        ['load percent', Math.round(h.load1 / h.cpu_count * 100) + '%']]);
-      CH.mem.push(memPct); CH.disk.push(h.disk_pct);
-      CH.load.push(Math.round(h.load1 / h.cpu_count * 100));
-      const cpuPct = Math.round(h.load1 / h.cpu_count * 100);
-      setRing('memring', 'mempct', memPct, 100);
-      setRing('diskring', 'diskpct', h.disk_pct, 100);
-      setRing('loadring', 'loadpct', cpuPct, 100);
-      if (d.pihole){
-        document.getElementById('phsub').textContent = `${d.pihole.blocked} blocked / ${d.pihole.total} queries`;
-        document.getElementById('phbig').textContent = d.pihole.pct.toFixed(1) + '%';
-        CH.ph.push(d.pihole.pct); if (CH.ph.length > 40) CH.ph.shift();
-        
-      }
-      for (const k of Object.keys(CH)) if (CH[k].length > 40) CH[k].shift();
+            const cpuPct = Math.round(h.load1 / h.cpu_count * 100);
+      _sysSet('cpu', cpuPct);
+      _sysSet('mem', Math.round(h.mem_used_gb / h.mem_total_gb * 100));
+      _sysSet('dsk', h.disk_pct);
+      if (d.pihole){ _sysSet('ph', d.pihole.pct); }
 
 document.getElementById('ctr').textContent = Object.keys(d.containers || {}).length;
       document.getElementById('ctrsub').textContent = Object.keys(d.containers || {}).length + ' docker containers';
