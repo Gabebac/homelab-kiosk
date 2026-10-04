@@ -82,7 +82,7 @@
   .clock b{color:var(--cream);font-weight:500}
 
   /* ==== small flip cards (card-14 port) ==== */
-  main{height:calc(100vh - 6px);padding:10px 28px 2px;overflow:hidden;scrollbar-width:none;
+  main{height:100%;padding:10px 28px 2px;overflow:hidden;scrollbar-width:none;
     display:grid;gap:10px;min-width:0;
     grid-template-columns:repeat(24,minmax(0,1fr));
     grid-template-rows:repeat(5, minmax(0,1fr));
@@ -90,8 +90,8 @@
       "sys sys sys sys sys sys sl sl sl sl sl sl usage usage usage usage usage usage cal cal cal cal cal cal"
       "sys sys sys sys sys sys sl sl sl sl sl sl ctr ctr ctr ctr ctr ctr cal cal cal cal cal cal"
       "eco eco eco eco eco eco sl sl sl sl sl sl preqs preqs preqs preqs preqs preqs wk wk wk wk wk wk"
-      "hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av av av av av"
-      "hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av av av av av"}
+      "hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av av"
+      "hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="sys"]{grid-area:sys}
@@ -395,7 +395,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.5</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.6</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>

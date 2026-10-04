@@ -1,5 +1,9 @@
 # Changelog
 
+## V7.6
+- **Bottom flush**: main switched from `calc(100vh-6px)` to `height:100%` inside the body's 26px+1fr grid — the ~1cm gap from the zoom/viewport round-off is gone; chat + avatar end at the margin.
+- **Bottom row split 7/10 : 3/10** (chat 17/24, avatar 7/24).
+
 ## V7.5
 - **Calendar flip removed**: `.flip` wrapper + the 'This week' back face deleted (single face, month grid only — the info lives in the WEEK SCHEDULE card); dead `wkl` fetch block removed.
 - **Bottom row rebalanced**: chat 18/24 → 14/24, avatar 6/24 → 10/24 (≈3/5 : 2/5).
