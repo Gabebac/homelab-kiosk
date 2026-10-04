@@ -5,6 +5,14 @@
 Xorg :0 vt1 -s 0 -dpms -nolisten tcp &
 sleep 4
 export DISPLAY=:0
+# ponytail: panel EDID drops out when the monitor is off/X restarts → X falls back to
+# 640x480 and the panel upscales everything (wall "too big"). Force native 1366x768.
+if ! xrandr | grep -q '1366x768'; then
+  xrandr --newmode "1366x768_60" 85.25 1366 1440 1576 1792 768 771 774 798 +hsync +vsync 2>/dev/null || true
+  for o in $(xrandr | awk '/ connected/ {print $1}'); do
+    xrandr --addmode "$o" 1366x768_60 2>/dev/null && xrandr --output "$o" --mode 1366x768_60 2>/dev/null || true
+  done
+fi
 xset s off
 xset -dpms
 xset s noblank
