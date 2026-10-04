@@ -26,7 +26,7 @@
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
   /* ==== avatar model dropup (bottom-right corner) ==== */
-  .avdrop{position:fixed;right:22px;bottom:12px;z-index:50;font-family:var(--f-disp)}
+  .avdrop{position:fixed;right:16px;bottom:46px;z-index:50;font-family:var(--f-disp)}
   .avdrop #avtab{background:#0b0b0b;color:var(--cream);border:1px solid #1a1a1a;border-radius:8px;
     font:600 8px var(--f-disp);letter-spacing:.1em;padding:3px 7px;cursor:pointer;text-transform:uppercase;opacity:.65}
   .avdrop #avtab:hover{border-color:rgba(127,214,164,.5)}
@@ -160,6 +160,11 @@
   .batt .fill::before{content:"";position:absolute;inset:0;
     background:linear-gradient(90deg,#123a2e,#2c6f52,#59b58a,#2c6f52,#123a2e);
     background-size:300% 100%;animation:battwave 6s linear infinite}
+  /* ring-style shading: bright core, dark edges */
+  .batt .fill::after{content:"";position:absolute;inset:0;border-radius:5px;
+    background:
+      radial-gradient(ellipse 120% 90% at 50% 50%, rgba(255,255,255,0.22), transparent 60%),
+      linear-gradient(180deg, rgba(2,12,9,0.55), transparent 35%, transparent 65%, rgba(2,12,9,0.65))}
   @keyframes battwave{0%{background-position:0% 0}100%{background-position:300% 0}}
   .batt .pct{font-family:var(--f-disp);font-size:15px;font-weight:700;color:var(--cream)}
   .batt .meta{font-size:8px;color:var(--dim);line-height:1.5}
@@ -369,7 +374,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.4</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.7</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -702,7 +707,9 @@ const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'DOWN', la
       triggerAction: () => {}
     };
 
-    const KEYMAP = { mem:'val1', dsk:'val2', cpu:'val3', ph:'val4', q:'val1', down:'val2', up:'val3', obstr:'val4' };
+    const KEYMAP = Object.assign({ mem:'val1', dsk:'val2', cpu:'val3', ph:'val4', q:'val1', down:'val2', up:'val3', obstr:'val4' }, OVR.keymap || {});
+    const _2seg = OVR.activeSegments === 2;
+    if (_2seg){ KEYMAP.down='val1'; KEYMAP.up='val2'; }
     window[brName] = function(key, pct){
       const k = KEYMAP[key]; if (!k) return;
       const cap = key === 'cpu' ? 150 : 100;
@@ -3844,7 +3851,7 @@ fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   document.getElementById('slsig').textContent = Math.round((s.quality||0)*100) + '% signal';
   const feed = () => {
     if (!window._slSet) return setTimeout(feed, 400);
-    const dv=Math.max(1,Math.min(100,Math.round((s.down_mbps||0)/250*100))), uv=Math.max(1,Math.min(100,Math.round((s.up_mbps||0)/50*100)));
+    const dv=50+Math.min(50,Math.round((s.down_mbps||0)/250*50)), uv=50+Math.min(50,Math.round((s.up_mbps||0)/50*50));
     _slSet('down', dv); _slSet('up', uv);
   };
   feed();

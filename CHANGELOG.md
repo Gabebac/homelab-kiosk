@@ -1,5 +1,10 @@
 # Changelog
 
+## V6.7
+- **Starlink range actually fixed this time**: root cause twofold — the V6.3 50-100 edit never reached disk (silent-edit bug, third occurrence), and the SL bridge's `down/up` keys mapped to val2/val3 while the 2-segment chart displays val1/val2 (so DOWN showed a stale seed sliver). KEYMAP now respects `activeSegments: 2`: down→val1, up→val2. Wall shows DOWN 50 / UP 55, both arcs past half-circle.
+- Battery fill: bright core + darker edges (radial highlight + vertical edge shading), ring-style.
+- Avatar picker button: right side, above the chat row's right end (was overlapping the containers card at mid-screen height).
+
 ## V6.4
 - Top block: usage column split in height — USAGE (upper half) + CONTAINERS (lower half); sys/sl/cal stay tall spanning both rows (5-row grid, rows 1-2 for tall cards).
 - Chat history now lives ON the dashboard — a 'HERMES · CHAT' card in the old containers spot mirrors the transcript (MutationObserver mirror of the drawer log, auto-scrolls); the popup no longer auto-expands after a reply.
