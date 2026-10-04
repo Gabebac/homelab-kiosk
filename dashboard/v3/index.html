@@ -43,8 +43,8 @@
   .avmenu button.on{color:var(--ok)}
   /* avatar cell */
   .avcard{perspective:none}
-  .avcard .avi-wrap{position:absolute;left:50%;top:0;transform:translateX(-50%);width:240px;height:100%;pointer-events:none;display:flex;align-items:flex-end;justify-content:center}
-  #avatar{width:240px;height:240px}
+  .avcard .avi-wrap{position:absolute;left:50%;top:0;transform:translateX(-50%);width:320px;height:100%;pointer-events:none;display:flex;align-items:flex-end;justify-content:center}
+  #avatar{width:300px;height:300px}
 
   /* ==== calendar flip: week events back face ==== */
   .card[data-k="cal"] .face{display:flex;flex-direction:column}
@@ -399,7 +399,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.8</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.9</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -452,7 +452,7 @@
     </div>
   </div>
   <div class="card avcard" data-k="av">
-    <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
+    <div class="avi-wrap"><canvas id="avatar" width="300" height="300" aria-hidden="true"></canvas></div>
   </div>
       <div class="card" data-k="sl">
     <div class="face front" style="display:flex;flex-direction:column"><h2>Starlink</h2>
@@ -572,7 +572,7 @@ async function loadAvatar(name){
   if (!window.PIXI || !PIXI.live2d || !PIXI.live2d.Live2DModel) return svgFallback();
   try{
     if (!pixiApp){
-      pixiApp = new PIXI.Application({view: AV, width: 220, height: 220,
+      pixiApp = new PIXI.Application({view: AV, width: 300, height: 300,
         backgroundAlpha: 0, antialias: true});
       if (pixiApp.ticker && pixiApp.ticker.maxFPS !== undefined) pixiApp.ticker.maxFPS = 30; // ponytail: cap avatar at 30fps — halves GPU load, idle motion visually identical
     }
