@@ -348,7 +348,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.5</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.6</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -677,8 +677,8 @@ function avTalk(ms){
 
 /* ==== Brik Radial Chart — verbatim animated creative port (System + Starlink cards) ==== */
 const SYS_OVR = { centerTitle: 'SYSTEM', label1: 'MEM', label2: 'DSK', label3: 'CPU', label4: 'PH' };
-const SL_OVR  = { centerTitle: 'STARLINK', label1: 'SIG', label2: 'DOWN', label3: 'UP', label4: 'OBS', val1: 100, val2: 40, val3: 25, val4: 2,
-  color1: '#4a9d78', color2: '#35624f', color3: '#6fb894', color4: '#2c4a3a' };
+const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'SIG', label2: 'OBS', val1: 100, val2: 2,
+  color1: '#4a9d78', color2: '#6fb894' };
 (function(){
   function bootBrik(hostSel, OVR, brName){
     const host = document.querySelector(hostSel);
@@ -2049,7 +2049,7 @@ function syncTargetState() {
   const rawScale = controls.get('chartSize');
   state.targetChartScale = Math.max(0.5, Math.min(1.5, typeof rawScale === 'number' ? rawScale : 1.0));
 
-  state.activeCount = Math.max(3, Math.min(MAX_SLOTS, Math.round(controls.get('activeSegments') || 8)));
+  state.activeCount = Math.max(2, Math.min(MAX_SLOTS, Math.round(controls.get('activeSegments') || 8)));
 
   for (let i = 0; i < MAX_SLOTS; i++) {
     const valKey = `val${i + 1}`;
@@ -3856,8 +3856,8 @@ fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   document.getElementById('slobs').textContent = s.obstructed_pct + '%' + (s.currently_obstructed ? ' · blocked now' : '');
   const feed = () => {
     if (!window._slSet) return setTimeout(feed, 400);
-    const qv=Math.round((s.quality||0)*100), dv=Math.min(100,Math.round((s.down_mbps||0)/250*100)), uv=Math.min(100,Math.round((s.up_mbps||0)/250*100)), ov=Math.max(1,Math.round(Math.min(100,s.obstructed_pct||0)));
-    _slSet('q', qv); _slSet('down', dv); _slSet('up', uv); _slSet('obstr', ov);
+    const qv=Math.round((s.quality||0)*100), ov=Math.max(1,Math.round(Math.min(100,s.obstructed_pct||0)));
+    _slSet('q', qv); _slSet('obstr', ov);
   };
   feed();
 }).catch(()=>{});

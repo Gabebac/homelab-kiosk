@@ -1,6 +1,7 @@
 # Changelog
 
-## V5.5
+## V5.6
+- Starlink ring: 2 segments only (SIG + OBS; down/up stay in the side rows). Enabled 2-slot activeSegments (template clamped at min 3).
 - Ring charts smaller: System 212→178px, Starlink 170→150px display (internal 300px stage untouched — labels intact).
 
 ## V5.4 (9144eda) — perf pass + Starlink Brik ring #2
