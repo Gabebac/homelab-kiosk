@@ -90,8 +90,8 @@
       "sys sys sys sl sl sl usage usage usage cal cal cal"
       "sys sys sys sl sl sl ctr ctr ctr cal cal cal"
       "eco eco eco eco eco eco preqs preqs preqs preqs preqs preqs"
-      "hist hist hist hist hist hist . . av av av av"
-      "chat chat chat chat chat chat chat chat av av av av"}
+      "hist hist hist hist hist hist hist hist av av av av"
+      "hist hist hist hist hist hist hist hist av av av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="sys"]{grid-area:sys}
@@ -291,6 +291,10 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 
   /* ==== wall chat history card ==== */
   .wmsg{overflow-y:auto;display:flex;flex-direction:column;gap:6px;font-size:9.5px;line-height:1.45;max-height:calc(100% - 22px);scrollbar-width:none}
+
+  .card[data-k="hist"] .face.front{display:flex;flex-direction:column}
+  .card[data-k="hist"] .wmsg{flex:1;max-height:none}
+  .card[data-k="hist"] .mo-pillrow{align-self:stretch;flex:none;margin-top:6px}
   .wmsg::-webkit-scrollbar{display:none}
   .wmsg .m{font-family:var(--f-disp);font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mint)}
   .wmsg .m.user{color:var(--orange)}
@@ -374,7 +378,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.7</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.8</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -415,16 +419,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
       <div class="face back"><h2>Plex · last added</h2><div id="preqsad" class="preq"></div></div>
     </div>
   </div>
-    <div class="card" data-k="chat" style="--h:150px">
-    <div class="face front chatface">
-      <div class="mo-pillrow">
-        <svg class="mo-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5l1.7 4.8 4.8 1.7-4.8 1.7L10 16.5l-1.7-4.8L3.5 10l4.8-1.7L10 3.5z"/><path d="M18 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z"/></svg>
-        <input id="q" placeholder="Ask anything…" autocomplete="off">
-        <button class="send" id="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5.5 11.5L12 5l6.5 6.5"/></svg></button>
-      </div>
-    </div>
-  </div>
-  <div class="dropup" id="dropup">
+    <div class="dropup" id="dropup">
     <div class="dr-head"><span>Hermes · chat</span><button id="dropclose" style="background:none;border:none;color:var(--dim);cursor:pointer;font:600 10px var(--f-disp)">✕</button></div>
     <div class="dr-msgs" id="drmsgs"></div>
     <div class="dr-comp"><div class="chatrow"><input id="qp" placeholder="Say something to Hermes…" autocomplete="off"><button class="send" id="sendp">Send</button></div></div>
@@ -455,7 +450,10 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     </div>
   </div>
       <div class="card" data-k="hist" style="--h:110px">
-    <div class="face front"><h2>Hermes · chat</h2><div class="wmsg" id="wallhist"></div></div>
+    <div class="face front"><h2>Hermes · chat</h2><div class="wmsg" id="wallhist"></div><div class="mo-pillrow">        <svg class="mo-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5l1.7 4.8 4.8 1.7-4.8 1.7L10 16.5l-1.7-4.8L3.5 10l4.8-1.7L10 3.5z"/><path d="M18 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z"/></svg>
+        <input id="q" placeholder="Ask anything…" autocomplete="off">
+        <button class="send" id="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5.5 11.5L12 5l6.5 6.5"/></svg></button>
+      </div></div>
   </div>
   <div class="card" data-k="usage">
     <div class="face front"><h2>Usage · providers</h2>
@@ -3740,7 +3738,7 @@ const MO = (() => {
 addEventListener('DOMContentLoaded', () => {
   const d = document.getElementById('dropup');
   const place = () => {
-    const card = document.querySelector('.card[data-k="chat"]').getBoundingClientRect();
+    const card = document.querySelector('.card[data-k="hist"]').getBoundingClientRect();
     const W = Math.max(360, card.width);
     d.style.width = W + 'px';
     d.style.left = card.left + 'px';
@@ -3754,7 +3752,7 @@ addEventListener('DOMContentLoaded', () => {
   const avdropEl = document.querySelector('.avdrop');
   const avpin = () => {
     if (!avdropEl) return;
-    const card = document.querySelector('.card[data-k="chat"]').getBoundingClientRect();
+    const card = document.querySelector('.card[data-k="hist"]').getBoundingClientRect();
     avdropEl.style.right = (window.innerWidth - card.right + 10) + 'px';
     avdropEl.style.bottom = (window.innerHeight - card.bottom + 8) + 'px';
   };

@@ -1,5 +1,9 @@
 # Changelog
 
+## V6.8
+- **Chat + text field unified**: one element — the HERMES·CHAT card now spans the full bottom 8-col zone across two rows, carries the input pill (spark + field + send) full-width at the card's bottom, transcript above. Old floating pill card removed. Dropup pin re-anchored to the chat card.
+- Send path verified on-wall (typed 'hello wall' → user bubble mirrored into card). Reply latency currently minutes-long: hermes-next-pilot gateway is compacting contexts; same /ask path verified end-to-end in V6.4.
+
 ## V6.7
 - **Starlink range actually fixed this time**: root cause twofold — the V6.3 50-100 edit never reached disk (silent-edit bug, third occurrence), and the SL bridge's `down/up` keys mapped to val2/val3 while the 2-segment chart displays val1/val2 (so DOWN showed a stale seed sliver). KEYMAP now respects `activeSegments: 2`: down→val1, up→val2. Wall shows DOWN 50 / UP 55, both arcs past half-circle.
 - Battery fill: bright core + darker edges (radial highlight + vertical edge shading), ring-style.
