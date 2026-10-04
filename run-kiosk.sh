@@ -9,7 +9,7 @@ docker network connect hermes-next-pilot-net stats-sidecar --alias stats-sidecar
 # sidecar: host netns for /proc + LAN service probing; binds config + docker socket
 # + dashboard HTML (host path: this container's /opt/data = host /DATA/AppData/hermes-next-pilot)
 docker run -d --name stats-sidecar --restart unless-stopped \
-    --network host \
+    --network host --env-file kiosk/usage.env \
     -v /DATA/AppData/hermes-next-pilot/config.yaml:/opt/data/config.yaml:ro \
     -v /DATA/AppData/hermes-next-pilot/kiosk/dashboard:/opt/data/kiosk/dashboard:ro \
     -v /var/run/docker.sock:/var/run/docker.sock \

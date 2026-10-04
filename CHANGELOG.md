@@ -1,5 +1,10 @@
 # Changelog
 
+## V5.8 (live-verified)
+- Starlink ring now shows **DOWN / UP speeds** (live, % of nominal 250/50 Mbps).
+- Starlink top-row card cut in half width-wise: left = ring, right = new **USAGE · PROVIDERS** card — OpenRouter spend, Ollama Cloud weekly % + request count, ElevenLabs characters, plus Starlink obstruction/signal line.
+- Data: new sidecar `/usage` endpoint (keys read from env at runtime — `usage.env`, gitignored, injected via `--env-file` in run-kiosk.sh). Values verified live: OpenRouter $18.93, Ollama 42% wk / 1310 reqs, ElevenLabs 51%.
+
 ## V5.7 (native-res, verified live)
 - Layout: Starlink card ↔ Containers card swapped (STARLINK now top row middle next to SYSTEM + CALENDAR).
 - Second row divided into two middle rows: half-height ECOFLOW + PLEX row, then a full-width CONTAINERS row (4 rows + chat now).

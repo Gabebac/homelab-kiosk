@@ -506,6 +506,44 @@ def plex_lists():
     adds = [x for x in out if x["ev"] == "downloadFolderImported"][:5]
     return {"requests": reqs, "added": adds}
 
+
+@app.get("/usage")
+def usage():
+    """Provider limits/credits: OpenRouter spend, Ollama Cloud weekly usage, ElevenLabs chars."""
+    out = {}
+    or_key = os.environ.get("OPENROUTER_API_KEY")
+    if or_key:
+        try:
+            rq = urllib.request.Request("https://openrouter.ai/api/v1/auth/key", headers={"Authorization": "Bearer " + or_key})
+            d = json.loads(urllib.request.urlopen(rq, timeout=10).read())
+            info = d.get("data", {})
+            out["openrouter"] = {"usage": round(info.get("usage") or 0, 2),
+                                 "limit": info.get("limit"),
+                                 "free_tier": bool(info.get("is_free_tier"))}
+        except Exception:
+            pass
+    ol_key = os.environ.get("OLLAMA_API_KEY")
+    if ol_key:
+        try:
+            rq = urllib.request.Request("https://ollama.com/api/usage", headers={"Authorization": "Bearer " + ol_key})
+            d = json.loads(urllib.request.urlopen(rq, timeout=10).read())
+            w = d.get("limits", {}).get("weekly", {})
+            out["ollama"] = {"weekly_usage": w.get("usage"),
+                             "reqs": sum(m.get("request_count", 0) for m in w.get("models", []))}
+        except Exception:
+            pass
+    el_key = os.environ.get("ELEVENLABS_API_KEY")
+    if el_key:
+        try:
+            rq = urllib.request.Request("https://api.elevenlabs.io/v1/user/subscription", headers={"xi-api-key": el_key})
+            d = json.loads(urllib.request.urlopen(rq, timeout=10).read())
+            out["elevenlabs"] = {"chars": d.get("character_count"),
+                                 "limit": d.get("character_limit"),
+                                 "tier": d.get("tier")}
+        except Exception:
+            pass
+    return out
+
 @app.get("/plexreqs")
 def plexreqs():
     return plex_lists()

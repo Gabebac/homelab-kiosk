@@ -87,7 +87,7 @@
     grid-template-columns:repeat(12,minmax(0,1fr));
     grid-template-rows:repeat(4, minmax(0, 1fr));
     grid-template-areas:
-      "sys sys sys sys sl sl sl sl cal cal cal cal"
+      "sys sys sys sys sl sl usage usage cal cal cal cal"
       "eco eco eco eco eco eco preqs preqs preqs preqs preqs preqs"
       "ctr ctr ctr ctr ctr ctr ctr ctr ctr ctr ctr ctr"
       "chat chat chat chat chat chat chat chat av av av av"}
@@ -272,7 +272,13 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     stroke-dasharray:119.4;stroke-dashoffset:119.4;transition:stroke-dashoffset .8s cubic-bezier(.3,1,.4,1)}
 
 
-/* ==== starlink viz ==== */
+/* ==== usage card ==== */
+  .urow{display:flex;align-items:baseline;gap:6px;margin:4px 0;font-size:9.5px;white-space:nowrap;overflow:hidden}
+  .urow b{font-family:var(--f-disp);font-size:11px;color:var(--cream);font-variant-numeric:tabular-nums;margin-left:auto;flex:none}
+  .urow span{color:var(--dim);letter-spacing:.02em;flex:none}
+  .urow .uq{color:var(--mint);font-size:8.5px;overflow:hidden;text-overflow:ellipsis}
+
+  /* ==== starlink viz ==== */
   .slviz{position:relative;flex:1;display:flex;align-items:center;gap:10px;min-height:0}
   #slarc{width:118px;height:118px;flex:none}
   .slcenter{position:absolute;left:0;top:0;width:118px;height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
@@ -344,7 +350,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.7</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.8</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -415,15 +421,16 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     <div class="avi-wrap"><canvas id="avatar" width="220" height="220" aria-hidden="true"></canvas></div>
   </div>
       <div class="card" data-k="sl">
-    <div class="face front"><h2>Starlink</h2>
-      <div class="slviz">
-        <div class="sysrings" id="slrings" style="width:170px;height:170px;flex:none"></div>
-        <div class="slbars">
-          <div class="slrow2"><span>▼ down</span><b id="sldown">–</b></div>
-          <div class="slrow2"><span>▲ up</span><b id="slup">–</b></div>
-          <div class="slrow2"><span>obstr</span><b id="slobs">–</b></div>
-        </div>
-      </div>
+    <div class="face front" style="display:flex;flex-direction:column"><h2>Starlink</h2>
+      <div class="sysrings" id="slrings" style="flex:1;min-height:0"></div>
+    </div>
+  </div>
+      <div class="card" data-k="usage">
+    <div class="face front"><h2>Usage · providers</h2>
+      <div class="urow"><span>OpenRouter</span><b id="uor">–</b><span class="uq" id="uorq"></span></div>
+      <div class="urow"><span>Ollama cloud</span><b id="uol">–</b><span class="uq" id="uolq"></span></div>
+      <div class="urow"><span>ElevenLabs</span><b id="uel">–</b><span class="uq" id="uelq"></span></div>
+      <div class="urow"><span>Obstr</span><b id="slobs">–</b><span class="uq" id="slsig"></span></div>
     </div>
   </div>
 </main>
@@ -629,8 +636,8 @@ function avTalk(ms){
 
 /* ==== Brik Radial Chart — verbatim animated creative port (System + Starlink cards) ==== */
 const SYS_OVR = { centerTitle: 'SYSTEM', label1: 'MEM', label2: 'DSK', label3: 'CPU', label4: 'PH' };
-const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'SIG', label2: 'OBS', val1: 100, val2: 2,
-  color1: '#4a9d78', color2: '#6fb894' };
+const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'DOWN', label2: 'UP', val1: 2, val2: 10,
+  color1: '#4a9d78', color2: '#6fb894', centerTitleSize: 11 };
 (function(){
   function bootBrik(hostSel, OVR, brName){
     const host = document.querySelector(hostSel);
@@ -638,7 +645,7 @@ const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'SIG', lab
     const BRIK_VALS = Object.assign({"enableHeatmap": true, "chartX": 0, "chartY": 0, "mode": "concentric", "segmentBlendMode": "source-over", "segmentNoise": 0.08, "segmentSoftness": 0.1, "chartSize": 1.0, "activeSegments": 4, "cornerRadius": 40, "heatmapView": false, "waveLayers": 6, "waveSpread": 70, "waveFalloff": 3, "animateWaves": false, "isolinePalette": "sunset", "isoColor1": "#FFF7ED", "isoColor2": "#FDE047", "isoColor3": "#F97316", "isoColor4": "#991B1B", "isoColor5": "#2A0404", "enableGuides": true, "guideColor": "rgba(127,214,164,0.25)", "guideOpacity": 100, "guideWidth": 2, "colorPreset": "ocean", "colorCore": "#eaf6ef", "colorHigh": "#7fd6a4", "colorMid": "#4e8f6e", "colorLow": "#2c4a3a", "colorEdge": "#12241c", "enableGradient": false, "gradientSpeed": 2, "gradientColor1": "#E9DFD8", "gradientColor2": "#FFF0A3", "gradientColor3": "#DFA5A5", "baseBgColor": "#0f1411", "bgNoiseAmount": 0, "fontFamily": {"family": "Inconsolata", "style": "normal", "weight": 400, "url": null}, "useAutoContrast": false, "headerColor": "#7fd6a4", "textColor": "#eaf2ec", "centerContent": "text", "centerTitle": "SYSTEM", "centerTitleSize": 13, "valNumberSize": 1.55, "segLabelSize": 2, "monoMode": false, "monoColor": "#B088F9", "animSpeed": 750, "val1": 31, "val2": 41, "val3": 222, "val4": 6, "val5": 35, "val6": 81, "val7": 38, "val8": 65, "val9": 18, "val10": 76, "val11": 100, "val12": 54, "val13": 73, "val14": 63, "val15": 70, "label1": "MEM", "label2": "DSK", "label3": "CPU", "label4": "PH", "label5": "Flow", "label6": "Reach", "label7": "Core", "label8": "Pulse", "label9": "Spark", "label10": "Vibe", "label11": "Echo", "label12": "Nova", "label13": "Aura", "label14": "Peak", "label15": "Drift", "color1": "#7fd6a4", "color2": "#5aa884", "color3": "#c96b5e", "color4": "#d4b48c", "color5": "#AAE3FF", "color6": "#AAE3FF", "color7": "#AAE3FF", "color8": "#F7941D", "color9": "#F05A2C", "color10": "#EF4138", "color11": "#DA1C5C", "color12": "#EE2B7A", "color13": "#DA1C5C", "color14": "#DA1C1F", "color15": "#ED0306", "bgImage": "", "bgOpacity": 0, "bgFit": "cover"}, OVR);
     const DPR = Math.min(2, window.devicePixelRatio || 1);
     const CW = 300, CH = 300;      // internal layout size (labels positioned for 300)
-    const CSIZE = hostSel === '#slrings' ? 178 : 178;  // CSS display size — downscaled to fit each card
+    const CSIZE = hostSel === '#slrings' ? 150 : 178;  // CSS display size — downscaled to fit each card
     const canvas = document.createElement('canvas');
     canvas.width = CW * DPR; canvas.height = CH * DPR;
     canvas.style.width = CSIZE + 'px'; canvas.style.height = CSIZE + 'px'; canvas.style.display = 'block'; canvas.style.margin = '0 auto';
@@ -3803,16 +3810,42 @@ fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   if (!s.ok) return;
   const st = document.getElementById('slstate');
   if (st){ st.textContent = s.state; st.className = s.state==='OK'?'':'bad'; }
-  document.getElementById('sldown').textContent = s.down_mbps + ' Mb/s';
-  document.getElementById('slup').textContent = s.up_mbps + ' Mb/s';
-  document.getElementById('slobs').textContent = s.obstructed_pct + '%' + (s.currently_obstructed ? ' · blocked now' : '');
+  document.getElementById('slobs').textContent = (s.obstructed_pct|0) + '%';
+  document.getElementById('slsig').textContent = Math.round((s.quality||0)*100) + '% signal';
   const feed = () => {
     if (!window._slSet) return setTimeout(feed, 400);
-    const qv=Math.round((s.quality||0)*100), ov=Math.max(1,Math.round(Math.min(100,s.obstructed_pct||0)));
-    _slSet('q', qv); _slSet('obstr', ov);
+    const dv=Math.max(1,Math.min(100,Math.round((s.down_mbps||0)/250*100))), uv=Math.max(1,Math.min(100,Math.round((s.up_mbps||0)/50*100)));
+    _slSet('down', dv); _slSet('up', uv);
   };
   feed();
 }).catch(()=>{});
+
+/* ==== usage providers (60s) ==== */
+(function(){
+  const REFRESH_MS = 60000;
+  async function bump(){
+    try{
+      const r = await fetch('/usage'); if (!r.ok) return;
+      const u = await r.json();
+      const orE=document.getElementById('uor'), olE=document.getElementById('uol'), elE=document.getElementById('uel');
+      const orQ=document.getElementById('uorq'), olQ=document.getElementById('uolq'), elQ=document.getElementById('uelq');
+      if (u.openrouter){
+        orE.textContent = '$' + u.openrouter.usage.toFixed(2);
+        orQ.textContent = u.openrouter.limit != null ? ('of $' + u.openrouter.limit) : ('credit, ' + (u.openrouter.free_tier ? 'free tier' : 'pay-as-you-go'));
+      } else { orE.textContent='–'; orQ.textContent=''; }
+      if (u.ollama){
+        olE.textContent = Math.round(u.ollama.weekly_usage*100) + '% wk';
+        olQ.textContent = u.ollama.reqs + ' reqs / 4wk';
+      } else { olE.textContent='–'; olQ.textContent=''; }
+      if (u.elevenlabs){
+        const pct = Math.round(u.elevenlabs.chars / u.elevenlabs.limit * 100);
+        elE.textContent = pct + '%';
+        elQ.textContent = Math.round((u.elevenlabs.limit - u.elevenlabs.chars)/1000) + 'k chars left';
+      } else { elE.textContent='–'; elQ.textContent=''; }
+    }catch(e){}
+  }
+  bump(); setInterval(bump, REFRESH_MS);
+})();
 
 /* ==== stats polling ==== */
 let LAST_OK = 0;
