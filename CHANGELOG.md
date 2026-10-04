@@ -1,5 +1,8 @@
 # Changelog
 
+## V5.5
+- Ring charts smaller: System 212→178px, Starlink 170→150px display (internal 300px stage untouched — labels intact).
+
 ## V5.4 (9144eda) — perf pass + Starlink Brik ring #2
 - Perf (wall CPU ~335% → ~209% on docker stats, idle):
   - Brik render governor: 30fps while values ease (unchanged look), 8fps settled.
