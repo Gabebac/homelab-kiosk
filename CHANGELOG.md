@@ -1,5 +1,11 @@
 # Changelog
 
+## V7.2
+- **EcoFlow card = System card width** (6/24, left column aligned).
+- **Plex card = Containers card width** (6/24), aligned directly under it.
+- **Starlink card grew into the freed gap**: it now spans the tall rows AND the eco row (cols 7–12), with the FULL important stats under the ring — down/up Mb/s, obstruction %, latency (ms), uptime (h), state. Battery bar reverted to 150px.
+- Week schedule width untouched.
+
 ## V7.0 / V7.1
 - **Grid widened to 24 columns** so widths can halve cleanly: EcoFlow = Plex = Plex-half (9/24 each), WEEK SCHEDULE keeps its exact 3/12 width (6/24).
 - **Battery widened** (150→250px bar) to fill the resized EcoFlow card.

@@ -89,7 +89,7 @@
     grid-template-areas:
       "sys sys sys sys sys sys sl sl sl sl sl sl usage usage usage usage usage usage cal cal cal cal cal cal"
       "sys sys sys sys sys sys sl sl sl sl sl sl ctr ctr ctr ctr ctr ctr cal cal cal cal cal cal"
-      "eco eco eco eco eco eco eco eco eco preqs preqs preqs preqs preqs preqs preqs preqs preqs wk wk wk wk wk wk"
+      "eco eco eco eco eco eco sl sl sl sl sl sl preqs preqs preqs preqs preqs preqs wk wk wk wk wk wk"
       "hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av"
       "hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av"}
   main::-webkit-scrollbar{display:none}
@@ -153,7 +153,7 @@
 
   /* ecoflow battery visuals */
   .batt{display:flex;align-items:center;gap:14px}
-  .batt .bwrap{width:250px;height:64px;border:2px solid var(--teal);border-radius:10px;position:relative;padding:5px}
+  .batt .bwrap{width:150px;height:64px;border:2px solid var(--teal);border-radius:10px;position:relative;padding:5px}
   .batt .bwrap::after{content:"";position:absolute;right:-8px;top:50%;transform:translateY(-50%);
     width:6px;height:26px;background:var(--teal);border-radius:0 3px 3px 0}
   .batt .fill{height:100%;border-radius:5px;overflow:hidden;
@@ -381,7 +381,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <div id="morphover"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.1</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.2</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -449,6 +449,9 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
         <div class="urow"><span>▼ down</span><b id="sldown">–</b><span class="uq">Mb/s</span></div>
         <div class="urow"><span>▲ up</span><b id="slup">–</b><span class="uq">Mb/s</span></div>
         <div class="urow"><span>obstr</span><b id="slobs">–</b><span class="uq" id="slsig"></span></div>
+        <div class="urow"><span>latency</span><b id="sllat">–</b><span class="uq">ms</span></div>
+        <div class="urow"><span>uptime</span><b id="slup2">–</b><span class="uq">h</span></div>
+        <div class="urow"><span>state</span><b id="slstate">–</b><span class="uq"></span></div>
       </div>
     </div>
   </div>
@@ -3867,6 +3870,8 @@ fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   document.getElementById('slup').textContent = s.up_mbps;
   document.getElementById('slobs').textContent = (s.obstructed_pct||0).toFixed(2) + '%';
   document.getElementById('slsig').textContent = Math.round((s.quality||0)*100) + '% signal';
+  const slLat = document.getElementById('sllat'); if (slLat) slLat.textContent = Math.round(s.latency_ms||0);
+  const slUp2 = document.getElementById('slup2'); if (slUp2) slUp2.textContent = s.uptime_h!=null ? s.uptime_h : '–';
   const feed = () => {
     if (!window._slSet) return setTimeout(feed, 400);
     const dv=50+Math.min(50,Math.round((s.down_mbps||0)/250*50)), uv=50+Math.min(50,Math.round((s.up_mbps||0)/50*50));
