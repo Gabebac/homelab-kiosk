@@ -50,6 +50,9 @@
 - **Chat + text field unified**: one element — the HERMES·CHAT card now spans the full bottom 8-col zone across two rows, carries the input pill (spark + field + send) full-width at the card's bottom, transcript above. Old floating pill card removed. Dropup pin re-anchored to the chat card.
 - Send path verified on-wall (typed 'hello wall' → user bubble mirrored into card). Reply latency currently minutes-long: hermes-next-pilot gateway is compacting contexts; same /ask path verified end-to-end in V6.4.
 
+## V6.5–V6.6 (rolled into 7c1224e)
+- avatar picker moved to right side; SL 50–100 range re-land discovered missing from disk; battery shading pass.
+
 ## V6.7
 - **Starlink range actually fixed this time**: root cause twofold — the V6.3 50-100 edit never reached disk (silent-edit bug, third occurrence), and the SL bridge's `down/up` keys mapped to val2/val3 while the 2-segment chart displays val1/val2 (so DOWN showed a stale seed sliver). KEYMAP now respects `activeSegments: 2`: down→val1, up→val2. Wall shows DOWN 50 / UP 55, both arcs past half-circle.
 - Battery fill: bright core + darker edges (radial highlight + vertical edge shading), ring-style.
@@ -95,6 +98,9 @@
 - The panel's EDID drops out (monitor off / X restart) → Xorg fell back to **640×480**; the panel upscaled that to fill the 16" screen, so the wall rendered ~2.1× bigger physically than in my headless 1366×768 checks — every size divergence traced here.
 - `entrypoint.sh` now forces a 1366×768_60 modeline on the connected output when 1366×768 is absent. Verified live: `xrandr` reports 1366×768, native-res capture matches the design.
 - Previous "v5.4 smaller rings" etc. may have been over-corrected under the old fallback; ring sizes (178/150) may now read small at true res — recalibrate on your call.
+
+## V5.5 (d651b4b)
+- ring sizes tightened (sys 178 / sl 150), minor spacing.
 
 ## V5.6
 - Starlink ring: 2 segments only (SIG + OBS; down/up stay in the side rows). Enabled 2-slot activeSegments (template clamped at min 3).
