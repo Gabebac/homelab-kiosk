@@ -39,8 +39,8 @@
   .avmenu button.on{color:var(--ok)}
   /* avatar cell */
   .avcard{perspective:none}
-  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:210px;height:210px;pointer-events:none}
-  #avatar{width:210px;height:210px}
+  .avcard .avi-wrap{position:absolute;left:50%;top:0;transform:translateX(-50%);width:240px;height:100%;pointer-events:none;display:flex;align-items:flex-end;justify-content:center}
+  #avatar{width:240px;height:240px}
 
   /* ==== calendar flip: week events back face ==== */
   .card[data-k="cal"] .face{display:flex;flex-direction:column}
@@ -89,7 +89,7 @@
     grid-template-areas:
       "sys sys sys sys sl sl usage usage cal cal cal cal"
       "eco eco eco eco eco eco preqs preqs preqs preqs preqs preqs"
-      "ctr ctr ctr ctr ctr ctr ctr ctr ctr ctr ctr ctr"
+      "ctr ctr ctr ctr ctr ctr . . av av av av"
       "chat chat chat chat chat chat chat chat av av av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
@@ -147,12 +147,17 @@
   .empty{color:var(--dim);font-size:9px;font-style:italic}
 
   /* ecoflow battery visuals */
-  .batt{display:flex;align-items:center;gap:12px}
-  .batt .bwrap{width:96px;height:44px;border:2px solid var(--teal);border-radius:8px;position:relative;padding:4px}
-  .batt .bwrap::after{content:"";position:absolute;right:-7px;top:50%;transform:translateY(-50%);
-    width:5px;height:20px;background:var(--teal);border-radius:0 3px 3px 0}
-  .batt .fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#015b66,var(--orange));
+  .batt{display:flex;align-items:center;gap:14px}
+  .batt .bwrap{width:150px;height:64px;border:2px solid var(--teal);border-radius:10px;position:relative;padding:5px}
+  .batt .bwrap::after{content:"";position:absolute;right:-8px;top:50%;transform:translateY(-50%);
+    width:6px;height:26px;background:var(--teal);border-radius:0 3px 3px 0}
+  .batt .fill{height:100%;border-radius:5px;overflow:hidden;
     width:var(--soc,50%);transition:width .8s}
+  /* ring-chart thermal motion ported onto the fill: waving mint heat */
+  .batt .fill::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,#123a2e,#2c6f52,#59b58a,#2c6f52,#123a2e);
+    background-size:300% 100%;animation:battwave 6s linear infinite}
+  @keyframes battwave{0%{background-position:0% 0}100%{background-position:300% 0}}
   .batt .pct{font-family:var(--f-disp);font-size:15px;font-weight:700;color:var(--cream)}
   .batt .meta{font-size:8px;color:var(--dim);line-height:1.5}
   .batt .meta b{color:var(--orange);font-weight:600}
@@ -351,7 +356,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.1</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.2</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>

@@ -1,5 +1,10 @@
 # Changelog
 
+## V6.2
+- EcoFlow battery bigger (96×44 → 150×64) with ring-chart-style thermal motion ported onto the fill (waving mint gradient, 6s loop).
+- Containers card cut to half width (left); avatar now spans the containers row + chat row (right-side) — ~2 rows tall, bottom-aligned.
+- `grid-template-areas` row3: ctr×6 · gap · av×4; av card stretches rows 3–4.
+
 ## V6.1
 - ROOT FIX: usage card rendered half-width — its `grid-area:usage` CSS rule had silently never landed (silent-edit bug again); rule added → equal width with Starlink card.
 - Even screen margin (main padding 10/18/10); avatar canvas unclamped 148→210px (the +15% fit bump finally displays) and truly centered (-50%,-50%); model-picker button right side (right:22px, bottom:12px).
