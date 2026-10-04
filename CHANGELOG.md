@@ -1,5 +1,10 @@
 # Changelog
 
+## V7.5
+- **Calendar flip removed**: `.flip` wrapper + the 'This week' back face deleted (single face, month grid only — the info lives in the WEEK SCHEDULE card); dead `wkl` fetch block removed.
+- **Bottom row rebalanced**: chat 18/24 → 14/24, avatar 6/24 → 10/24 (≈3/5 : 2/5).
+- **Bottom stretch**: main height 100vh−12px→−6px, bottom padding 6→2px; chat + avatar reach almost to the screen edge, picker stays pinned to the avatar card's bottom.
+
 ## V7.4
 - **Thinking orb/label centered**: the orb wrap was 220px wide left-aligned while the orb renders 132px — canvas + phase label sat left of center. Wrap pinned to 132px with centered flex; label now dead-center under the orb.
 - **Starlink ring bigger** (170→200px display).

@@ -82,7 +82,7 @@
   .clock b{color:var(--cream);font-weight:500}
 
   /* ==== small flip cards (card-14 port) ==== */
-  main{height:calc(100vh - 12px);padding:10px 28px 6px;overflow:hidden;scrollbar-width:none;
+  main{height:calc(100vh - 6px);padding:10px 28px 2px;overflow:hidden;scrollbar-width:none;
     display:grid;gap:10px;min-width:0;
     grid-template-columns:repeat(24,minmax(0,1fr));
     grid-template-rows:repeat(5, minmax(0,1fr));
@@ -90,8 +90,8 @@
       "sys sys sys sys sys sys sl sl sl sl sl sl usage usage usage usage usage usage cal cal cal cal cal cal"
       "sys sys sys sys sys sys sl sl sl sl sl sl ctr ctr ctr ctr ctr ctr cal cal cal cal cal cal"
       "eco eco eco eco eco eco sl sl sl sl sl sl preqs preqs preqs preqs preqs preqs wk wk wk wk wk wk"
-      "hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av"
-      "hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av"}
+      "hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av av av av av"
+      "hist hist hist hist hist hist hist hist hist hist hist hist hist hist av av av av av av av av av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
   .card[data-k="sys"]{grid-area:sys}
@@ -395,7 +395,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.4</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.5</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -442,15 +442,9 @@
     <div class="dr-comp"><div class="chatrow"><input id="qp" placeholder="Say something to Hermes…" autocomplete="off"><button class="send" id="sendp">Send</button></div></div>
   </div>
   <div class="card" data-k="cal">
-    <div class="flip">
-      <div class="face front">
+    <div class="face front">
         <div class="calhead"><div class="calmonth" id="calmonth">–</div></div>
         <div class="calgrid" id="calgrid"></div>
-      </div>
-      <div class="face back">
-        <h2>This week</h2>
-        <div class="wkl" id="wkl"><div class="wkd">–</div></div>
-      </div>
     </div>
   </div>
   <div class="card avcard" data-k="av">
@@ -3810,20 +3804,6 @@ function askPopup(){
   ask();
 }
 
-/* ==== calendar back: this-week events (cron + reminders) ==== */
-fetch('/v3/events.json').then(r=>r.json()).then(x=>{
-  const wk = document.getElementById('wkl'); if (!wk) return;
-  const now = new Date();
-  const in7 = new Date(now.getTime() + 7*864e5);
-  const rows = (x.events||[]).filter(e => { const t=new Date(e.next); return t>=new Date(now-864e5) && t<=in7; })
-    .sort((a,b)=>new Date(a.next)-new Date(b.next));
-  wk.innerHTML = rows.length ? rows.map(e=>{
-    const d=new Date(e.next);
-    const day=d.toLocaleDateString('en-GB',{weekday:'short'});
-    const tm=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false});
-    return `<div class="wkd"><div class="nm">${esc(e.name)}</div><div class="when">${day} ${tm} · <b>${e.last_status==='ok'?'ok':e.last_status}</b></div></div>`;
-  }).join('') : '<div class="wkd"><div class="nm">No events this week</div><div class="when">cron idle</div></div>';
-}).catch(()=>{});
 
 
 fetch('/v3/events.json').then(r=>r.json()).then(x=>{
