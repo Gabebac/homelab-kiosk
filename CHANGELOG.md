@@ -1,5 +1,9 @@
 # Changelog
 
+## V7.3
+- **Side margins widened**: main padding 18→28px left/right; main height extended (100vh−26px→−12px) so chat + avatar stretch closer to the screen's bottom.
+- **Avatar-model picker re-pinned** to the avatar card's bottom edge — its bottom line is now flush with the chat card and avatar bottoms (was floating ~40px above).
+
 ## V7.2
 - **EcoFlow card = System card width** (6/24, left column aligned).
 - **Plex card = Containers card width** (6/24), aligned directly under it.
