@@ -399,7 +399,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.0</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.1</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -588,8 +588,8 @@ async function loadAvatar(name){
       jinx: {s: 0.098, fx: 0.50, fy: 0.22},
     }[name] || {s: 0.30, fx: 0.50, fy: 0.50};
     model.scale.set(FIT.s);
-    model.x = 110 - model.width * FIT.fx;
-    model.y = (FIT.ay !== undefined) ? FIT.ay : 110 - model.height * FIT.fy;
+    model.x = 150 - model.width * FIT.fx;   // stage center (canvas 300)
+    model.y = (FIT.ay !== undefined) ? FIT.ay : 150 - model.height * FIT.fy;
     
   }catch(e){ console.warn('live2d init failed for ' + name, e); model = null; svgFallback(); }
 }
@@ -609,7 +609,7 @@ setTimeout(() => { // still nothing after 4s? paint a simple neon face on the ca
     const c = AV.getContext('2d'); if (!c) return;
     c.clearRect(0,0,AV.width,AV.height);
     c.strokeStyle = 'rgba(127,214,164,.5)'; c.lineWidth = 3;
-    c.beginPath(); c.arc(110,110,80,0,Math.PI*2); c.stroke();
+    c.beginPath(); c.arc(150,150,95,0,Math.PI*2); c.stroke();
     c.fillStyle = '#fafafa';
     c.beginPath(); c.arc(82,92,9,0,Math.PI*2); c.fill();
     c.beginPath(); c.arc(138,92,9,0,Math.PI*2); c.fill();
