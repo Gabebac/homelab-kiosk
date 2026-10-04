@@ -1,5 +1,12 @@
 # Changelog
 
+## V7.0 / V7.1
+- **Grid widened to 24 columns** so widths can halve cleanly: EcoFlow = Plex = Plex-half (9/24 each), WEEK SCHEDULE keeps its exact 3/12 width (6/24).
+- **Battery widened** (150→250px bar) to fill the resized EcoFlow card.
+- **Chat + avatar stretch lower**: main bottom padding 10→4px, avatar-model button bottom-aligned on the same line (bottom:4px).
+- **SEND FIXED (root cause)**: the `#morphover` overlay element was missing from the markup — `ask()` threw a TypeError right after echoing the user bubble, so the `/ask` fetch NEVER fired and the send button stayed disabled for all later messages. Restored the div; verified live: click → user bubble + "SEARCHING" orb overlay → turn resolves (short turns ~15s; long agent turns with tool use can run minutes, and a 120s client abort now surfaces 'gateway timeout — try again' in the transcript instead of dead silence).
+- Instrumented the sidecar to diagnose the hang: each wall /ask creates a fresh agent session whose turns sometimes run TOOLS (tool.start/complete, sessions.changed events) before answering — that is the multi-minute latency, not a broken socket. Debug stamps removed after the diagnosis.
+
 ## V6.9
 - **Send button root cause (blocked, not broken)**: the avatar-model button was auto-pinned by `avpin()` to the chat card's right end — right on top of the send arrow — swallowing every click (also explains mystery avatar switches). Avpin neutralized; picker button now fixed at the far bottom-right, under the avatar — "the other side of the model".
 - **System ring bigger** (200→230px display) with smaller ring labels (`segLabelSize` 2→1.5).

@@ -250,7 +250,7 @@ def ask(payload: Ask):
         reply, done = ask_hermes_streaming(payload.text)
     except Exception as e:
         raise HTTPException(502, f"gateway unreachable: {e}")
-    if not reply and not done:
+        if not reply and not done:
         raise HTTPException(502, "turn produced no reply")
     return {"ok": True, "reply": reply, "complete": done}
 
