@@ -1,5 +1,10 @@
 # Changelog
 
+## V6.3
+- Starlink rings mapped to a 50–100 range (always ≥ half active; mb/s still shown as text below).
+- Metrics rows under the Starlink ring: down/up Mb/s, obstruction, signal.
+- Top row = four equal 3/12 cards (sys/sl/usage/cal same width).
+
 ## V6.2
 - EcoFlow battery bigger (96×44 → 150×64) with ring-chart-style thermal motion ported onto the fill (waving mint gradient, 6s loop).
 - Containers card cut to half width (left); avatar now spans the containers row + chat row (right-side) — ~2 rows tall, bottom-aligned.
