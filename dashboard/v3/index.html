@@ -3906,7 +3906,8 @@ const slFetch=()=>fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   const slUp2 = document.getElementById('slup2'); if (slUp2) slUp2.textContent = s.uptime_h!=null ? s.uptime_h : '–';
   const feed = () => {
     if (!window._slSet) return setTimeout(feed, 400);
-    const dv=Math.max(2,Math.min(100,Math.round((s.down_mbps||0)/250*100))), uv=Math.max(2,Math.min(100,Math.round((s.up_mbps||0)/50*100)));
+    const pd = s.peak_down || 250, pu = s.peak_up || 50;  // observed max (dishfeed 48h rolling); fallback plan limits
+    const dv=Math.max(2,Math.min(100,Math.round((s.down_mbps||0)/pd*100))), uv=Math.max(2,Math.min(100,Math.round((s.up_mbps||0)/pu*100)));
     window._slSetText = window._slSetText || {};
     window._slSetText.val1 = (s.down_mbps||0).toFixed(1); window._slSetText.val2 = (s.up_mbps||0).toFixed(1);
     _slSet('down', dv); _slSet('up', uv);
