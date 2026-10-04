@@ -117,6 +117,25 @@ there" and the change gets implemented.
 | V5.2 | 9359683 | cursor: instant follow (lerp deleted), edges reachable |
 | V5.3 | 967b70e | bare chat pill 2/3 width + fullscreen orb overlay before popup, arrow-only model picker |
 | **V5.4** | **9144eda** | **perf pass + Starlink Brik ring #2 (below)** |
+| V5.5 | d651b4b | rings smaller (sys 178 / sl 150) |
+| V5.6 | 26a30a1 | Starlink 2 rings (clamp Math.max(3) relaxed) |
+| V5.7 | 1f9ce21 | SL↔ctr swap, middle row split, custom cursor scrapped |
+| (fix) | 37e3546 | native 1366×768 xrandr modeline baked into entrypoint.sh (EDID fallback was 640×480) |
+| V5.8 | a0e1b4b | SL DOWN/UP % rings, USAGE·PROVIDERS card, sidecar /usage |
+| V5.9–V6.0 | 67983dc | avatar upsize + top row 2fr, rings 200/170 |
+| V6.1 | 2cc8639 | usage=sl width, 18/10 screen padding, avatar 210px unclamped, picker arrow right |
+| V6.2 | db5e64c | battery ring-effect motion fill, containers half width, avatar spans last 2 rows |
+| V6.3 | 5a18982 | SL rings 50–100 range + metrics rows, sys/sl equal width |
+| V6.4 | a1683cc | usage split (containers under it), chat history wall card replaces popup auto-open |
+| V6.7 | 7c1224e | SL keymap respects 2 segments (silent-edit x3 + 50–100 range), battery bright-core shading |
+| V6.8 | 7d2ee58 | chat = ONE card (history + input merged), spans last 2 rows |
+| V6.9 | a475805 | send unblocked (avtab pinned over it), sys ring 230px, plex halved → WEEK SCHEDULE card, global esc() fixes cal back |
+| V7.0/V7.1 | 6e91013 | 24-col grid, battery 250px (reverted later), missing #morphover div = send root cause |
+| V7.2 | 8779930 | eco=sys width, plex=ctr width, SL spans into eco row + latency/uptime/state rows, battery back 150px |
+| V7.3 | f05fa07 | side margins 28px, chat+avatar stretch, picker pinned flush to avatar card bottom |
+| V7.4 | dfd2500 | thinking orb/label centered, SL ring 200px, avatar picker inside margin, CHAT model picker (session.create model), sidecar 300s WS timeout |
+| V7.5 | 347915c | calendar flip removed, bottom row 14/10, cards stretch lower |
+| **V7.6** | **5281d97** | **CURRENT — bottom flush (main 100%), chat/avatar 17/7 of 24** |
 
 ## V5.4 — performance pass (9144eda)
 
