@@ -399,7 +399,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.9</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.0</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -698,7 +698,7 @@ const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'DOWN', la
     const BRIK_VALS = Object.assign({"enableHeatmap": true, "chartX": 0, "chartY": 0, "mode": "concentric", "segmentBlendMode": "source-over", "segmentNoise": 0.08, "segmentSoftness": 0.1, "chartSize": 1.0, "activeSegments": 4, "cornerRadius": 40, "heatmapView": false, "waveLayers": 6, "waveSpread": 70, "waveFalloff": 3, "animateWaves": false, "isolinePalette": "sunset", "isoColor1": "#FFF7ED", "isoColor2": "#FDE047", "isoColor3": "#F97316", "isoColor4": "#991B1B", "isoColor5": "#2A0404", "enableGuides": true, "guideColor": "rgba(127,214,164,0.25)", "guideOpacity": 100, "guideWidth": 2, "colorPreset": "ocean", "colorCore": "#eaf6ef", "colorHigh": "#7fd6a4", "colorMid": "#4e8f6e", "colorLow": "#2c4a3a", "colorEdge": "#12241c", "enableGradient": false, "gradientSpeed": 2, "gradientColor1": "#E9DFD8", "gradientColor2": "#FFF0A3", "gradientColor3": "#DFA5A5", "baseBgColor": "#0f1411", "bgNoiseAmount": 0, "fontFamily": {"family": "Inconsolata", "style": "normal", "weight": 400, "url": null}, "useAutoContrast": false, "headerColor": "#7fd6a4", "textColor": "#eaf2ec", "centerContent": "text", "centerTitle": "SYSTEM", "centerTitleSize": 13, "valNumberSize": 1.55, "segLabelSize": 2, "monoMode": false, "monoColor": "#B088F9", "animSpeed": 750, "val1": 31, "val2": 41, "val3": 222, "val4": 6, "val5": 35, "val6": 81, "val7": 38, "val8": 65, "val9": 18, "val10": 76, "val11": 100, "val12": 54, "val13": 73, "val14": 63, "val15": 70, "label1": "MEM", "label2": "DSK", "label3": "CPU", "label4": "PH", "label5": "Flow", "label6": "Reach", "label7": "Core", "label8": "Pulse", "label9": "Spark", "label10": "Vibe", "label11": "Echo", "label12": "Nova", "label13": "Aura", "label14": "Peak", "label15": "Drift", "color1": "#7fd6a4", "color2": "#5aa884", "color3": "#c96b5e", "color4": "#d4b48c", "color5": "#AAE3FF", "color6": "#AAE3FF", "color7": "#AAE3FF", "color8": "#F7941D", "color9": "#F05A2C", "color10": "#EF4138", "color11": "#DA1C5C", "color12": "#EE2B7A", "color13": "#DA1C5C", "color14": "#DA1C1F", "color15": "#ED0306", "bgImage": "", "bgOpacity": 0, "bgFit": "cover"}, OVR);
     const DPR = Math.min(2, window.devicePixelRatio || 1);
     const CW = 300, CH = 300;      // internal layout size (labels positioned for 300)
-    const CSIZE = 230;  // CSS display size (sys + sl equal)
+    const CSIZE = 285;  // CSS display size (sys + sl equal)
     const canvas = document.createElement('canvas');
     canvas.width = CW * DPR; canvas.height = CH * DPR;
     canvas.style.width = CSIZE + 'px'; canvas.style.height = CSIZE + 'px'; canvas.style.display = 'block'; canvas.style.margin = '0 auto';
@@ -1147,7 +1147,7 @@ let glUniforms = {};
 function initWebGL() {
   try {
     glCanvas = document.createElement('canvas');
-    gl = glCanvas.getContext('webgl2', { alpha: true, antialias: true });
+    gl = glCanvas.getContext('webgl2', { alpha: true, antialias: false, powerPreference: 'high-performance' });
     if (!gl) return false;
 
     const vs = gl.createShader(gl.VERTEX_SHADER);
