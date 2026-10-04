@@ -93,3 +93,45 @@ display / Alata body type. Sized for a 1366×768 wall panel.
 | `health-probe.sh` | quick page/stats probe |
 | `build/` | kiosk image build tree (kiosk-Dockerfile, etc.) |
 | `PROTOCOL.md` | full gateway auth + poll protocol notes |
+## Wall design history (the "boards" line)
+
+Design versions live in the [Figma design file](https://www.figma.com/design/aBmUGgcsBwEc1XUzFK8OZX)
+(one 1366×768 wall frame + changelog note per version, forward-only — past eras
+are never backfilled). From **V5.4** on, every version also ships a **SEGMENTS
+section**: each wall element (system brik, starlink brik, containers, calendar,
+ecoflow, plex, chat pill, avatar, cursor, clock/brand) is its own frame with an
+empty `timeline` lane underneath — drop tweak copies there and say "i got some
+there" and the change gets implemented.
+
+| Version | Commit | What |
+|---|---|---|
+| V3.x | 934ce89 → f3a4c37 | Olympus → bento layout, arr/plex cards |
+| V4.0 | 13a359c | glow purge, mint-slate palette |
+| V4.2 | 7d65267 | ring gauges, glow removal from cards |
+| V4.3 | d1c9b4f | all bar graphs removed (rings only) |
+| V4.5 | 07d6e1b | chat popup |
+| V4.6 | 1bec549 | sys fusion card, starlink card |
+| V4.9 | e446050 | verbatim animated Brik Radial Chart port |
+| V5.0 | 0430815 | equal 4/4/4 rows, SL ring gauge, morph chat pill, containers 13/37 re-spec, cron calendar |
+| V5.1 | 3af3583 | vanilla thinking-orbs port (528-dot SVG, per-phase looks) |
+| V5.2 | 9359683 | cursor: instant follow (lerp deleted), edges reachable |
+| V5.3 | 967b70e | bare chat pill 2/3 width + fullscreen orb overlay before popup, arrow-only model picker |
+| **V5.4** | **9144eda** | **perf pass + Starlink Brik ring #2 (below)** |
+
+## V5.4 — performance pass (9144eda)
+
+Goal: lag-free wall **without losing any visuals**. Measured on the ZimaOS box
+(`docker stats`, idle wall): **~335% → ~209% CPU**.
+
+- **Brik charts (system + starlink)**: render governor — full GL+SDF redraw at
+  30fps while values ease, **8fps when settled** (the thermal wave keeps
+  breathing; indistinguishable at its actual wave speed).
+- **Root cause found — Starlink ring was dead**: the bridge `KEYMAP` only had
+  the system keys (`mem/dsk/cpu/ph`), so every `_slSet()` silently no-oped;
+  the second ring showed boot seeds forever. `q/down/up/obstr` added; both
+  charts animate live now.
+- **Avatar**: pixi ticker capped at 30fps (biggest single saving, ≈110%).
+- **Hyper-grid background**: redraws only on pointer move/resize (was 60fps).
+- **Cursor**: rAF frame skips all work when nothing is hovered.
+- Verbatim-port rule intact: both briks keep the internal 300px stage,
+  CSS-downscaled; no visual regressions (verified true-res 1366×768).
