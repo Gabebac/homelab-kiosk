@@ -1,5 +1,9 @@
 # Changelog
 
+## V6.4
+- Top block: usage column split in height — USAGE (upper half) + CONTAINERS (lower half); sys/sl/cal stay tall spanning both rows (5-row grid, rows 1-2 for tall cards).
+- Chat history now lives ON the dashboard — a 'HERMES · CHAT' card in the old containers spot mirrors the transcript (MutationObserver mirror of the drawer log, auto-scrolls); the popup no longer auto-expands after a reply.
+
 ## V6.3
 - Starlink rings mapped to a 50–100 range (always ≥ half active; mb/s still shown as text below).
 - Metrics rows under the Starlink ring: down/up Mb/s, obstruction, signal.
