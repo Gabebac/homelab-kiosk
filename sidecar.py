@@ -511,6 +511,14 @@ def ecoflow():
         return {"ok": False, "err": str(e)}
 
 
+@app.middleware("http")
+async def _no_store_html(request, call_next):
+    # kiosk page must NEVER cache: a 304 keeps chromium rendering yesterday's wall (v8.3 bug)
+    resp = await call_next(request)
+    if request.url.path.startswith("/v3/") and (request.url.path.endswith("/") or request.url.path.endswith(".html") or request.url.path.endswith(".json")):
+        resp.headers["Cache-Control"] = "no-store"
+    return resp
+
 app.mount("/v3", StaticFiles(directory=DASH_DIR / "v3", html=True), name="v3")
 
 # ---- V3: last 5 add requests (radarr+sonarr grabbed) ----

@@ -43,8 +43,8 @@
   .avmenu button.on{color:var(--ok)}
   /* avatar cell */
   .avcard{perspective:none}
-  .avcard .avi-wrap{position:absolute;left:50%;top:0;transform:translateX(-50%);width:320px;height:100%;pointer-events:none;display:flex;align-items:flex-end;justify-content:center}
-  #avatar{width:300px;height:300px}
+  .avcard .avi-wrap{position:absolute;left:50%;top:0;transform:translateX(-50%);width:344px;height:100%;pointer-events:none;display:flex;align-items:flex-end;justify-content:center}
+  #avatar{width:330px;height:330px}
 
   /* ==== calendar flip: week events back face ==== */
   .card[data-k="cal"] .face{display:flex;flex-direction:column}
@@ -399,7 +399,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.1</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.3</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -572,7 +572,7 @@ async function loadAvatar(name){
   if (!window.PIXI || !PIXI.live2d || !PIXI.live2d.Live2DModel) return svgFallback();
   try{
     if (!pixiApp){
-      pixiApp = new PIXI.Application({view: AV, width: 300, height: 300,
+      pixiApp = new PIXI.Application({view: AV, width: 330, height: 330,
         backgroundAlpha: 0, antialias: true});
       if (pixiApp.ticker && pixiApp.ticker.maxFPS !== undefined) pixiApp.ticker.maxFPS = 30; // ponytail: cap avatar at 30fps — halves GPU load, idle motion visually identical
     }
@@ -588,8 +588,8 @@ async function loadAvatar(name){
       jinx: {s: 0.098, fx: 0.50, fy: 0.22},
     }[name] || {s: 0.30, fx: 0.50, fy: 0.50};
     model.scale.set(FIT.s);
-    model.x = 150 - model.width * FIT.fx;   // stage center (canvas 300)
-    model.y = (FIT.ay !== undefined) ? FIT.ay : 150 - model.height * FIT.fy;
+    model.x = 165 - model.width * FIT.fx;   // stage center (canvas 330)
+    model.y = (FIT.ay !== undefined) ? FIT.ay : 165 - model.height * FIT.fy;
     
   }catch(e){ console.warn('live2d init failed for ' + name, e); model = null; svgFallback(); }
 }
@@ -3909,7 +3909,7 @@ const slFetch=()=>fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
     const pd = s.peak_down || 250, pu = s.peak_up || 50;  // observed max (dishfeed 48h rolling); fallback plan limits
     const dv=Math.max(2,Math.min(100,Math.round((s.down_mbps||0)/pd*100))), uv=Math.max(2,Math.min(100,Math.round((s.up_mbps||0)/pu*100)));
     window._slSetText = window._slSetText || {};
-    window._slSetText.val1 = (s.down_mbps||0).toFixed(1); window._slSetText.val2 = (s.up_mbps||0).toFixed(1);
+    window._slSetText.val1 = ((s.down_mbps||0)*100).toFixed(0); window._slSetText.val2 = ((s.up_mbps||0)*100).toFixed(0);
     _slSet('down', dv); _slSet('up', uv);
   };
   feed();
