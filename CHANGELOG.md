@@ -1,5 +1,11 @@
 # Changelog
 
+## V5.7 (native-res, verified live)
+- Layout: Starlink card ↔ Containers card swapped (STARLINK now top row middle next to SYSTEM + CALENDAR).
+- Second row divided into two middle rows: half-height ECOFLOW + PLEX row, then a full-width CONTAINERS row (4 rows + chat now).
+- Cursor effect + custom pointer scrapped: #mcur CSS/JS/markup removed, `cursor:none` lifted (OS pointer again). Hyper-grid keeps its own parallax listeners (self-contained).
+- Verified on TRUE live wall at 1366×768 after the X-mode fix.
+
 ## ROOT-CAUSE FIX (with V5.6) — display resolution
 - The panel's EDID drops out (monitor off / X restart) → Xorg fell back to **640×480**; the panel upscaled that to fill the 16" screen, so the wall rendered ~2.1× bigger physically than in my headless 1366×768 checks — every size divergence traced here.
 - `entrypoint.sh` now forces a 1366×768_60 modeline on the connected output when 1366×768 is absent. Verified live: `xrandr` reports 1366×768, native-res capture matches the design.

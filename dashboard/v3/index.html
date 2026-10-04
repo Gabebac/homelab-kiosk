@@ -17,7 +17,7 @@
   }
   *{box-sizing:border-box;margin:0}
   html,body{height:100%;overflow:hidden}
-  html,body{cursor:none}
+  html,body{cursor:auto}
   /* calibrated knob: everything too big on the 16" 1366x768 panel — global shrink */
   html{zoom:0.92}
   body{font-family:var(--f-body);color:var(--ink);background:var(--bg);
@@ -85,10 +85,11 @@
   main{height:calc(100vh - 26px);padding:10px 16px 2px;overflow:hidden;scrollbar-width:none;
     display:grid;gap:10px;min-width:0;
     grid-template-columns:repeat(12,minmax(0,1fr));
-    grid-template-rows:repeat(3, minmax(0, 1fr));
+    grid-template-rows:repeat(4, minmax(0, 1fr));
     grid-template-areas:
-      "sys sys sys sys ctr ctr ctr ctr cal cal cal cal"
-      "eco eco eco eco sl sl sl sl preqs preqs preqs preqs"
+      "sys sys sys sys sl sl sl sl cal cal cal cal"
+      "eco eco eco eco eco eco preqs preqs preqs preqs preqs preqs"
+      "ctr ctr ctr ctr ctr ctr ctr ctr ctr ctr ctr ctr"
       "chat chat chat chat chat chat chat chat av av av av"}
   main::-webkit-scrollbar{display:none}
   main>*{min-width:0}
@@ -271,12 +272,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
     stroke-dasharray:119.4;stroke-dashoffset:119.4;transition:stroke-dashoffset .8s cubic-bezier(.3,1,.4,1)}
 
 
-  /* ==== magnetic cursor (exclusion / liquid-glass negative contrast) ==== */
-  #mcur{position:fixed;left:0;top:0;width:14px;height:14px;border-radius:50%;
-    background:#fff;mix-blend-mode:exclusion;pointer-events:none;z-index:9999;opacity:0;
-    will-change:transform,width,height,border-radius;backdrop-filter:contrast(1.35);-webkit-backdrop-filter:contrast(1.35)}
-
-  /* ==== starlink viz ==== */
+/* ==== starlink viz ==== */
   .slviz{position:relative;flex:1;display:flex;align-items:center;gap:10px;min-height:0}
   #slarc{width:118px;height:118px;flex:none}
   .slcenter{position:absolute;left:0;top:0;width:118px;height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
@@ -348,7 +344,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.6</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.7</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -394,14 +390,14 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
       <div class="mo-pillrow">
         <svg class="mo-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5l1.7 4.8 4.8 1.7-4.8 1.7L10 16.5l-1.7-4.8L3.5 10l4.8-1.7L10 3.5z"/><path d="M18 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z"/></svg>
         <input id="q" placeholder="Ask anything…" autocomplete="off">
-        <button class="send" data-magnetic id="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5.5 11.5L12 5l6.5 6.5"/></svg></button>
+        <button class="send" id="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5.5 11.5L12 5l6.5 6.5"/></svg></button>
       </div>
     </div>
   </div>
   <div class="dropup" id="dropup">
     <div class="dr-head"><span>Hermes · chat</span><button id="dropclose" style="background:none;border:none;color:var(--dim);cursor:pointer;font:600 10px var(--f-disp)">✕</button></div>
     <div class="dr-msgs" id="drmsgs"></div>
-    <div class="dr-comp"><div class="chatrow"><input id="qp" placeholder="Say something to Hermes…" autocomplete="off"><button class="send" data-magnetic id="sendp">Send</button></div></div>
+    <div class="dr-comp"><div class="chatrow"><input id="qp" placeholder="Say something to Hermes…" autocomplete="off"><button class="send" id="sendp">Send</button></div></div>
   </div>
   <div class="card" data-k="cal">
     <div class="flip">
@@ -432,7 +428,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   </div>
 </main>
 <div class="avdrop">
-  <button data-magnetic id="avtab" aria-label="Avatar model" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border-radius:50%"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg></button>
+  <button id="avtab" aria-label="Avatar model" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border-radius:50%"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg></button>
   <div class="avmenu" id="avmenu">
     <button data-av="ren">ren</button>
     <button data-av="kei" class="on">kei</button>
@@ -448,51 +444,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <script src="/av/vendor/live2dcubismcore.min.js"></script>
 <script src="/av/vendor/pixi.min.js"></script>
 <script src="/av/vendor/pixi-live2d-display.min.js"></script>
-<script>
-
-/* ==== magnetic cursor: exclusion-blend glass (magnetic-cursor port) ==== */
-(function(){
-  function initCur(){
-  const el = document.getElementById('mcur'); if (!el) return;
-  const pos={x:-100,y:-100,tx:-100,ty:-100,px:-100,py:-100};
-  let hover=false, detaching=false, seen=false;
-  const lerp=(a,b,t)=>a+(b-a)*t;
-  function frame(){
-    if (!hover && el.style.opacity !== '0'){
-      pos.x=pos.tx; pos.y=pos.ty;
-      const dx=pos.x-pos.px, dy=pos.y-pos.py;
-      pos.px=pos.x; pos.py=pos.y;
-      const speed=Math.min(1, Math.hypot(dx,dy)*.02);
-      if (detaching){ detaching=false;
-        el.style.width='14px'; el.style.height='14px'; el.style.borderRadius='50%'; }
-      el.style.transform=`translate(${pos.x-7}px,${pos.y-7}px)`+
-        (speed>.01?` rotate(${Math.atan2(dy,dx)}deg) scale(${1+speed},${1-speed*.6})`:'');
-    }
-    requestAnimationFrame(frame);
-  }
-  frame();
-  addEventListener('pointermove',e=>{
-    pos.tx=e.clientX; pos.ty=e.clientY;
-    if (!seen){ seen=true; pos.x=pos.tx; pos.y=pos.ty; pos.px=pos.tx; pos.py=pos.ty; el.style.opacity=1; }
-    el.style.opacity = (e.clientX>=0&&e.clientX<=innerWidth&&e.clientY>=0&&e.clientY<=innerHeight)?1:0;
-    const t=e.target instanceof Element ? e.target.closest('[data-magnetic]') : null;
-    if (t && !hover){
-      const r=t.getBoundingClientRect(), pad=12;
-      hover=true;
-      el.style.width=(r.width+pad*2)+'px'; el.style.height=(r.height+pad*2)+'px';
-      el.style.borderRadius=getComputedStyle(t).borderRadius||'12px';
-      el.style.transform=`translate(${r.left-pad}px,${r.top-pad}px)`;
-    } else if (!t && hover){
-      hover=false; detaching=true;
-    }
-  },{passive:true});
-  document.addEventListener('mouseleave',()=>el.style.opacity=0);
-  document.addEventListener('mouseenter',()=>el.style.opacity=1);
-  }
-  if (document.readyState==='loading') addEventListener('DOMContentLoaded', initCur); else initCur();
-})();
-
-/* ==== hyper-grid: perspective 3D grid + cursor parallax + warp on mouse speed ==== */
+<script>/* ==== hyper-grid: perspective 3D grid + cursor parallax + warp on mouse speed ==== */
 (function(){
   const cv = document.getElementById('hypergrid'), ctx = cv.getContext('2d');
   const host = cv.parentElement || document.body;
@@ -686,7 +638,7 @@ const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'SIG', lab
     const BRIK_VALS = Object.assign({"enableHeatmap": true, "chartX": 0, "chartY": 0, "mode": "concentric", "segmentBlendMode": "source-over", "segmentNoise": 0.08, "segmentSoftness": 0.1, "chartSize": 1.0, "activeSegments": 4, "cornerRadius": 40, "heatmapView": false, "waveLayers": 6, "waveSpread": 70, "waveFalloff": 3, "animateWaves": false, "isolinePalette": "sunset", "isoColor1": "#FFF7ED", "isoColor2": "#FDE047", "isoColor3": "#F97316", "isoColor4": "#991B1B", "isoColor5": "#2A0404", "enableGuides": true, "guideColor": "rgba(127,214,164,0.25)", "guideOpacity": 100, "guideWidth": 2, "colorPreset": "ocean", "colorCore": "#eaf6ef", "colorHigh": "#7fd6a4", "colorMid": "#4e8f6e", "colorLow": "#2c4a3a", "colorEdge": "#12241c", "enableGradient": false, "gradientSpeed": 2, "gradientColor1": "#E9DFD8", "gradientColor2": "#FFF0A3", "gradientColor3": "#DFA5A5", "baseBgColor": "#0f1411", "bgNoiseAmount": 0, "fontFamily": {"family": "Inconsolata", "style": "normal", "weight": 400, "url": null}, "useAutoContrast": false, "headerColor": "#7fd6a4", "textColor": "#eaf2ec", "centerContent": "text", "centerTitle": "SYSTEM", "centerTitleSize": 13, "valNumberSize": 1.55, "segLabelSize": 2, "monoMode": false, "monoColor": "#B088F9", "animSpeed": 750, "val1": 31, "val2": 41, "val3": 222, "val4": 6, "val5": 35, "val6": 81, "val7": 38, "val8": 65, "val9": 18, "val10": 76, "val11": 100, "val12": 54, "val13": 73, "val14": 63, "val15": 70, "label1": "MEM", "label2": "DSK", "label3": "CPU", "label4": "PH", "label5": "Flow", "label6": "Reach", "label7": "Core", "label8": "Pulse", "label9": "Spark", "label10": "Vibe", "label11": "Echo", "label12": "Nova", "label13": "Aura", "label14": "Peak", "label15": "Drift", "color1": "#7fd6a4", "color2": "#5aa884", "color3": "#c96b5e", "color4": "#d4b48c", "color5": "#AAE3FF", "color6": "#AAE3FF", "color7": "#AAE3FF", "color8": "#F7941D", "color9": "#F05A2C", "color10": "#EF4138", "color11": "#DA1C5C", "color12": "#EE2B7A", "color13": "#DA1C5C", "color14": "#DA1C1F", "color15": "#ED0306", "bgImage": "", "bgOpacity": 0, "bgFit": "cover"}, OVR);
     const DPR = Math.min(2, window.devicePixelRatio || 1);
     const CW = 300, CH = 300;      // internal layout size (labels positioned for 300)
-    const CSIZE = hostSel === '#slrings' ? 150 : 178;  // CSS display size — downscaled to fit each card
+    const CSIZE = hostSel === '#slrings' ? 178 : 178;  // CSS display size — downscaled to fit each card
     const canvas = document.createElement('canvas');
     canvas.width = CW * DPR; canvas.height = CH * DPR;
     canvas.style.width = CSIZE + 'px'; canvas.style.height = CSIZE + 'px'; canvas.style.display = 'block'; canvas.style.margin = '0 auto';
@@ -3953,6 +3905,6 @@ refreshEco = async function(){
   }catch(e){}
 }
 </script>
-<div id="mcur"></div>
+
 </body>
 </html>
