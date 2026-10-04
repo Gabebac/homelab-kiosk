@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 COPY entrypoint.sh /entrypoint.sh
 COPY xorg.conf /etc/X11/xorg.conf
+COPY 90-kiosk-mode.conf /etc/X11/xorg.conf.d/90-kiosk-mode.conf
 RUN chmod +x /entrypoint.sh
 ENV KIOSK_URL=http://127.0.0.1:8644/
 ENTRYPOINT ["/entrypoint.sh"]
