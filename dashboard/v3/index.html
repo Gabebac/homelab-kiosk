@@ -348,7 +348,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.3</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.4</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -421,15 +421,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
       <div class="card" data-k="sl">
     <div class="face front"><h2>Starlink</h2>
       <div class="slviz">
-        <svg id="slarc" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(127,214,164,.10)" stroke-width="8"/>
-          <circle id="slq" cx="60" cy="60" r="52" fill="none" stroke="var(--ok)" stroke-width="8" stroke-linecap="round"
-            stroke-dasharray="326.7" stroke-dashoffset="326.7" transform="rotate(-90 60 60)"/>
-          <circle cx="60" cy="60" r="40" fill="none" stroke="rgba(127,214,164,.10)" stroke-width="5"/>
-          <circle id="slob" cx="60" cy="60" r="40" fill="none" stroke="var(--warn)" stroke-width="5" stroke-linecap="round"
-            stroke-dasharray="251.3" stroke-dashoffset="251.3" transform="rotate(-90 60 60)"/>
-        </svg>
-        <div class="slcenter"><b id="slstate">–</b><span id="sllat"></span></div>
+        <div class="sysrings" id="slrings" style="width:170px;height:170px;flex:none"></div>
         <div class="slbars">
           <div class="slrow2"><span>▼ down</span><b id="sldown">–</b></div>
           <div class="slrow2"><span>▲ up</span><b id="slup">–</b></div>
@@ -466,7 +458,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
   let hover=false, detaching=false, seen=false;
   const lerp=(a,b,t)=>a+(b-a)*t;
   function frame(){
-    if (!hover){
+    if (!hover && el.style.opacity !== '0'){
       pos.x=pos.tx; pos.y=pos.ty;
       const dx=pos.x-pos.px, dy=pos.y-pos.py;
       pos.px=pos.x; pos.py=pos.y;
@@ -527,8 +519,12 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
         ctx.fill();
       }
     }
-    requestAnimationFrame(frame);
   }
+  // kiosk perf: grid is stateless — redraw only when the pointer actually moves or on resize, no rAF loop
+  let rq = false, tm = 0;
+  const redraw = () => { if (!rq){ rq = true; requestAnimationFrame(() => { rq = false; frame(); }); } tm = Date.now(); };
+  addEventListener('mousemove', redraw, {passive:true});
+  addEventListener('resize', () => { fit(); redraw(); });
   frame();
 })();
 
@@ -566,6 +562,7 @@ async function loadAvatar(name){
     if (!pixiApp){
       pixiApp = new PIXI.Application({view: AV, width: 220, height: 220,
         backgroundAlpha: 0, antialias: true});
+      if (pixiApp.ticker && pixiApp.ticker.maxFPS !== undefined) pixiApp.ticker.maxFPS = 30; // ponytail: cap avatar at 30fps — halves GPU load, idle motion visually identical
     }
     if (model){ pixiApp.stage.removeChild(model); model.destroy(); model = null; }
     model = await PIXI.live2d.Live2DModel.from(AVATAR_MODELS[name],
@@ -678,15 +675,18 @@ function avTalk(ms){
 }
 
 
-/* ==== Brik Radial Chart — verbatim animated creative port (fusion System card) ==== */
+/* ==== Brik Radial Chart — verbatim animated creative port (System + Starlink cards) ==== */
+const SYS_OVR = { centerTitle: 'SYSTEM', label1: 'MEM', label2: 'DSK', label3: 'CPU', label4: 'PH' };
+const SL_OVR  = { centerTitle: 'STARLINK', label1: 'SIG', label2: 'DOWN', label3: 'UP', label4: 'OBS', val1: 100, val2: 40, val3: 25, val4: 2,
+  color1: '#4a9d78', color2: '#35624f', color3: '#6fb894', color4: '#2c4a3a' };
 (function(){
-  function bootBrik(){
-    const host = document.getElementById('sysrings');
+  function bootBrik(hostSel, OVR, brName){
+    const host = document.querySelector(hostSel);
     if (!host) return;
-    const BRIK_VALS = {"enableHeatmap": true, "chartX": 0, "chartY": 0, "mode": "concentric", "segmentBlendMode": "source-over", "segmentNoise": 0.08, "segmentSoftness": 0.1, "chartSize": 1.0, "activeSegments": 4, "cornerRadius": 40, "heatmapView": false, "waveLayers": 6, "waveSpread": 70, "waveFalloff": 3, "animateWaves": false, "isolinePalette": "sunset", "isoColor1": "#FFF7ED", "isoColor2": "#FDE047", "isoColor3": "#F97316", "isoColor4": "#991B1B", "isoColor5": "#2A0404", "enableGuides": true, "guideColor": "rgba(127,214,164,0.25)", "guideOpacity": 100, "guideWidth": 2, "colorPreset": "ocean", "colorCore": "#eaf6ef", "colorHigh": "#7fd6a4", "colorMid": "#4e8f6e", "colorLow": "#2c4a3a", "colorEdge": "#12241c", "enableGradient": false, "gradientSpeed": 2, "gradientColor1": "#E9DFD8", "gradientColor2": "#FFF0A3", "gradientColor3": "#DFA5A5", "baseBgColor": "#0f1411", "bgNoiseAmount": 0, "fontFamily": {"family": "Inconsolata", "style": "normal", "weight": 400, "url": null}, "useAutoContrast": false, "headerColor": "#7fd6a4", "textColor": "#eaf2ec", "centerContent": "text", "centerTitle": "SYSTEM", "centerTitleSize": 13, "valNumberSize": 1.55, "segLabelSize": 2, "monoMode": false, "monoColor": "#B088F9", "animSpeed": 750, "val1": 31, "val2": 41, "val3": 222, "val4": 6, "val5": 35, "val6": 81, "val7": 38, "val8": 65, "val9": 18, "val10": 76, "val11": 100, "val12": 54, "val13": 73, "val14": 63, "val15": 70, "label1": "MEM", "label2": "DSK", "label3": "CPU", "label4": "PH", "label5": "Flow", "label6": "Reach", "label7": "Core", "label8": "Pulse", "label9": "Spark", "label10": "Vibe", "label11": "Echo", "label12": "Nova", "label13": "Aura", "label14": "Peak", "label15": "Drift", "color1": "#7fd6a4", "color2": "#5aa884", "color3": "#c96b5e", "color4": "#d4b48c", "color5": "#AAE3FF", "color6": "#AAE3FF", "color7": "#AAE3FF", "color8": "#F7941D", "color9": "#F05A2C", "color10": "#EF4138", "color11": "#DA1C5C", "color12": "#EE2B7A", "color13": "#DA1C5C", "color14": "#DA1C1F", "color15": "#ED0306", "bgImage": "", "bgOpacity": 0, "bgFit": "cover"};
+    const BRIK_VALS = Object.assign({"enableHeatmap": true, "chartX": 0, "chartY": 0, "mode": "concentric", "segmentBlendMode": "source-over", "segmentNoise": 0.08, "segmentSoftness": 0.1, "chartSize": 1.0, "activeSegments": 4, "cornerRadius": 40, "heatmapView": false, "waveLayers": 6, "waveSpread": 70, "waveFalloff": 3, "animateWaves": false, "isolinePalette": "sunset", "isoColor1": "#FFF7ED", "isoColor2": "#FDE047", "isoColor3": "#F97316", "isoColor4": "#991B1B", "isoColor5": "#2A0404", "enableGuides": true, "guideColor": "rgba(127,214,164,0.25)", "guideOpacity": 100, "guideWidth": 2, "colorPreset": "ocean", "colorCore": "#eaf6ef", "colorHigh": "#7fd6a4", "colorMid": "#4e8f6e", "colorLow": "#2c4a3a", "colorEdge": "#12241c", "enableGradient": false, "gradientSpeed": 2, "gradientColor1": "#E9DFD8", "gradientColor2": "#FFF0A3", "gradientColor3": "#DFA5A5", "baseBgColor": "#0f1411", "bgNoiseAmount": 0, "fontFamily": {"family": "Inconsolata", "style": "normal", "weight": 400, "url": null}, "useAutoContrast": false, "headerColor": "#7fd6a4", "textColor": "#eaf2ec", "centerContent": "text", "centerTitle": "SYSTEM", "centerTitleSize": 13, "valNumberSize": 1.55, "segLabelSize": 2, "monoMode": false, "monoColor": "#B088F9", "animSpeed": 750, "val1": 31, "val2": 41, "val3": 222, "val4": 6, "val5": 35, "val6": 81, "val7": 38, "val8": 65, "val9": 18, "val10": 76, "val11": 100, "val12": 54, "val13": 73, "val14": 63, "val15": 70, "label1": "MEM", "label2": "DSK", "label3": "CPU", "label4": "PH", "label5": "Flow", "label6": "Reach", "label7": "Core", "label8": "Pulse", "label9": "Spark", "label10": "Vibe", "label11": "Echo", "label12": "Nova", "label13": "Aura", "label14": "Peak", "label15": "Drift", "color1": "#7fd6a4", "color2": "#5aa884", "color3": "#c96b5e", "color4": "#d4b48c", "color5": "#AAE3FF", "color6": "#AAE3FF", "color7": "#AAE3FF", "color8": "#F7941D", "color9": "#F05A2C", "color10": "#EF4138", "color11": "#DA1C5C", "color12": "#EE2B7A", "color13": "#DA1C5C", "color14": "#DA1C1F", "color15": "#ED0306", "bgImage": "", "bgOpacity": 0, "bgFit": "cover"}, OVR);
     const DPR = Math.min(2, window.devicePixelRatio || 1);
     const CW = 300, CH = 300;      // internal layout size (labels positioned for 300)
-    const CSIZE = 212;             // CSS display size — downscaled to fully fit the system card
+    const CSIZE = hostSel === '#slrings' ? 170 : 212;  // CSS display size — downscaled to fit each card
     const canvas = document.createElement('canvas');
     canvas.width = CW * DPR; canvas.height = CH * DPR;
     canvas.style.width = CSIZE + 'px'; canvas.style.height = CSIZE + 'px'; canvas.style.display = 'block'; canvas.style.margin = '0 auto';
@@ -716,10 +716,11 @@ function avTalk(ms){
       triggerAction: () => {}
     };
 
-    const KEYMAP = { mem:'val1', dsk:'val2', cpu:'val3', ph:'val4' };
-    window._sysSet = function(key, pct){
+    const KEYMAP = { mem:'val1', dsk:'val2', cpu:'val3', ph:'val4', q:'val1', down:'val2', up:'val3', obstr:'val4' };
+    window[brName] = function(key, pct){
       const k = KEYMAP[key]; if (!k) return;
-      const v = Math.max(1, Math.min(150, Math.round(pct)));
+      const cap = key === 'cpu' ? 150 : 100;
+      const v = Math.max(1, Math.min(cap, Math.round(pct)));
       controls.set(k, v);
     };
 
@@ -2605,8 +2606,15 @@ function render(timestamp) {
     state.center.displayedPct = Math.round((state.slots[idx].targetVal / sumVal) * 100);
   }
 
-  drawChart(timestamp);
-
+  // kiosk perf governor: while an easing/transition is running ride the rAF; once settled,
+  // drop to ~8fps — the chart is visually static except the film grain, which reads fine at 8.
+  const _settled = !state.modeTransition.active && !state.isSequenceAnimating &&
+    state.slots.every(s => Math.abs(s.currentVal - s.targetVal) < 0.35) &&
+    Math.abs(state.chartScale - state.targetChartScale) < 0.003 &&
+    state.hoveredIndex === -1 && state.center.hoverAlpha < 0.02;
+  const _minDt = _settled ? 125 : 33;
+  const _since = timestamp - (render._lastDraw || timestamp - _minDt);
+  if (_since >= _minDt) { render._lastDraw = timestamp; drawChart(timestamp); }
   animationFrameId = requestAnimationFrame(render);
 }
 
@@ -3187,7 +3195,11 @@ render(performance.now());
 
     }
   }
-  if (document.readyState === 'loading') addEventListener('DOMContentLoaded', bootBrik); else bootBrik();
+    const _boot2 = () => {
+    bootBrik('#sysrings', SYS_OVR, '_sysSet');
+    bootBrik('#slrings', SL_OVR, '_slSet');
+  };
+  if (document.readyState === 'loading') addEventListener('DOMContentLoaded', _boot2); else _boot2();
 })();
 
 
@@ -3838,15 +3850,16 @@ for (const c of document.querySelectorAll('.card')) {
 fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   if (!s.ok) return;
   const st = document.getElementById('slstate');
-  st.textContent = s.state;
-  st.className = s.state==='OK'?'':'bad';
+  if (st){ st.textContent = s.state; st.className = s.state==='OK'?'':'bad'; }
   document.getElementById('sldown').textContent = s.down_mbps + ' Mb/s';
   document.getElementById('slup').textContent = s.up_mbps + ' Mb/s';
-  document.getElementById('sllat').textContent = s.latency_ms + ' ms';
   document.getElementById('slobs').textContent = s.obstructed_pct + '%' + (s.currently_obstructed ? ' · blocked now' : '');
-  const q = document.getElementById('slq'), ob = document.getElementById('slob');
-  if (q){ q.setAttribute('stroke-dashoffset', (326.7*(1-Math.max(0,Math.min(1,s.quality||0)))).toFixed(1)); }
-  if (ob){ ob.setAttribute('stroke-dashoffset', (251.3*(1-Math.max(0,Math.min(1,(s.obstructed_pct||0)/100)))).toFixed(1)); }
+  const feed = () => {
+    if (!window._slSet) return setTimeout(feed, 400);
+    const qv=Math.round((s.quality||0)*100), dv=Math.min(100,Math.round((s.down_mbps||0)/250*100)), uv=Math.min(100,Math.round((s.up_mbps||0)/250*100)), ov=Math.max(1,Math.round(Math.min(100,s.obstructed_pct||0)));
+    _slSet('q', qv); _slSet('down', dv); _slSet('up', uv); _slSet('obstr', ov);
+  };
+  feed();
 }).catch(()=>{});
 
 /* ==== stats polling ==== */
