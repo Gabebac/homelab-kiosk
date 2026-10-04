@@ -1,5 +1,9 @@
 # Changelog
 
+## V6.1
+- ROOT FIX: usage card rendered half-width — its `grid-area:usage` CSS rule had silently never landed (silent-edit bug again); rule added → equal width with Starlink card.
+- Even screen margin (main padding 10/18/10); avatar canvas unclamped 148→210px (the +15% fit bump finally displays) and truly centered (-50%,-50%); model-picker button right side (right:22px, bottom:12px).
+
 ## V6.0
 - Top card row **2× the height** of the other rows (`grid-template-rows: 2fr 1fr 1fr 1fr`); ring charts upsized to match (sys 178→200, starlink 150→170).
 - Usage card: 4s retry after boot race (was showing dashes until first 60s tick).

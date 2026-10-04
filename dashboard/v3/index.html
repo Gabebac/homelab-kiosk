@@ -26,7 +26,7 @@
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
   /* ==== avatar model dropup (bottom-right corner) ==== */
-  .avdrop{position:fixed;right:4px;bottom:3px;z-index:50;font-family:var(--f-disp)}
+  .avdrop{position:fixed;right:22px;bottom:12px;z-index:50;font-family:var(--f-disp)}
   .avdrop #avtab{background:#0b0b0b;color:var(--cream);border:1px solid #1a1a1a;border-radius:8px;
     font:600 8px var(--f-disp);letter-spacing:.1em;padding:3px 7px;cursor:pointer;text-transform:uppercase;opacity:.65}
   .avdrop #avtab:hover{border-color:rgba(127,214,164,.5)}
@@ -39,8 +39,8 @@
   .avmenu button.on{color:var(--ok)}
   /* avatar cell */
   .avcard{perspective:none}
-  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);width:210px;height:210px;pointer-events:none}
-  #avatar{width:148px;height:148px}
+  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:210px;height:210px;pointer-events:none}
+  #avatar{width:210px;height:210px}
 
   /* ==== calendar flip: week events back face ==== */
   .card[data-k="cal"] .face{display:flex;flex-direction:column}
@@ -82,7 +82,7 @@
   .clock b{color:var(--cream);font-weight:500}
 
   /* ==== small flip cards (card-14 port) ==== */
-  main{height:calc(100vh - 26px);padding:10px 16px 2px;overflow:hidden;scrollbar-width:none;
+  main{height:calc(100vh - 26px);padding:10px 18px 10px;overflow:hidden;scrollbar-width:none;
     display:grid;gap:10px;min-width:0;
     grid-template-columns:repeat(12,minmax(0,1fr));
     grid-template-rows:2fr 1fr 1fr 1fr;
@@ -102,6 +102,7 @@
     .card[data-k="av"]{grid-area:av}
   .card[data-k="cal"]{grid-area:cal}
   .card[data-k="sl"]{grid-area:sl}
+  .card[data-k="usage"]{grid-area:usage}
 
   .card{--h:110px;perspective:900px;background:transparent;border:none}
   .flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;
@@ -350,7 +351,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.0</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.1</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
