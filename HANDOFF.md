@@ -65,4 +65,4 @@ Full table in README (`## design history`); per-version details in CHANGELOG.md.
 - /ask still slow by gateway nature (full agent turn); fine per 120s timeout.
 - Figma: per-version wall frames beyond V7.6 = add going forward only. Segments block (52:6) + Tweak lanes remain for user-driven edits.
 - Thinking-trace expandable rows — parked unless user revives.
-- CPU ~209% of 4 cores (governed); Live2D dominates — perf headroom is bounded.
+- V7.9.1: Chromium runs Vulkan ANGLE on the Intel iGPU (NOT swiftshader) — container steady ~75% (was 344% on software WebGL). Live2D 30fps cap + Brik 16ms/125ms governors remain. Entrypoint retries the 1366×768 modeline (X race).
