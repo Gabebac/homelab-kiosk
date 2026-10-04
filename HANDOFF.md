@@ -61,8 +61,10 @@ Full table in README (`## design history`); per-version details in CHANGELOG.md.
 - Thinking overlay #morphover: dim + dotted orb + centered label.
 - Avtab pinned flush bottom-right under avatar card (inset 28px margin).
 
+- V8.1.1 display enforcer: permanent 15s modeline restore + F5 in entrypoint.sh (EDID drops when monitor sleeps). Vulkan ANGLE GPU, NOT swiftshader.
+
 ## Open threads
 - /ask still slow by gateway nature (full agent turn); fine per 120s timeout.
 - Figma: per-version wall frames beyond V7.6 = add going forward only. Segments block (52:6) + Tweak lanes remain for user-driven edits.
 - Thinking-trace expandable rows — parked unless user revives.
-- V7.9.1: Chromium runs Vulkan ANGLE on the Intel iGPU (NOT swiftshader) — container steady ~75% (was 344% on software WebGL). Live2D 30fps cap + Brik 16ms/125ms governors remain. Entrypoint retries the 1366×768 modeline (X race).
+- V8.1.1: Chromium runs Vulkan ANGLE on the Intel iGPU (NOT swiftshader) — container steady ~75% (was 344% software WebGL). Live2D 30fps cap + Brik 16ms/125ms governors. entrypoint.sh has a PERMANENT display enforcer (15s): restores the 1366×768 modeline after EDID drops (monitor off/sleep) and F5s the wall — don't strip it; a lost --newmode line once made addmode fail silently.
