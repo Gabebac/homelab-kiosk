@@ -1,5 +1,8 @@
 # Changelog
 
+## V5.9
+- Avatar bigger: all Live2D model fit-scales +15% (kei .16→.185, ren .07→.08, rice .068→.078, jinx .085→.098); av-wrap 148→210px.
+
 ## V5.8 (live-verified)
 - Starlink ring now shows **DOWN / UP speeds** (live, % of nominal 250/50 Mbps).
 - Starlink top-row card cut in half width-wise: left = ring, right = new **USAGE · PROVIDERS** card — OpenRouter spend, Ollama Cloud weekly % + request count, ElevenLabs characters, plus Starlink obstruction/signal line.

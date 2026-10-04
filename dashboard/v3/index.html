@@ -39,7 +39,7 @@
   .avmenu button.on{color:var(--ok)}
   /* avatar cell */
   .avcard{perspective:none}
-  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);width:148px;height:148px;pointer-events:none}
+  .avcard .avi-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);width:210px;height:210px;pointer-events:none}
   #avatar{width:148px;height:148px}
 
   /* ==== calendar flip: week events back face ==== */
@@ -350,7 +350,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.8</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v5.9</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -529,10 +529,10 @@ async function loadAvatar(name){
     pixiApp.stage.addChild(model);
     clearAvFallback();
     const FIT = {
-      ren:  {s: 0.07, fx: 0.50, fy: 0.18},
-      kei:  {s: 0.16, fx: 0.50, fy: 0.35},
-      rice: {s: 0.068, fx: 0.50, fy: 0.45},
-      jinx: {s: 0.085, fx: 0.50, fy: 0.22},
+      ren:  {s: 0.08, fx: 0.50, fy: 0.18},
+      kei:  {s: 0.185, fx: 0.50, fy: 0.35},
+      rice: {s: 0.078, fx: 0.50, fy: 0.45},
+      jinx: {s: 0.098, fx: 0.50, fy: 0.22},
     }[name] || {s: 0.30, fx: 0.50, fy: 0.50};
     model.scale.set(FIT.s);
     model.x = 110 - model.width * FIT.fx;
