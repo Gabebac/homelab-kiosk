@@ -26,7 +26,7 @@
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
   /* ==== avatar model dropup (bottom-right corner) ==== */
-  .avdrop{position:fixed;right:16px;bottom:46px;z-index:50;font-family:var(--f-disp)}
+  .avdrop{position:fixed;right:16px;bottom:10px;z-index:50;font-family:var(--f-disp)}
   .avdrop #avtab{background:#0b0b0b;color:var(--cream);border:1px solid #1a1a1a;border-radius:8px;
     font:600 8px var(--f-disp);letter-spacing:.1em;padding:3px 7px;cursor:pointer;text-transform:uppercase;opacity:.65}
   .avdrop #avtab:hover{border-color:rgba(127,214,164,.5)}
@@ -89,7 +89,7 @@
     grid-template-areas:
       "sys sys sys sl sl sl usage usage usage cal cal cal"
       "sys sys sys sl sl sl ctr ctr ctr cal cal cal"
-      "eco eco eco eco eco eco preqs preqs preqs preqs preqs preqs"
+      "eco eco eco eco eco eco preqs preqs preqs wk wk wk"
       "hist hist hist hist hist hist hist hist av av av av"
       "hist hist hist hist hist hist hist hist av av av av"}
   main::-webkit-scrollbar{display:none}
@@ -106,6 +106,8 @@
   .card[data-k="usage"]{grid-area:usage}
   .card[data-k="ctr"]{grid-area:ctr}
   .card[data-k="hist"]{grid-area:hist}
+  .card[data-k="wk"]{grid-area:wk}
+
 
   .card{--h:110px;perspective:900px;background:transparent;border:none}
   .flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;
@@ -378,7 +380,7 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
 <body>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.8</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v6.9</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -462,6 +464,10 @@ splay:flex;gap:6px;align-items:center;position:relative;z-index:6}
       <div class="urow"><span>ElevenLabs</span><b id="uel">–</b><span class="uq" id="uelq"></span></div>
       <div class="urow"><span>Obstr</span><b id="slobs">–</b><span class="uq" id="slsig"></span></div>
     </div>
+  </div>
+
+  <div class="card" data-k="wk">
+    <div class="face front"><h2>Week schedule</h2><div class="wkl" id="wksched"><div class="wkd"><div class="nm">–</div></div></div></div>
   </div>
 </main>
 <div class="avdrop">
@@ -665,7 +671,7 @@ function avTalk(ms){
 
 
 /* ==== Brik Radial Chart — verbatim animated creative port (System + Starlink cards) ==== */
-const SYS_OVR = { centerTitle: 'SYSTEM', label1: 'MEM', label2: 'DSK', label3: 'CPU', label4: 'PH' };
+const SYS_OVR = { centerTitle: 'SYSTEM', label1: 'MEM', label2: 'DSK', label3: 'CPU', label4: 'PH', segLabelSize: 1.5 };
 const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'DOWN', label2: 'UP', val1: 2, val2: 10,
   color1: '#4a9d78', color2: '#6fb894', centerTitleSize: 11 };
 (function(){
@@ -675,7 +681,7 @@ const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'DOWN', la
     const BRIK_VALS = Object.assign({"enableHeatmap": true, "chartX": 0, "chartY": 0, "mode": "concentric", "segmentBlendMode": "source-over", "segmentNoise": 0.08, "segmentSoftness": 0.1, "chartSize": 1.0, "activeSegments": 4, "cornerRadius": 40, "heatmapView": false, "waveLayers": 6, "waveSpread": 70, "waveFalloff": 3, "animateWaves": false, "isolinePalette": "sunset", "isoColor1": "#FFF7ED", "isoColor2": "#FDE047", "isoColor3": "#F97316", "isoColor4": "#991B1B", "isoColor5": "#2A0404", "enableGuides": true, "guideColor": "rgba(127,214,164,0.25)", "guideOpacity": 100, "guideWidth": 2, "colorPreset": "ocean", "colorCore": "#eaf6ef", "colorHigh": "#7fd6a4", "colorMid": "#4e8f6e", "colorLow": "#2c4a3a", "colorEdge": "#12241c", "enableGradient": false, "gradientSpeed": 2, "gradientColor1": "#E9DFD8", "gradientColor2": "#FFF0A3", "gradientColor3": "#DFA5A5", "baseBgColor": "#0f1411", "bgNoiseAmount": 0, "fontFamily": {"family": "Inconsolata", "style": "normal", "weight": 400, "url": null}, "useAutoContrast": false, "headerColor": "#7fd6a4", "textColor": "#eaf2ec", "centerContent": "text", "centerTitle": "SYSTEM", "centerTitleSize": 13, "valNumberSize": 1.55, "segLabelSize": 2, "monoMode": false, "monoColor": "#B088F9", "animSpeed": 750, "val1": 31, "val2": 41, "val3": 222, "val4": 6, "val5": 35, "val6": 81, "val7": 38, "val8": 65, "val9": 18, "val10": 76, "val11": 100, "val12": 54, "val13": 73, "val14": 63, "val15": 70, "label1": "MEM", "label2": "DSK", "label3": "CPU", "label4": "PH", "label5": "Flow", "label6": "Reach", "label7": "Core", "label8": "Pulse", "label9": "Spark", "label10": "Vibe", "label11": "Echo", "label12": "Nova", "label13": "Aura", "label14": "Peak", "label15": "Drift", "color1": "#7fd6a4", "color2": "#5aa884", "color3": "#c96b5e", "color4": "#d4b48c", "color5": "#AAE3FF", "color6": "#AAE3FF", "color7": "#AAE3FF", "color8": "#F7941D", "color9": "#F05A2C", "color10": "#EF4138", "color11": "#DA1C5C", "color12": "#EE2B7A", "color13": "#DA1C5C", "color14": "#DA1C1F", "color15": "#ED0306", "bgImage": "", "bgOpacity": 0, "bgFit": "cover"}, OVR);
     const DPR = Math.min(2, window.devicePixelRatio || 1);
     const CW = 300, CH = 300;      // internal layout size (labels positioned for 300)
-    const CSIZE = hostSel === '#slrings' ? 150 : 200;  // CSS display size — downscaled to fit each card
+    const CSIZE = hostSel === '#slrings' ? 170 : 230;  // CSS display size — downscaled to fit each card
     const canvas = document.createElement('canvas');
     canvas.width = CW * DPR; canvas.height = CH * DPR;
     canvas.style.width = CSIZE + 'px'; canvas.style.height = CSIZE + 'px'; canvas.style.display = 'block'; canvas.style.margin = '0 auto';
@@ -3750,12 +3756,7 @@ addEventListener('DOMContentLoaded', () => {
   const dc = document.getElementById('dropclose');
   if (dc) dc.onclick = () => d.classList.remove('open');
   const avdropEl = document.querySelector('.avdrop');
-  const avpin = () => {
-    if (!avdropEl) return;
-    const card = document.querySelector('.card[data-k="hist"]').getBoundingClientRect();
-    avdropEl.style.right = (window.innerWidth - card.right + 10) + 'px';
-    avdropEl.style.bottom = (window.innerHeight - card.bottom + 8) + 'px';
-  };
+  const avpin = () => { if (!avdropEl) return; };
   avpin(); addEventListener('resize', avpin);
   function expandChat(){
     place();
@@ -3799,6 +3800,23 @@ fetch('/v3/events.json').then(r=>r.json()).then(x=>{
     return `<div class="wkd"><div class="nm">${esc(e.name)}</div><div class="when">${day} ${tm} · <b>${e.last_status==='ok'?'ok':e.last_status}</b></div></div>`;
   }).join('') : '<div class="wkd"><div class="nm">No events this week</div><div class="when">cron idle</div></div>';
 }).catch(()=>{});
+
+
+fetch('/v3/events.json').then(r=>r.json()).then(x=>{
+  const el = document.getElementById('wksched'); if (!el) return;
+  const now = new Date(); const in7 = new Date(now.getTime() + 7*864e5);
+  const rows = (x.events||[]).filter(e => { const t=new Date(e.next); return t>=new Date(now-864e5) && t<=in7; })
+    .sort((a,b)=>new Date(a.next)-new Date(b.next));
+  el.innerHTML = rows.length ? rows.map(e=>{
+    const d=new Date(e.next);
+    const day=d.toLocaleDateString('en-GB',{weekday:'short'});
+    const tm=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false});
+    return `<div class="wkd"><div class="nm">${esc(e.name)}</div><div class="when">${day} ${tm} · <b>${e.last||'?'}</b></div></div>`;
+  }).join('') : '<div class="wkd"><div class="nm">No events this week</div><div class="when">cron idle</div></div>';
+}).catch(()=>{});
+
+/* global escape helper */
+const esc = s => String(s).replace(/[&<>"/]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c));
 
 /* ==== clock ==== */
 function clockTick(){

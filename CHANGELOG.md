@@ -1,5 +1,11 @@
 # Changelog
 
+## V6.9
+- **Send button root cause (blocked, not broken)**: the avatar-model button was auto-pinned by `avpin()` to the chat card's right end — right on top of the send arrow — swallowing every click (also explains mystery avatar switches). Avpin neutralized; picker button now fixed at the far bottom-right, under the avatar — "the other side of the model".
+- **System ring bigger** (200→230px display) with smaller ring labels (`segLabelSize` 2→1.5).
+- **Plex card cut in half** (6→3 cols) → freed half became the **WEEK SCHEDULE** card under the calendar, listing the next 7 days of cron events (live: Gmail inbox assistant, cerebellum-post-upgrade).
+- **Calendar flip fixed at the root**: the card's back list used a local `esc()` that only existed inside other closures → template threw and the back stayed at '–'/empty. A global `esc()` helper added; back face now renders events.
+
 ## V6.8
 - **Chat + text field unified**: one element — the HERMES·CHAT card now spans the full bottom 8-col zone across two rows, carries the input pill (spark + field + send) full-width at the card's bottom, transcript above. Old floating pill card removed. Dropup pin re-anchored to the chat card.
 - Send path verified on-wall (typed 'hello wall' → user bubble mirrored into card). Reply latency currently minutes-long: hermes-next-pilot gateway is compacting contexts; same /ask path verified end-to-end in V6.4.
