@@ -9,19 +9,26 @@ export DISPLAY=:0
 # ponytail: panel EDID drops out when the monitor is off/X restarts → X falls back to
 # 640x480 and the panel upscales everything (wall "too big"). Force native 1366x768.
 try_fix_modes() {
+  # active-mode check: only the CURRENT mode gets '*'; a listed-but-unapplied mode doesn't
+  if xrandr 2>/dev/null | grep -q '1366x768_60[*]'; then return 0; fi
+  xrandr --newmode "1366x768_60" 85.25 1366 1440 1576 1792 768 771 774 798 +hsync +vsync 2>/dev/null || true
   for o in $(xrandr 2>/dev/null | awk '/ connected/ {print $1}'); do
-    xrandr --addmode "$o" 1366x768_60 2>/dev/null && xrandr --output "$o" --mode 1366x768_60 2>/dev/null || true
+    xrandr --addmode "$o" 1366x768_60 2>/dev/null || continue
+    xrandr --output "$o" --mode 1366x768_60 2>/dev/null || true
   done
 }
-# X needs a beat before the connector list is real; retry a few times (lost the race once, fell back to 640x480)
-for i in $(seq 1 12); do try_fix_modes && break; sleep 3; done
-if ! xrandr | grep -q '1366x768_60'; then
-  for o in $(xrandr | awk '/ connected/ {print $1}'); do
-    xrandr --addmode "$o" 1366x768_60 2>/dev/null && xrandr --output "$o" --mode 1366x768_60 2>/dev/null || true
-  done
-fi
-# watchdog: keep fixing the mode in the background — EDID/connector can appear up to minutes after boot
-( fixed=0; for i in $(seq 1 60); do if try_fix_modes; then fixed=1; break; fi; sleep 3; done; if [ "$fixed" = 1 ]; then sleep 2; DISPLAY=:0 xdotool key F5 2>/dev/null; fi ) >/dev/null 2>&1 &
+# boot fix: X needs a beat before the connector list is real — retry ~1 min
+for i in $(seq 1 20); do try_fix_modes && break; sleep 3; done
+# enforcer: EDID drops (panel sleep, monitor off, re-seat) revert X to 640x480 later →
+# keep enforcing native mode forever at 15s cadence; F5 chromium so it refits.
+( while true; do
+    if ! xrandr 2>/dev/null | grep -q '1366x768_60[*]'; then
+      try_fix_modes >/dev/null 2>&1
+      sleep 2
+      DISPLAY=:0 xdotool key F5 2>/dev/null
+    fi
+    sleep 15
+  done ) >/dev/null 2>&1 &
 xset s off
 xset -dpms
 xset s noblank
