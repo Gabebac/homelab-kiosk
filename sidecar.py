@@ -319,11 +319,55 @@ def _pihole_sid():
     # session TTL is 1800s; reuse sid instead of re-authing every poll (429 otherwise)
     if _sid["v"] and time.time() - _sid["t"] < 1500:
         return _sid["v"]
+    pw = ""
     pw_path = Path("/appdata/pihole/etc/pihole/cli_pw")
-    pw = pw_path.read_text().strip() if pw_path.exists() else ""
+    try:
+        if pw_path.exists():
+            pw = pw_path.read_text().strip()
+    except Exception:
+        pw = ""
     if not pw:
-        pw = subprocess.run(["cat", "/appdata/pihole/etc/pihole/cli_pw"],
-                            capture_output=True, text=True, timeout=10).stdout.strip()
+        # ponytail: cli_pw bind dropped from the recreated sidecar — read it through docker.sock (exec in pihole container)
+        try:
+            import socket as _s
+            class _SockFile:
+                def __init__(self): self.buf = b""
+                def readable(self): return True
+                def read(self, n=-1):
+                    d = self.sock.recv(65536)
+                    self.buf += d
+                    return d
+            # minimal HTTP-over-unix-socket request
+            import http.client
+            class UnixConn(http.client.HTTPConnection):
+                def __init__(self):
+                    super().__init__("localhost")
+                def connect(self):
+                    self.sock = _s.socket(_s.AF_UNIX, _s.SOCK_STREAM)
+                    self.sock.connect("/var/run/docker.sock")
+            def dlExec():
+                c = UnixConn(); c.request("POST", "/v1.41/containers/pihole/exec",
+                    json.dumps({"AttachStdout": True, "Cmd": ["cat", "/etc/pihole/cli_pw"]}),
+                    {"Content-Type": "application/json"})
+                return json.load(c.getresponse())["Id"]
+            def dlInspect(eid):
+                c = UnixConn(); c.request("POST", f"/v1.41/exec/{eid}/json")
+                return json.load(c.getresponse())
+            eid = dlExec()
+            c = UnixConn()
+            c.request("POST", f"/v1.41/exec/{eid}/start",
+                      json.dumps({"Detach": False, "Tty": False}),
+                      {"Content-Type": "application/json"})
+            resp = c.getresponse()
+            out = resp.read()
+            # demux docker stream: skip 8-byte header per chunk
+            pw, i = b"", 0
+            while i + 8 <= len(out):
+                ln = int.from_bytes(out[i+4:i+8], "big")
+                pw += out[i+8:i+8+ln]; i += 8 + ln
+            pw = pw.decode().strip()
+        except Exception:
+            pw = ""
     req = urllib.request.Request("http://192.168.0.78:8800/api/auth",
                                  data=json.dumps({"password": pw}).encode(),
                                  headers={"Content-Type": "application/json"})

@@ -1,5 +1,13 @@
 # Changelog
 
+## V7.7/V7.8
+- **Nebula font**: family slots switched to `Nebula` (falls back to Chakra Petch/Inter until the Airnauts font file is dropped in `v3/fonts/` — the $9 Gumroad font can't be pulled from the community file; ready-to-uncomment `@font-face` sitting in the head). CDN 'Nebula' fonts are unrelated (checked + rejected).
+- **Real ring values**: Brik value text is overridable per instance (`window._sysSetText` / `_slSetText`); SYSTEM rings show %, PH ring shows **clean %** (arc = 100 − blocked; the unlit part is the blocked %.), STARLINK DOWN/UP show **real Mb/s** with arc = current/max (250 / 50 Mb/s).
+- **Starlink ring 230px** (was 200); Sys/SL OVR label+value fonts smaller (1.1).
+- **Ring smoothness**: rAF governor during animation 33ms → 16ms (was chunky frame-by-frame); idle still 125ms.
+- **Starlink live polling** — the SL fetch was one-shot on page load (stale ring forever); now 15s interval like dishfeed.
+- **Sidecar Pi-hole fix**: sidecar was recreated without the `cli_pw` bind → pihole feed (PH ring) went null; sidecar now pulls the password through docker.sock exec when the bind is missing.
+
 ## V7.6
 - **Bottom flush**: main switched from `calc(100vh-6px)` to `height:100%` inside the body's 26px+1fr grid — the ~1cm gap from the zoom/viewport round-off is gone; chat + avatar end at the margin.
 - **Bottom row split 7/10 : 3/10** (chat 17/24, avatar 7/24).

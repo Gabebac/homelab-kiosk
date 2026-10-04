@@ -7,13 +7,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* REAL Nebula (Airnauts, $9 gumroad): drop Nebula-Regular.woff/woff2 into /opt/data/kiosk/dashboard/v3/fonts/ then uncomment:
+  @font-face{font-family:"Nebula";src:url("fonts/Nebula-Regular.woff") format("woff");font-weight:400;font-display:swap;}
+  */
+
   /* ==== V3 palette — huemint brand-intersection 031216-46656c-e85404-f1d7c8 ==== */
   :root{ /* mint-slate (@serafimcloud) dark adaptation */
     --bg:#0a0d0b; --grid:#111613; --surface:#0f1411; --surface2:#141a16; --raised:#1a211d;
     --teal:#242b27; --cream:#eceae4; --orange:#7fd6a4; --orange-soft:rgba(127,214,164,.14);
     --red:#c96b5e; --ink:#eceae4; --dim:#8b968f; --faint:rgba(236,234,228,.10);
     --ok:#7fd6a4; --warn:#d4b48c; --bad:#c96b5e; --slate:#627884; --tan:#998466;
-    --f-disp:"Chakra Petch", sans-serif; --f-body:"Inter", sans-serif;
+    --f-disp:"Nebula","Chakra Petch", sans-serif; --f-body:"Nebula","Inter", sans-serif;
   }
   *{box-sizing:border-box;margin:0}
   html,body{height:100%;overflow:hidden}
@@ -395,7 +399,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.6</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.8</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -684,9 +688,9 @@ function avTalk(ms){
 
 
 /* ==== Brik Radial Chart — verbatim animated creative port (System + Starlink cards) ==== */
-const SYS_OVR = { centerTitle: 'SYSTEM', label1: 'MEM', label2: 'DSK', label3: 'CPU', label4: 'PH', segLabelSize: 1.5 };
+const SYS_OVR = { centerTitle: 'SYSTEM', label1: 'MEM', label2: 'DSK', label3: 'CPU', label4: 'PH', segLabelSize: 1.1, valNumberSize: 1.1 };
 const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'DOWN', label2: 'UP', val1: 2, val2: 10,
-  color1: '#4a9d78', color2: '#6fb894', centerTitleSize: 11 };
+  color1: '#4a9d78', color2: '#6fb894', centerTitleSize: 11, segLabelSize: 1.1, valNumberSize: 1.1 };
 (function(){
   function bootBrik(hostSel, OVR, brName){
     const host = document.querySelector(hostSel);
@@ -694,7 +698,7 @@ const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'DOWN', la
     const BRIK_VALS = Object.assign({"enableHeatmap": true, "chartX": 0, "chartY": 0, "mode": "concentric", "segmentBlendMode": "source-over", "segmentNoise": 0.08, "segmentSoftness": 0.1, "chartSize": 1.0, "activeSegments": 4, "cornerRadius": 40, "heatmapView": false, "waveLayers": 6, "waveSpread": 70, "waveFalloff": 3, "animateWaves": false, "isolinePalette": "sunset", "isoColor1": "#FFF7ED", "isoColor2": "#FDE047", "isoColor3": "#F97316", "isoColor4": "#991B1B", "isoColor5": "#2A0404", "enableGuides": true, "guideColor": "rgba(127,214,164,0.25)", "guideOpacity": 100, "guideWidth": 2, "colorPreset": "ocean", "colorCore": "#eaf6ef", "colorHigh": "#7fd6a4", "colorMid": "#4e8f6e", "colorLow": "#2c4a3a", "colorEdge": "#12241c", "enableGradient": false, "gradientSpeed": 2, "gradientColor1": "#E9DFD8", "gradientColor2": "#FFF0A3", "gradientColor3": "#DFA5A5", "baseBgColor": "#0f1411", "bgNoiseAmount": 0, "fontFamily": {"family": "Inconsolata", "style": "normal", "weight": 400, "url": null}, "useAutoContrast": false, "headerColor": "#7fd6a4", "textColor": "#eaf2ec", "centerContent": "text", "centerTitle": "SYSTEM", "centerTitleSize": 13, "valNumberSize": 1.55, "segLabelSize": 2, "monoMode": false, "monoColor": "#B088F9", "animSpeed": 750, "val1": 31, "val2": 41, "val3": 222, "val4": 6, "val5": 35, "val6": 81, "val7": 38, "val8": 65, "val9": 18, "val10": 76, "val11": 100, "val12": 54, "val13": 73, "val14": 63, "val15": 70, "label1": "MEM", "label2": "DSK", "label3": "CPU", "label4": "PH", "label5": "Flow", "label6": "Reach", "label7": "Core", "label8": "Pulse", "label9": "Spark", "label10": "Vibe", "label11": "Echo", "label12": "Nova", "label13": "Aura", "label14": "Peak", "label15": "Drift", "color1": "#7fd6a4", "color2": "#5aa884", "color3": "#c96b5e", "color4": "#d4b48c", "color5": "#AAE3FF", "color6": "#AAE3FF", "color7": "#AAE3FF", "color8": "#F7941D", "color9": "#F05A2C", "color10": "#EF4138", "color11": "#DA1C5C", "color12": "#EE2B7A", "color13": "#DA1C5C", "color14": "#DA1C1F", "color15": "#ED0306", "bgImage": "", "bgOpacity": 0, "bgFit": "cover"}, OVR);
     const DPR = Math.min(2, window.devicePixelRatio || 1);
     const CW = 300, CH = 300;      // internal layout size (labels positioned for 300)
-    const CSIZE = hostSel === '#slrings' ? 200 : 230;  // CSS display size — downscaled to fit each card
+    const CSIZE = 230;  // CSS display size (sys + sl equal)
     const canvas = document.createElement('canvas');
     canvas.width = CW * DPR; canvas.height = CH * DPR;
     canvas.style.width = CSIZE + 'px'; canvas.style.height = CSIZE + 'px'; canvas.style.display = 'block'; canvas.style.margin = '0 auto';
@@ -2319,7 +2323,7 @@ function getConcentricLayout(scale, activeCount) {
   let maxValW = 0;
   for (let i = 0; i < N; i++) {
     const slot = state.slots[i];
-    const valStr = `${Math.round(slot ? slot.currentVal : 0)}`;
+    const valStr = ((window[brName+'Text']||{})['val'+(i+1)]) || `${Math.round(slot ? slot.currentVal : 0)}`;
     const hoverP = slot ? (slot.hoverProgress || 0) : 0;
     const hoverValScale = 1.0 + 0.18 * hoverP;
     const curValFontSize = Math.max(8, Math.round(valFontSize * hoverValScale));
@@ -2622,7 +2626,7 @@ function render(timestamp) {
     state.slots.every(s => Math.abs(s.currentVal - s.targetVal) < 0.35) &&
     Math.abs(state.chartScale - state.targetChartScale) < 0.003 &&
     state.hoveredIndex === -1 && state.center.hoverAlpha < 0.02;
-  const _minDt = _settled ? 125 : 33;
+  const _minDt = _settled ? 125 : 16;
   const _since = timestamp - (render._lastDraw || timestamp - _minDt);
   if (_since >= _minDt) { render._lastDraw = timestamp; drawChart(timestamp); }
   animationFrameId = requestAnimationFrame(render);
@@ -3033,7 +3037,7 @@ function drawSegmentLabels(minDim, activeCount, sumVal, scale) {
       curValFontSize = Math.max(8, Math.round(valFontSize * hoverValScale));
       curLblFontSize = curValFontSize;
 
-      const valStr = `${secVal}`;
+      const valStr = ((window[brName+'Text']||{})['val'+(i+1)]) || `${secVal}`;
       const lblStr = `${secLabel}`;
       const segTextColor = getSegmentTextColor();
 
@@ -3889,7 +3893,8 @@ for (const c of document.querySelectorAll('.card')) {
 }
 
 
-fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
+/* starlink poll (15s — dishfeed cadence) */
+const slFetch=()=>fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   if (!s.ok) return;
   const st = document.getElementById('slstate');
   if (st){ st.textContent = s.state; st.className = s.state==='OK'?'':'bad'; }
@@ -3901,11 +3906,14 @@ fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   const slUp2 = document.getElementById('slup2'); if (slUp2) slUp2.textContent = s.uptime_h!=null ? s.uptime_h : '–';
   const feed = () => {
     if (!window._slSet) return setTimeout(feed, 400);
-    const dv=50+Math.min(50,Math.round((s.down_mbps||0)/250*50)), uv=50+Math.min(50,Math.round((s.up_mbps||0)/50*50));
+    const dv=Math.max(2,Math.min(100,Math.round((s.down_mbps||0)/250*100))), uv=Math.max(2,Math.min(100,Math.round((s.up_mbps||0)/50*100)));
+    window._slSetText = window._slSetText || {};
+    window._slSetText.val1 = (s.down_mbps||0).toFixed(1); window._slSetText.val2 = (s.up_mbps||0).toFixed(1);
     _slSet('down', dv); _slSet('up', uv);
   };
   feed();
 }).catch(()=>{});
+slFetch(); setInterval(slFetch, 15000);
 
 /* ==== usage providers (60s) ==== */
 (function(){
@@ -3953,9 +3961,13 @@ async function refresh(){
     if (h){
             const cpuPct = Math.round(h.load1 / h.cpu_count * 100);
       _sysSet('cpu', cpuPct);
-      _sysSet('mem', Math.round(h.mem_used_gb / h.mem_total_gb * 100));
+      window._sysSetText = window._sysSetText || {};
+      const memP = Math.round(h.mem_used_gb / h.mem_total_gb * 100);
+      window._sysSetText.val1 = memP + '%'; window._sysSetText.val2 = Math.round(h.disk_pct) + '%';
+      window._sysSetText.val3 = cpuPct + '%';
+      _sysSet('mem', memP);
       _sysSet('dsk', h.disk_pct);
-      if (d.pihole){ _sysSet('ph', d.pihole.pct); }
+      if (d.pihole){ _sysSet('ph', 100 - d.pihole.pct); window._sysSetText = window._sysSetText || {}; window._sysSetText.val4 = (100 - d.pihole.pct).toFixed(0) + '%'; }
 
 const cn = Object.keys(d.containers || {});
       const svc = Object.entries(d.services || {});
