@@ -1,6 +1,14 @@
 # Changelog
 
-## V7.3
+## V7.3 (final)
+- **Sidecar crash-loop fixed (this debug turn)**: a mid-flight edit to `sidecar.py` left the
+  "turn produced no reply" guard indented *inside* the `except` block (`IndentationError`
+  on every boot — sidecar `Restarting (1)`, wall cards stale, `/ask` dead). Guard restored
+  to function level; chat verified end-to-end (`PONG`, `complete:true`).
+- **Broken CSS remnant removed**: orphaned `splay:flex;...}` line (mangled leftover of the
+  old `.chatrow` rule from V3.4-era string replaces) unbalanced the stylesheet; deleted,
+  style/script/div balances all 0.
+- v7.3 layout tweak (margins, picker pin, `main` bottom stretch) committed with the fixes.
 - **Side margins widened**: main padding 18→28px left/right; main height extended (100vh−26px→−12px) so chat + avatar stretch closer to the screen's bottom.
 - **Avatar-model picker re-pinned** to the avatar card's bottom edge — its bottom line is now flush with the chat card and avatar bottoms (was floating ~40px above).
 
