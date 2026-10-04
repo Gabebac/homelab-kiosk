@@ -1,5 +1,9 @@
 # Changelog
 
+## V6.0
+- Top card row **2× the height** of the other rows (`grid-template-rows: 2fr 1fr 1fr 1fr`); ring charts upsized to match (sys 178→200, starlink 150→170).
+- Usage card: 4s retry after boot race (was showing dashes until first 60s tick).
+
 ## V5.9
 - Avatar bigger: all Live2D model fit-scales +15% (kei .16→.185, ren .07→.08, rice .068→.078, jinx .085→.098); av-wrap 148→210px.
 
