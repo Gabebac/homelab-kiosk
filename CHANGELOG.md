@@ -1,5 +1,11 @@
 # Changelog
 
+## V7.4
+- **Thinking orb/label centered**: the orb wrap was 220px wide left-aligned while the orb renders 132px — canvas + phase label sat left of center. Wrap pinned to 132px with centered flex; label now dead-center under the orb.
+- **Starlink ring bigger** (170→200px display).
+- **Avatar model picker** nudged inboard (right 14→34px) to respect the cards' 28px margin.
+- **Chat model picker added** (Cursor-style): AUTO pill + chevron beside the input, dropdown listing auto/glm-5.3/kimi-k2.6/gpt-oss:120b/minimax-m3/deepseek-v4.1-flash, selection persisted (localStorage) and forwarded to `/ask` → gateway `session.create {model}` (verified: `prompt.submit` REJECTS a model param; session.create accepts it). Tested end-to-end with kimi-k2.6 → PONG. On the sidecar, /ask gained an optional `model` field + a 300s socket timeout (cold model starts produce >10s silent WS gaps, which previously raised a false 'gateway unreachable' 502 around the 40s mark).
+
 ## V7.3 (final)
 - **Sidecar crash-loop fixed (this debug turn)**: a mid-flight edit to `sidecar.py` left the
   "turn produced no reply" guard indented *inside* the `except` block (`IndentationError`

@@ -194,14 +194,17 @@ def _ws_frames(sock):
         buf += chunk
 
 
-def ask_hermes_streaming(text: str):
+def ask_hermes_streaming(text: str, model: str | None = None):
     """Yields reply text deltas from one prompt.submit turn."""
     token = _mint_access_token()
     ticket = _ws_ticket(token)
     sock = _ws_connect(ticket)
+    sock.settimeout(300)  # slow model cold-starts / long tool turns produce >10s silent gaps
 
     # dedicated kiosk session per gateway process — one persistent sid reuse
-    _ws_send(sock, {"jsonrpc": "2.0", "id": 1, "method": "session.create", "params": {"title": "Wall Kiosk"}})
+    _p = {"title": "Wall Kiosk"}
+    if model: _p["model"] = model
+    _ws_send(sock, {"jsonrpc": "2.0", "id": 1, "method": "session.create", "params": _p})
     sid = None
     for frame in _ws_frames(sock):
         if frame.get("id") == 1:
@@ -242,12 +245,13 @@ def ask_hermes_streaming(text: str):
 
 class Ask(BaseModel):
     text: str
+    model: str | None = None
 
 
 @app.post("/ask")
 def ask(payload: Ask):
     try:
-        reply, done = ask_hermes_streaming(payload.text)
+        reply, done = ask_hermes_streaming(payload.text, payload.model)
     except Exception as e:
         raise HTTPException(502, f"gateway unreachable: {e}")
     if not reply and not done:

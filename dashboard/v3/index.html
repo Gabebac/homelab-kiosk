@@ -26,7 +26,7 @@
   /* ==== hyper-grid canvas background ==== */
   #hypergrid{position:absolute;inset:0;z-index:0;opacity:.85;pointer-events:none}
   /* ==== avatar model dropup (bottom-right corner) ==== */
-  .avdrop{position:fixed;right:14px;bottom:6px;z-index:50;font-family:var(--f-disp)}
+  .avdrop{position:fixed;right:34px;bottom:6px;z-index:50;font-family:var(--f-disp)}
   .avdrop #avtab{background:#0b0b0b;color:var(--cream);border:1px solid #1a1a1a;border-radius:8px;
     font:600 8px var(--f-disp);letter-spacing:.1em;padding:3px 7px;cursor:pointer;text-transform:uppercase;opacity:.65}
   .avdrop #avtab:hover{border-color:rgba(127,214,164,.5)}
@@ -244,7 +244,7 @@
   /* ==== chat: morph overlay + 2/3-screen expansion ==== */
   #morphover{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;z-index:70;pointer-events:none;background:rgba(5,8,6,.45)}
   #morphover.on{display:flex}
-  .mofield{margin-bottom:22vh;text-align:center;transition:opacity .3s}
+  .mofield{margin-bottom:22vh;text-align:center;transition:opacity .3s;display:flex;flex-direction:column;align-items:center}
   .mofield span{display:block;margin-top:10px;font:600 10px var(--f-disp);letter-spacing:.14em;text-transform:uppercase;color:var(--ok)}
 
   .card[data-k="chat"] .face{display:flex;align-items:center}
@@ -296,6 +296,20 @@
   .card[data-k="hist"] .face.front{display:flex;flex-direction:column}
   .card[data-k="hist"] .wmsg{flex:1;max-height:none}
   .card[data-k="hist"] .mo-pillrow{align-self:stretch;flex:none;margin-top:6px}
+
+  .modelpill{display:flex;align-items:center;gap:4px;background:none;border:1px solid #1a1a1a;border-radius:999px;
+    padding:4px 8px;font:600 9px var(--f-disp);letter-spacing:.08em;color:var(--cream);cursor:pointer;text-transform:uppercase;
+    white-space:nowrap;max-width:120px;overflow:hidden;position:relative}
+  .modelpill b{overflow:hidden;text-overflow:ellipsis;max-width:80px}
+  .modelpill svg{width:10px;height:10px;color:var(--dim)}
+  .modelmenu{display:none;position:fixed;z-index:80;background:rgba(5,5,5,.98);border:1px solid #1a1a1a;border-radius:12px;
+    padding:6px;box-shadow:0 12px 40px rgba(0,0,0,.7);flex-direction:column;gap:2px;min-width:170px}
+  .modelmenu.open{display:flex}
+  .modelmenu button{display:flex;align-items:center;justify-content:space-between;gap:8px;background:none;border:none;border-radius:8px;
+    padding:6px 9px;font:500 10px var(--f-disp);color:var(--dim);cursor:pointer;text-align:left;letter-spacing:.06em;text-transform:uppercase}
+  .modelmenu button:hover{background:rgba(127,214,164,.09);color:var(--cream)}
+  .modelmenu button.sel{color:var(--mint)}
+  .modelmenu button.sel::after{content:'✓';color:var(--ok)}
   .wmsg::-webkit-scrollbar{display:none}
   .wmsg .m{font-family:var(--f-disp);font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mint)}
   .wmsg .m.user{color:var(--orange)}
@@ -378,9 +392,10 @@
 </head>
 <body>
 <div id="morphover"></div>
+<div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.3</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v7.4</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -457,6 +472,7 @@
       <div class="card" data-k="hist" style="--h:110px">
     <div class="face front"><h2>Hermes · chat</h2><div class="wmsg" id="wallhist"></div><div class="mo-pillrow">        <svg class="mo-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5l1.7 4.8 4.8 1.7-4.8 1.7L10 16.5l-1.7-4.8L3.5 10l4.8-1.7L10 3.5z"/><path d="M18 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z"/></svg>
         <input id="q" placeholder="Ask anything…" autocomplete="off">
+        <button class="modelpill" id="modelpill" aria-label="Chat model"><b id="modelpillname">auto</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
         <button class="send" id="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5.5 11.5L12 5l6.5 6.5"/></svg></button>
       </div></div>
   </div>
@@ -684,7 +700,7 @@ const SL_OVR  = { centerTitle: 'STARLINK', activeSegments: 2, label1: 'DOWN', la
     const BRIK_VALS = Object.assign({"enableHeatmap": true, "chartX": 0, "chartY": 0, "mode": "concentric", "segmentBlendMode": "source-over", "segmentNoise": 0.08, "segmentSoftness": 0.1, "chartSize": 1.0, "activeSegments": 4, "cornerRadius": 40, "heatmapView": false, "waveLayers": 6, "waveSpread": 70, "waveFalloff": 3, "animateWaves": false, "isolinePalette": "sunset", "isoColor1": "#FFF7ED", "isoColor2": "#FDE047", "isoColor3": "#F97316", "isoColor4": "#991B1B", "isoColor5": "#2A0404", "enableGuides": true, "guideColor": "rgba(127,214,164,0.25)", "guideOpacity": 100, "guideWidth": 2, "colorPreset": "ocean", "colorCore": "#eaf6ef", "colorHigh": "#7fd6a4", "colorMid": "#4e8f6e", "colorLow": "#2c4a3a", "colorEdge": "#12241c", "enableGradient": false, "gradientSpeed": 2, "gradientColor1": "#E9DFD8", "gradientColor2": "#FFF0A3", "gradientColor3": "#DFA5A5", "baseBgColor": "#0f1411", "bgNoiseAmount": 0, "fontFamily": {"family": "Inconsolata", "style": "normal", "weight": 400, "url": null}, "useAutoContrast": false, "headerColor": "#7fd6a4", "textColor": "#eaf2ec", "centerContent": "text", "centerTitle": "SYSTEM", "centerTitleSize": 13, "valNumberSize": 1.55, "segLabelSize": 2, "monoMode": false, "monoColor": "#B088F9", "animSpeed": 750, "val1": 31, "val2": 41, "val3": 222, "val4": 6, "val5": 35, "val6": 81, "val7": 38, "val8": 65, "val9": 18, "val10": 76, "val11": 100, "val12": 54, "val13": 73, "val14": 63, "val15": 70, "label1": "MEM", "label2": "DSK", "label3": "CPU", "label4": "PH", "label5": "Flow", "label6": "Reach", "label7": "Core", "label8": "Pulse", "label9": "Spark", "label10": "Vibe", "label11": "Echo", "label12": "Nova", "label13": "Aura", "label14": "Peak", "label15": "Drift", "color1": "#7fd6a4", "color2": "#5aa884", "color3": "#c96b5e", "color4": "#d4b48c", "color5": "#AAE3FF", "color6": "#AAE3FF", "color7": "#AAE3FF", "color8": "#F7941D", "color9": "#F05A2C", "color10": "#EF4138", "color11": "#DA1C5C", "color12": "#EE2B7A", "color13": "#DA1C5C", "color14": "#DA1C1F", "color15": "#ED0306", "bgImage": "", "bgOpacity": 0, "bgFit": "cover"}, OVR);
     const DPR = Math.min(2, window.devicePixelRatio || 1);
     const CW = 300, CH = 300;      // internal layout size (labels positioned for 300)
-    const CSIZE = hostSel === '#slrings' ? 170 : 230;  // CSS display size — downscaled to fit each card
+    const CSIZE = hostSel === '#slrings' ? 200 : 230;  // CSS display size — downscaled to fit each card
     const canvas = document.createElement('canvas');
     canvas.width = CW * DPR; canvas.height = CH * DPR;
     canvas.style.width = CSIZE + 'px'; canvas.style.height = CSIZE + 'px'; canvas.style.display = 'block'; canvas.style.margin = '0 auto';
@@ -3247,7 +3263,7 @@ async function ask(){
   REPLY.scrollTop = REPLY.scrollHeight;
   try{
     const r = await fetch('/ask', {method:'POST', signal: _ac.signal,
-      headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: t})});
+      headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: t, model: chatModel==='auto'?null:chatModel})});
     const j = await r.json();
     clearTimeout(_to); clearInterval(cyc); MO.hide(); ov.classList.remove('on');
     bubble(r.ok ? (j.reply || '(no reply)') : (j.detail || 'error'));
@@ -3727,7 +3743,7 @@ function mountOrb(
 const MO = (() => {
   const SZ = 132;
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:none;width:220px;height:132px;margin:0 auto;color:#f5f0e2';
+  wrap.style.cssText = 'display:none;width:132px;height:132px;margin:0 auto;color:#f5f0e2;justify-content:center';
   wrap.dataset.k = 'mo';
   const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
   wrap.appendChild(svg);
@@ -3825,6 +3841,34 @@ fetch('/v3/events.json').then(r=>r.json()).then(x=>{
 
 /* global escape helper */
 const esc = s => String(s).replace(/[&<>"/]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c));
+
+
+/* ==== chat model picker ==== */
+const WALL_MODELS = ['auto','glm-5.3','kimi-k2.6','gpt-oss:120b','minimax-m3','deepseek-v4.1-flash'];
+let chatModel = localStorage.getItem('chatModel') || 'auto';
+if (!WALL_MODELS.includes(chatModel)) chatModel = 'auto';
+const MPILL = document.getElementById('modelpill'), MMENU = document.getElementById('modelmenu'), MPNAME = document.getElementById('modelpillname');
+function renderModelmenu(){
+  MPNAME.textContent = chatModel === 'auto' ? 'auto' : chatModel.split(':')[0];
+  MMENU.innerHTML = WALL_MODELS.map(m =>
+    `<button data-m="${m}" class="${m===chatModel?'sel':''}">${m==='auto'?'auto (gateway default)':m}</button>`).join('');
+}
+renderModelmenu();
+MPILL.onclick = (e) => {
+  e.stopPropagation();
+  const r = MPILL.getBoundingClientRect();
+  MMENU.style.left = Math.max(10, r.left - 40) + 'px';
+  MMENU.style.bottom = (window.innerHeight - r.top + 6) + 'px';
+  MMENU.classList.toggle('open');
+};
+MMENU.onclick = (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  chatModel = b.dataset.m; localStorage.setItem('chatModel', chatModel);
+  renderModelmenu(); MMENU.classList.remove('open');
+};
+document.addEventListener('click', (e) => {
+  if (!MMENU.contains(e.target) && e.target !== MPILL && !MPILL.contains(e.target)) MMENU.classList.remove('open');
+});
 
 /* ==== clock ==== */
 function clockTick(){
