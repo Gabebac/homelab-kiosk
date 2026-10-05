@@ -399,7 +399,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.4</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.5</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -3906,8 +3906,8 @@ const slFetch=()=>fetch('/v3/starlink.json').then(r=>r.json()).then(s=>{
   const slUp2 = document.getElementById('slup2'); if (slUp2) slUp2.textContent = s.uptime_h!=null ? s.uptime_h : '–';
   const feed = () => {
     if (!window._slSet) return setTimeout(feed, 400);
-    // arc fill = the displayed number (mbps*100) treated as % of the full ring (V8.4)
-    const dv=Math.max(2,Math.min(100,Math.round((s.down_mbps||0)*100))), uv=Math.max(2,Math.min(100,Math.round((s.up_mbps||0)*100)));
+    // arc fill = displayed number (mbps*100) remapped into 30..100 so idle never reads as a sliver (V8.5)
+    const dv=Math.min(100,Math.round(30+((s.down_mbps||0)*100)*0.7)), uv=Math.min(100,Math.round(30+((s.up_mbps||0)*100)*0.7));
     window._slSetText = window._slSetText || {};
     window._slSetText.val1 = ((s.down_mbps||0)*100).toFixed(0); window._slSetText.val2 = ((s.up_mbps||0)*100).toFixed(0);
     _slSet('down', dv); _slSet('up', uv);
