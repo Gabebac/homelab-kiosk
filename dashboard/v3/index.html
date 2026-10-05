@@ -48,11 +48,11 @@
 
   /* ==== calendar flip: week events back face ==== */
   .card[data-k="cal"] .face{display:flex;flex-direction:column}
-  .wkl{flex:1;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:6px;margin-top:6px;min-height:0}
+  .wkl{flex:1;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:3px;margin-top:5px;min-height:0}
   .wkl::-webkit-scrollbar{display:none}
-  .wkd{padding:6px 8px;background:rgba(127,214,164,.05);border:1px solid #1c231f;border-radius:8px}
-  .wkd .nm{font:600 10px var(--f-disp);color:var(--cream);letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .wkd .when{font:600 8px var(--f-disp);color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+  .wkd{padding:3px 8px;background:rgba(127,214,164,.05);border:1px solid #1c231f;border-radius:8px}
+  .wkd .nm{font:600 9px var(--f-disp);color:var(--cream);letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wkd .when{font:600 7px var(--f-disp);color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-top:1px}
   .wkd .when b{color:var(--ok)}
 
   /* ==== glass calendar (vanilla port) ==== */
@@ -399,7 +399,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.6</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.7</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -3814,7 +3814,7 @@ fetch('/v3/events.json').then(r=>r.json()).then(x=>{
   const el = document.getElementById('wksched'); if (!el) return;
   const now = new Date(); const in7 = new Date(now.getTime() + 7*864e5);
   const rows = (x.events||[]).filter(e => { const t=new Date(e.next); return t>=new Date(now-864e5) && t<=in7; })
-    .sort((a,b)=>new Date(a.next)-new Date(b.next));
+    .sort((a,b)=>new Date(a.next)-new Date(b.next)).slice(0,3);
   el.innerHTML = rows.length ? rows.map(e=>{
     const d=new Date(e.next);
     const day=d.toLocaleDateString('en-GB',{weekday:'short'});
