@@ -1,0 +1,4 @@
+/opt/data/kiosk/gcalfeed.py:16: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now=datetime.datetime.utcnow().strftime("%Y-%m-%dT00:00:00Z")
+/opt/data/kiosk/gcalfeed.py:17: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  end=(datetime.datetime.utcnow()+datetime.timedelta(days=DAYS)).strftime("%Y-%m-%dT23:59:59Z")

@@ -63,6 +63,8 @@ Full table in README (`## design history`); per-version details in CHANGELOG.md.
 
 - V8.1.1 display enforcer: permanent 15s modeline restore + F5 in entrypoint.sh (EDID drops when monitor sleeps). Vulkan ANGLE GPU, NOT swiftshader.
 
+- **gcalfeed.py resident feed** (calendar ← gabrieltfilho primary Google Cal + cron merge → events.json, 15-min loop): start after reboot — `pkill -9 -f gcalfeed.py; setsid nohup /opt/data/.venvs/gws/bin/python /opt/data/kiosk/gcalfeed.py --loop >> /opt/data/kiosk/gcalfeed.log 2>&1 < /dev/null &` (same pattern as dishfeed; token /opt/data/google_token.json auto-refreshes).
+
 ## Open threads
 - /ask still slow by gateway nature (full agent turn); fine per 120s timeout.
 - Figma: per-version wall frames beyond V7.6 = add going forward only. Segments block (52:6) + Tweak lanes remain for user-driven edits.

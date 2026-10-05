@@ -399,7 +399,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.5</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.6</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -3819,7 +3819,7 @@ fetch('/v3/events.json').then(r=>r.json()).then(x=>{
     const d=new Date(e.next);
     const day=d.toLocaleDateString('en-GB',{weekday:'short'});
     const tm=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false});
-    return `<div class="wkd"><div class="nm">${esc(e.name)}</div><div class="when">${day} ${tm} · <b>${e.last||'?'}</b></div></div>`;
+    return `<div class="wkd"><div class="nm">${esc(e.name)}</div><div class="when">${day} ${tm} · <b>${e.last||(e.src==='google'?'gcal':'?')}</b></div></div>`;
   }).join('') : '<div class="wkd"><div class="nm">No events this week</div><div class="when">cron idle</div></div>';
 }).catch(()=>{});
 
