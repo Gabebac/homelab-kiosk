@@ -1,5 +1,14 @@
 # Changelog
 
+## V8.8 — Hirael meters + mini charts + Huemint palette + liquid glass
+- **Brik rings retired** on both System and Starlink (−94KB of WebGL creative code; wall CPU drops back to ~80% at glass-lite).
+- **Cards = status pill + meter bars + dual-line mini chart**: cpu/mem/disk/pi-hole-pass on System, down/up/obstruction/signal on Starlink. Meter tones: mint <75, coral 75–90 (warm), coral ≥90 (hot); cpu text shows the real load (fill clamps at 100). Starlink meters scale against plan ceilings (250/50 — no more 30% floor).
+- **Mini charts**: solid + dashed SVG lines, client-side 24-sample buffer (~6 min at the 15s poll; empty until filled), color-codes off the meters' tones (cpu line turns coral ≥75). `-6m/-3m/now` ticks.
+- **Huemint brand palette**: charcoal `#1f2121` ground, aqua `#79dcd7` primary, coral `#f1797a` warn/bad — every hardcoded mint/tan/bad hex swept.
+- **Liquid glass on all cards**: translucent charcoal faces + inset specular edge highlights + drop shadow. Perf knob: the per-frame `backdrop-filter`+`feTurbulence` distortion costs ~30% CPU on the 4-core box, so default ships **glass-lite** (tint + edge, no per-frame filter); `?glass=1` restores the full liquid distortion.
+- **Calendar**: navigable months (‹ ›), aqua today chip, coral event dots (dots follow events.json — Pooh's calendar has recurring weekly meetings nearly every weekday, so dots are factual), month nav refetches per (y,m) with a stale-click token.
+- **infra bugs found while shipping**: launcher's `KIOSK_URL` had drifted to `/` (V1 Olympus page shows on recreate) — fixed to `/v3/`; sidecar image bakes a stale sidecar.py — docker-cp + restart is required after every recreate; kiosk image rebuilt so the vulkan entrypoint is baked (no more docker-cp dance; swiftshader was back at 339% CPU).
+
 ## V7.7/V7.8
 - **Nebula font**: family slots switched to `Nebula` (falls back to Chakra Petch/Inter until the Airnauts font file is dropped in `v3/fonts/` — the $9 Gumroad font can't be pulled from the community file; ready-to-uncomment `@font-face` sitting in the head). CDN 'Nebula' fonts are unrelated (checked + rejected).
 - **Real ring values**: Brik value text is overridable per instance (`window._sysSetText` / `_slSetText`); SYSTEM rings show %, PH ring shows **clean %** (arc = 100 − blocked; the unlit part is the blocked %.), STARLINK DOWN/UP show **real Mb/s** with arc = current/max (250 / 50 Mb/s).

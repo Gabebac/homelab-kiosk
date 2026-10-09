@@ -135,7 +135,9 @@ there" and the change gets implemented.
 | V7.3 | f05fa07 | side margins 28px, chat+avatar stretch, picker pinned flush to avatar card bottom |
 | V7.4 | dfd2500 | thinking orb/label centered, SL ring 200px, avatar picker inside margin, CHAT model picker (session.create model), sidecar 300s WS timeout |
 | V7.5 | 347915c | calendar flip removed, bottom row 14/10, cards stretch lower |
-| **V7.6** | **5281d97** | **CURRENT — bottom flush (main 100%), chat/avatar 17/7 of 24** |
+| **V7.6** | **5281d97** | **bottom flush (main 100%), chat/avatar 17/7 of 24** |
+| V8.0–V8.7 | eae76e0 → a12e517 | rings era: sizes/rescale/remap, enforcer + cache fixes, gcal |
+| **V8.8** | **(this commit)** | **CURRENT — Brik retired: Hirael meters + mini charts + Huemint palette + liquid-glass cards (glass-lite default)** |
 
 ## V5.4 — performance pass (9144eda)
 

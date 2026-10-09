@@ -2,3 +2,48 @@
   now=datetime.datetime.utcnow().strftime("%Y-%m-%dT00:00:00Z")
 /opt/data/kiosk/gcalfeed.py:17: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
   end=(datetime.datetime.utcnow()+datetime.timedelta(days=DAYS)).strftime("%Y-%m-%dT23:59:59Z")
+events: 3 cron + 50 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 3 cron + 50 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 3 cron + 50 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 3 cron + 50 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 50 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 50 google -> /opt/data/kiosk/dashboard/v3/events.json
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+gcalfeed loop error: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+events: 5 cron + 49 google -> /opt/data/kiosk/dashboard/v3/events.json
+gcalfeed loop error: HTTPSConnectionPool(host='www.googleapis.com', port=443): Max retries exceeded with url: /calendar/v3/calendars/primary/events?timeMin=2026-10-06T00:00:00Z&timeMax=2026-12-05T23:59:59Z&singleEvents=true&orderBy=startTime&maxResults=50 (Caused by NameResolutionError("HTTPSConnection(host='www.googleapis.com', port=443): Failed to resolve 'www.googleapis.com' ([Errno -3] Temporary failure in name resolution)"))

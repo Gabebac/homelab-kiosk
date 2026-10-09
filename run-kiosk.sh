@@ -21,7 +21,7 @@ docker run -d --name stats-sidecar --restart unless-stopped \
 # /run/udev bind: libinput needs the host udev database or Xorg gets ZERO input devices.
 docker run -d --name hermes-kiosk --restart unless-stopped \
     --privileged --network host \
-    -e KIOSK_URL=http://127.0.0.1:8644/ \
+    -e KIOSK_URL=http://127.0.0.1:8644/v3/ \
     -v /run/udev:/run/udev:ro \
     hermes-kiosk:v1
 
