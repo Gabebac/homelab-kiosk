@@ -137,7 +137,8 @@ there" and the change gets implemented.
 | V7.5 | 347915c | calendar flip removed, bottom row 14/10, cards stretch lower |
 | **V7.6** | **5281d97** | **bottom flush (main 100%), chat/avatar 17/7 of 24** |
 | V8.0–V8.7 | eae76e0 → a12e517 | rings era: sizes/rescale/remap, enforcer + cache fixes, gcal |
-| **V8.8** | **(this commit)** | **CURRENT — Brik retired: Hirael meters + mini charts + Huemint palette + liquid-glass cards (glass-lite default)** |
+| V8.8 | 1de2b6d | Brik retired: Hirael meters + mini charts + Huemint palette + liquid-glass faces |
+| **V8.9** | **(this commit)** | **CURRENT — broken-by-design glass shards on all cards + topo-field WebGL background** |
 
 ## V5.4 — performance pass (9144eda)
 

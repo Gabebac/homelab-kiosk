@@ -15,6 +15,10 @@ docker run -d --name stats-sidecar --restart unless-stopped \
     -v /var/run/docker.sock:/var/run/docker.sock \
     hermes-dashboard:v1
 
+# the image bakes a STALE sidecar.py (V5.8 pitfall) — overlay the host copy into the fresh container, always
+docker cp kiosk/sidecar.py stats-sidecar:/app/sidecar.py
+docker restart stats-sidecar >/dev/null
+
 # kiosk display: takes over the console; needs /dev/dri for the Intel iGPU
 # (Xorg modesetting); privileged is the community-proven shortcut for input
 # + VT access. Owner approved this trade-off.

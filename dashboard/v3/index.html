@@ -65,7 +65,7 @@
   .calgrid button{width:15px;height:15px;border-radius:50%;border:none;background:none;color:var(--ink);
     font:600 10px var(--f-disp);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
   .calgrid button:disabled{color:var(--dim);cursor:default}
-  .calgrid button.today{background:linear-gradient(135deg,#f1797a,#f1797a);color:#0a0d0b;font-weight:700}
+  .calgrid button.today{background:#79dcd7;color:#1f2121;font-weight:700}
   .calgrid button.ev{box-shadow:inset 0 -2px 0 var(--warn)}
   .calgrid button.ev.today{box-shadow:none}
 
@@ -401,6 +401,35 @@
     .orb::before,body.thinking .orb::after{animation:none}
     .card:hover .flip{transform:none}
   }
+
+  /* ==== v8.9 — broken-by-design shards on every card ==== */
+  .card .flip,.card>.face{transform-style:preserve-3d}
+  /* pane UNDER content: shards carry the fracture + tilt light; live data stays crisp and readable on top.
+     (the source hero bakes its text into the glass bitmaps; a live dashboard can't, so the glass reads as
+     the card's substrate, not its lid) */
+  .card[data-k]:not([data-k="av"]):not([data-k="chat"]):not([data-k="hist"]) .shardpane{position:absolute;inset:0;z-index:0;transform-style:flat;pointer-events:none}
+  .shard{position:absolute;transform-origin:50% 50%;pointer-events:auto;
+    transition:filter .45s cubic-bezier(.16,1,.3,1)}
+  .shard--hot{z-index:40!important;
+    filter:brightness(1.22) drop-shadow(0 18px 24px rgba(0,0,0,.72)) drop-shadow(0 0 18px rgba(121,220,215,.16))}
+  .shardclip{position:absolute;inset:0;overflow:hidden;clip-path:var(--poly);background:rgba(33,37,36,.66)}
+  .shardglass{position:absolute;inset:0}
+  .shardglass::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(132deg,rgba(121,220,215,.10) 0%,rgba(121,220,215,.02) 30%,transparent 46%,transparent 60%,rgba(241,121,122,.05) 100%);
+    pointer-events:none}
+  .shardspec{position:absolute;inset:0;opacity:0;
+    background:radial-gradient(42% 42% at var(--mx,50%) var(--my,50%),rgba(121,220,215,.26),rgba(121,220,215,.05) 46%,transparent 72%);
+    transition:opacity .5s cubic-bezier(.16,1,.3,1)}
+  .shard--hot .shardspec{opacity:1}
+  /* crack lines through the gaps between shards */
+  .cracksvg{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:.8}
+  .cracksvg .cg{stroke:rgba(198,214,244,.10);stroke-width:2.2;fill:none;vector-effect:non-scaling-stroke}
+  .cracksvg .cl{stroke:rgba(198,214,244,.30);stroke-width:1;fill:none;vector-effect:non-scaling-stroke}
+  .cracksvg .cf{stroke:rgba(198,214,244,.14);stroke-width:.7;fill:none;vector-effect:non-scaling-stroke}
+
+  /* 3D-context fix: inside a flipped/preserved-3d face, painted order = depth, not z-index.
+     Lift real content toward the viewer so it renders proud of the glass shards. */
+  .card[data-k]:not([data-k="av"]):not([data-k="chat"]):not([data-k="hist"]) .face>*:not(.glayer):not(.gwhite):not(.gspec):not(.shardpane):not(.cracksvg){position:relative;z-index:10}
 </style>
 </head>
 <body>
@@ -425,7 +454,7 @@
 <div class="modelmenu" id="modelmenu"></div>
 <canvas id="hypergrid"></canvas>
 <header>
-  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.8</span></div>
+  <div class="logo"><b>Pooh's HunLab</b> <span style="font-weight:400;color:var(--dim);font-size:9px">· kiosk v8.9</span></div>
   <div class="clock" id="clock">--:--</div>
   <div id="syncc" style="font:600 8px var(--f-disp);letter-spacing:.1em;color:var(--dim);border:1px solid #1a1a1a;border-radius:5px;padding:1px 6px;margin-right:6px;text-transform:uppercase">sync</div>
 </header>
@@ -534,40 +563,87 @@
 <script src="/av/vendor/live2dcubismcore.min.js"></script>
 <script src="/av/vendor/pixi.min.js"></script>
 <script src="/av/vendor/pixi-live2d-display.min.js"></script>
-<script>/* ==== hyper-grid: perspective 3D grid + cursor parallax + warp on mouse speed ==== */
+<script>/* ==== topo-field background (threeui port: 48px grid + drifting topographic contours, WebGL) ==== */
 (function(){
-  const cv = document.getElementById('hypergrid'), ctx = cv.getContext('2d');
-  const host = cv.parentElement || document.body;
-  let W, H;
-  function fit(){ const r = host.getBoundingClientRect(); W = cv.width = Math.max(60, r.width); H = cv.height = Math.max(60, r.height); }
-  fit(); addEventListener('resize', fit);
-  let mx = .5, my = .5;
-  addEventListener('mousemove', e => {
-    mx = (e.clientX / innerWidth - .5) * 2;
-    my = (e.clientY / innerHeight - .5) * 2;
-  });
-  function frame(){
-    ctx.clearRect(0, 0, W, H);
-    const gap = 26;
-    const ox = ((mx * 10) % gap + gap) % gap, oy = ((my * 10) % gap + gap) % gap;
-    for (let y = oy - gap/2; y < H + gap; y += gap){
-      for (let x = ox - gap/2; x < W + gap; x += gap){
-        // parallax drift by distance from center for subtle depth
-        const dx = (x - W/2) / W, dy = (y - H/2) / H;
-        const px = x - mx * 14 * (0.4 + Math.abs(dx)), py = y - my * 14 * (0.4 + Math.abs(dy));
-        ctx.beginPath();
-        ctx.arc(px, py, 1.1, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(127,214,164,.16)';
-        ctx.fill();
-      }
+  const cv = document.getElementById('hypergrid');
+  const gl = cv.getContext('webgl', { alpha: false, antialias: false, depth: false });
+  if (!gl){ cv.style.display='none'; return; }
+  const vsSource = 'attribute vec2 a_position; void main(){ gl_Position = vec4(a_position, 0.0, 1.0); }';
+  const fsSource = `
+    precision highp float;
+    uniform vec2 u_resolution;
+    uniform float u_time;
+    uniform float u_dpr;
+    vec3 permute(vec3 x){ return mod(((x*34.0)+1.0)*x, 289.0); }
+    float snoise(vec2 v){
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+      vec2 i  = floor(v + dot(v, C.yy));
+      vec2 x0 = v - i + dot(i, C.xx);
+      vec2 i1; i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1;
+      i = mod(i, 289.0);
+      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+      m = m*m; m = m*m;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5; vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox; m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+      vec3 g; g.x = a0.x * x0.x + h.x * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
     }
+    void main(){
+      vec2 st = gl_FragCoord.xy / u_resolution.xy;
+      st.x *= u_resolution.x / u_resolution.y;
+      float gridSize = 48.0 * u_dpr;
+      vec2 gridSt = gl_FragCoord.xy / gridSize;
+      vec2 gridFract = fract(gridSt);
+      float lineThickness = 1.0 / gridSize;
+      float gridLines = step(1.0 - lineThickness, gridFract.x) + step(1.0 - lineThickness, gridFract.y);
+      gridLines = clamp(gridLines, 0.0, 1.0) * 0.12;
+      float noiseScale = 1.4;
+      vec2 noisePos = st * noiseScale + vec2(u_time * 0.015, u_time * 0.025);
+      float n = snoise(noisePos) * 0.5 + 0.5;
+      float numBands = 10.0;
+      float bandVal = n * numBands;
+      float triangleWave = abs(fract(bandVal) - 0.5) * 2.0;
+      float topoLines = smoothstep(0.02, 0.00, triangleWave) * 0.45;
+      // wall tint: aqua lines on the charcoal ground (white weights -> aqua-dim)
+      vec3 col = vec3(0.121,0.129,0.129);           // #1f2121 base
+      col += vec3(0.475,0.863,0.843) * gridLines;   // #79dcd7 * 0.12
+      col += vec3(0.475,0.863,0.843) * topoLines * 0.9;
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+  function shader(type, s){ const sh = gl.createShader(type); gl.shaderSource(sh, s); gl.compileShader(sh); return sh; }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, shader(gl.VERTEX_SHADER, vsSource));
+  gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, fsSource));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uDpr = gl.getUniformLocation(prog, 'u_dpr');
+  let W, H;
+  function fit(){
+    const dpr = window.devicePixelRatio || 1;
+    W = Math.floor(innerWidth * dpr); H = Math.floor(innerHeight * dpr);
+    cv.width = W; cv.height = H;
+    gl.viewport(0, 0, W, H);
+    gl.uniform2f(uRes, W, H); gl.uniform1f(uDpr, dpr);
   }
-  // kiosk perf: grid is stateless — redraw only when the pointer actually moves or on resize, no rAF loop
-  let rq = false, tm = 0;
-  const redraw = () => { if (!rq){ rq = true; requestAnimationFrame(() => { rq = false; frame(); }); } tm = Date.now(); };
-  addEventListener('mousemove', redraw, {passive:true});
-  addEventListener('resize', () => { fit(); redraw(); });
-  frame();
+  fit(); addEventListener('resize', fit);
+  // cadence like the grid it replaces: topography drifts slowly — 12fps is indistinguishable and cheap
+  let start = performance.now();
+  setInterval(() => {
+    gl.uniform1f(uTime, (performance.now() - start) * 0.001);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }, 80);
 })();
 
 /* ==== avatar (same proven loader as V2) ==== */
@@ -1388,11 +1464,7 @@ function statRows(el, rows){
 /* ==== service pills ==== */
 
 /* ==== hyper-grid now lives in the chat panel ==== */
-document.addEventListener('DOMContentLoaded', () => {
-  const hg = document.getElementById('hypergrid');
-  const aside = document.querySelector('aside');
-  if (hg && aside) aside.insertBefore(hg, aside.firstChild);
-});
+/* v8.9: hypergrid canvas is the full-bleed topo-field background — stays in body root */
 /* ==== glare tilt ==== */
 for (const c of document.querySelectorAll('.card')) {
   c.addEventListener('mousemove', e => {
@@ -1504,6 +1576,134 @@ function drawMini(k){
     ${ticks}
   </svg>`;
 }
+
+
+/* ==== v8.9 broken-by-design shards (vanilla port, one rAF loop for all cards) ==== */
+(function(){
+  if (new URLSearchParams(location.search).has('noshards')) return;   // perf kill-switch
+  const PANE = 5;   // shards per card — big panes, like the hero
+  // deterministic fracture per card: cuts generated from the card's own seed, then fixed points jitted
+  function mulberry(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; } }
+  function genShards(w,h,seed){
+    const rnd = mulberry(seed);
+    const cuts = [];   // each card: one crack polyline (x pairs in %), shards = slices above/below it zig-zagged
+    // simple approach: two non-crossing polylines split the pane into 5 convex-ish quads
+    const p=[];
+    let x=0,y=0;
+    const line=(x0,y0,x1,y1,n,amp)=>{const pts=[];for(let i=0;i<=n;i++){const t=i/n;pts.push([x0+(x1-x0)*t+(rnd()-.5)*amp, y0+(y1-y0)*t+(rnd()-.5)*amp]);}return pts;};
+    // vertical-ish crack at ~22-30%, another at ~52-60%, a third at ~74-82%
+    const a=line(24+rnd()*6,-6, 20+rnd()*8,106, 4, 7);
+    const b=line(54+rnd()*6,-6, 58+rnd()*6,106, 4, 6);
+    const c=line(78+rnd()*4,-6, 74+rnd()*6,106, 3, 5);
+    return [a,b,c];
+  }
+  const cards = Array.from(document.querySelectorAll('.card[data-k]')).filter(c=>!['av','chat','hist'].includes(c.getAttribute('data-k')));
+  cards.forEach((card,ci)=>{
+    const face = card.querySelector('.face'); if (!face) return;
+    const host = document.createElement('div'); host.className='shardpane';
+    const flip = card.querySelector('.flip');
+    if (flip) flip.insertBefore(host, flip.firstChild); else card.insertBefore(host, face);
+    const cracks = genShards(100,100,(ci+3)*1013);
+    // build shard polygons: 4 columns split by the vertical cracks => 4 shards; plus a horizontal cut across cols 1-2 for a 5th
+    const polys=[];
+    // column 0: left of crack A
+    polys.push([[-2,-2],[24,-2],[22,50],[18,106],[-2,106]]);
+    // column 1: between A and B with a step
+    polys.push([[24,-2],[55,-2],[57,44],[31,47],[22,50],[18,106]===undefined?0:18,106].slice(0,6));
+    // column 2: between B and C
+    polys.push([[55,-2],[80,-2],[76,52],[57,56],[57,44]]);
+    // column 3: right of C
+    polys.push([[80,-2],[102,-2],[102,106],[74,106],[76,52]]);
+    // a floating shard overlapping cols 1-2 lower area (lifted, like the hero's 05a)
+    polys.push([[30,58],[60,55],[62,78],[36,84]]);
+    polys.forEach((poly,si)=>{
+      const el=document.createElement('div'); el.className='shard';
+      // bbox from poly
+      const xs=poly.map(p=>p[0]), ys=poly.map(p=>p[1]);
+      const x0=Math.min(...xs), y0=Math.min(...ys), w=Math.max(...xs)-x0, h=Math.max(...ys)-y0;
+      el.style.left=x0+'%'; el.style.top=y0+'%'; el.style.width=w+'%'; el.style.height=h+'%';
+      el.style.zIndex=10+si;
+      const clip=document.createElement('div'); clip.className='shardclip';
+      clip.style.setProperty('--poly','polygon('+poly.map(p=>((p[0]-x0)/w*100).toFixed(1)+'% '+((p[1]-y0)/h*100).toFixed(1)+'%').join(',')+')');
+      const glass=document.createElement('div'); glass.className='shardglass';
+      const spec=document.createElement('div'); spec.className='shardspec';
+      clip.appendChild(glass); clip.appendChild(spec); el.appendChild(clip); host.appendChild(el);
+      // resting pose
+      const bx=(Math.sin((ci*7+si)*91.7)-.5)*3.4, by=(Math.cos((ci*5+si)*77.3)-.5)*4.2, bz=Math.abs(Math.sin(ci+si))*14;
+      el._base={rx:bx,ry:by,tz:bz,px:0,py:0,sc:1};
+      el._cur={...el._base}; el._tgt={...el._base};
+    });
+    // crack svg through the gaps
+    const svgns='http://www.w3.org/2000/svg';
+    const svg=document.createElementNS(svgns,'svg'); svg.setAttribute('class','cracksvg');
+    svg.setAttribute('viewBox','0 0 100 100'); svg.setAttribute('preserveAspectRatio','none');
+    const g=document.createElementNS(svgns,'g');
+    const mkPath=(pts,cls)=>{const el=document.createElementNS(svgns,'path');el.setAttribute('class',cls);el.setAttribute('d','M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L'));return el;};
+    cracks.forEach(pts=>{g.appendChild(mkPath(pts,'cg'));g.appendChild(mkPath(pts,'cl'));});
+    svg.appendChild(g); if (flip) flip.insertBefore(svg, host); else card.insertBefore(svg, host);
+  });
+  // one spring loop for everything
+  const all=Array.from(document.querySelectorAll('.shard'));
+  const cur=all.map(el=>el._cur), tgt=all.map(el=>el._tgt);
+  let raf=0, running=false, gx=0, gy=0, lastMove=0;
+  function wake(){ if(!running){running=true;raf=requestAnimationFrame(tick);} }
+  function tick(){
+    let alive=false; const k=.12;
+    for(let i=0;i<all.length;i++){
+      const c=cur[i],t=tgt[i];
+      for(const key of ['rx','ry','tz','px','py']) c[key]+= (t[key]-c[key])*k;
+      const d=Math.abs(t.rx-c.rx)+Math.abs(t.ry-c.ry)+Math.abs(t.tz-c.tz)+Math.abs(t.px-c.px)+Math.abs(t.py-c.py);
+      if(d>.01) alive=true;
+      const b=all[i]._base;
+      const lift = (b.tz+c.tz)/16;                       // 1..~5 — depth as scale+shadow instead of z-translation
+      all[i].style.transform='translate3d('+(b.px+c.px).toFixed(2)+'px,'+(b.py+c.py).toFixed(2)+'px,0) rotateX('+(b.rx+c.rx).toFixed(2)+'deg) rotateY('+(b.ry+c.ry).toFixed(2)+'deg) scale('+(1+lift*.03).toFixed(4)+')';
+      all[i].style.zIndex= c.tz>40?40:all[i]._zi;
+    }
+    if(alive) raf=requestAnimationFrame(tick); else {running=false; all.forEach((el,i)=>cur[i].sc=1);}
+  }
+  document.addEventListener('pointermove',e=>{
+    gx=e.clientX/innerWidth-.5; gy=e.clientY/innerHeight-.5;
+    const now=Date.now(); if(now-lastMove<16) return; lastMove=now;
+    all.forEach((el,i)=>{
+      if(el._hot)return;
+      const pane=el.closest('.shardpane').getBoundingClientRect();
+      const depth=1-(i%3)*.3;
+      tgt[i].px=-gx*22*depth; tgt[i].py=-gy*16*depth;
+      tgt[i].rx=el._base.rx+gy*3.2*depth; tgt[i].ry=el._base.ry-gx*4*depth;
+    });
+    wake();
+  },{passive:true});
+  all.forEach((el,i)=>{
+    el._zi=10+i;
+    el.addEventListener('pointerenter',()=>{ el._hot=true; el.classList.add('shard--hot'); });
+    el.addEventListener('pointermove',e=>{
+      const r=el.getBoundingClientRect();
+      const lx=(e.clientX-r.left)/r.width-.5, ly=(e.clientY-r.top)/r.height-.5;
+      const b=el._base;
+      tgt[i].rx=b.rx-ly*9; tgt[i].ry=b.ry+lx*11; tgt[i].tz=40; tgt[i].sc=1;
+      el.style.setProperty('--mx',((lx+.5)*100).toFixed(1)+'%');
+      el.style.setProperty('--my',((ly+.5)*100).toFixed(1)+'%');
+      wake();
+    });
+    el.addEventListener('pointerleave',()=>{ el._hot=false; el.classList.remove('shard--hot'); Object.assign(tgt[i],el._base); wake(); });
+  });
+  // entrance: assemble from center, one beat
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    all.forEach((el,i)=>{
+      const pane=el.closest('.shardpane'); if(!pane) return;
+      const pr=pane.getBoundingClientRect();
+      const cx=pr.left+(parseFloat(el.style.left)/100+parseFloat(el.style.width)/200)*pr.width;
+      const cy=pr.top+(parseFloat(el.style.top)/100+parseFloat(el.style.height)/200)*pr.height;
+      const dx=cx-innerWidth/2, dy=cy-innerHeight/2, dist=Math.hypot(dx,dy)||1;
+      const rest=el.style.transform;
+      el.animate([
+        {opacity:0,transform:'translate3d('+(dx/dist*90)+'px,'+(dy/dist*90)+'px,220px) rotateX('+(-dy/dist*10)+'deg) rotateY('+(dx/dist*10)+'deg)',filter:'brightness(2) blur(2px)'},
+        {opacity:1,transform:rest,filter:'brightness(1) blur(0px)',offset:.72},
+        {opacity:1,transform:rest,filter:'none'}
+      ],{duration:1300,delay:220,easing:'cubic-bezier(.16,1,.3,1)',fill:'backwards'});
+    });
+  }
+})();
 
 /* ==== stats polling ==== */
 let LAST_OK = 0;

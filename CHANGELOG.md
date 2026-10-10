@@ -1,5 +1,13 @@
 # Changelog
 
+## V8.9 — broken-by-design shards + topo-field background
+- **Every card is now a fractured glass pane** (vanilla port of the broken-by-design hero, guglielmogiannattasio): 5 glass shards per card cut by deterministic crack polylines, crack lines traced through the gaps (glow + fine layers), pointer parallax by depth ring, per-shard hover tilt + specular + hot brightness/lift, assemble-from-center entrance on load. Avatar, chat, and history cards excluded (canvas/interactivity). `?noshards=1` kill-switch.
+- **PAINT-ORDER FIND (cost a debug odyssey):** shards must NOT live inside `.face` on a preserve-3d/perspective card — the GPU composites 3D-transformed siblings ahead of z-index and swallows the card's live content (plex rows existed in DOM, `r=200 rows=5`, and painted empty on the real wall while headless w/ GPU-off rendered them). Fix: the shard pane + crack SVG are **card-level siblings inserted before `.flip`/`.face`** — content always paints above; hover lift stays (scale+shadow, z dropped from the shard transform in favor of a scale factor).
+- **Topo-field background** (MengTo/threeui port): the old hypergrid dot canvas is now the WebGL topography shader — 48px grid + ultra-thin contour bands from simplex noise, drifting at 6fps (interval, no rAF-loop CPU), aqua-tinted on the charcoal ground. Canvas stays in body root (the old DOMContentLoaded mover into the chat aside is deleted).
+- **infra:** `run-kiosk.sh` now auto-`docker cp`s sidecar.py into the fresh sidecar + restarts it (the image bakes a stale copy — v5.8 pitfall, bit 3× this session); entrypoint purges chromium session-restore files too (a stray restored tab once hijacked the kiosk page); launcher KIOSK_URL fixed `/` → `/v3/` (V8.8 find, kept).
+- Wall CPU ~110–125% (was 80% pre-shards; the ~35% is 40 clip-path composited layers — `?noshards=1` if the box is loaded).
+
+
 ## V8.8 — Hirael meters + mini charts + Huemint palette + liquid glass
 - **Brik rings retired** on both System and Starlink (−94KB of WebGL creative code; wall CPU drops back to ~80% at glass-lite).
 - **Cards = status pill + meter bars + dual-line mini chart**: cpu/mem/disk/pi-hole-pass on System, down/up/obstruction/signal on Starlink. Meter tones: mint <75, coral 75–90 (warm), coral ≥90 (hot); cpu text shows the real load (fill clamps at 100). Starlink meters scale against plan ceilings (250/50 — no more 30% floor).

@@ -4,7 +4,9 @@
 # no touch handling — inputs attached today are mouse + keyboard.
 rm -f /tmp/.X0-lock /tmp/.X11-unix/X0 2>/dev/null
 # kill stale http cache so the wall never boots on yesterday's HTML (no-store covers future, this covers old entries)
-rm -rf /root/.config/chromium/'"'Default"'"/Cache /root/.config/chromium/'"'Default"'"/'"'Code Cache"'" 2>/dev/null || true
+rm -rf /root/.config/chromium/Default/Cache "/root/.config/chromium/Default/Code Cache" 2>/dev/null || true
+# also purge session-restore: chromium would otherwise reopen whatever page a previous probe session had open
+rm -rf /root/.config/chromium/Default/Sessions "/root/.config/chromium/Default/Last Session" "/root/.config/chromium/Default/Last Tabs" 2>/dev/null || true
 Xorg :0 vt1 -s 0 -dpms -nolisten tcp &
 sleep 6
 export DISPLAY=:0
